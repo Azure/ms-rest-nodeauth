@@ -51,14 +51,14 @@ class UserTokenCredentials extends tokenCredentialsBase_1.TokenCredentialsBase {
     }
     /**
      * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
-     * @returns {Promise<any>}
+     * @returns {Promise<TokenResponse>}
      * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
      * @memberof UserTokenCredentials
      */
     getToken() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return this.getTokenFromCache(this.username);
+                return yield this.getTokenFromCache(this.username);
             }
             catch (error) {
                 const self = this;

@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceRoot}/lib/azureEnvironment.ts",
+      "program": "${workspaceRoot}/samples/sample.ts",
       "outFiles": [
         "${workspaceRoot}/dist/**/*.js"
       ]

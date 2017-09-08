@@ -64,15 +64,14 @@ export class UserTokenCredentials extends TokenCredentialsBase {
 
   /**
    * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
-   * @returns {Promise<any>}
+   * @returns {Promise<TokenResponse>}
    * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    * @memberof UserTokenCredentials
    */
   public async getToken(): Promise<TokenResponse> {
     try {
-      return this.getTokenFromCache(this.username);
+      return await this.getTokenFromCache(this.username);
     } catch (error) {
-
       const self = this;
       const resource = this.getActiveDirectoryResourceId();
 

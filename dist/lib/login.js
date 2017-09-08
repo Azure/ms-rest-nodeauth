@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const adal = require("adal");
+const adal = require("adal-node");
 const fs = require("fs");
 const msRest = require("ms-rest-ts");
 const ms_rest_azure_env_1 = require("ms-rest-azure-env");

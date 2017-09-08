@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-const adal = require("adal");
+const adal = require("adal-node");
 import * as fs from "fs";
 import * as msRest from "ms-rest-ts";
 import { AzureEnvironment } from "ms-rest-azure-env";
