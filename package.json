@@ -1,5 +1,5 @@
 {
-  "name": "ms-rest-azure-ts",
+  "name": "ms-rest-nodeauth",
   "author": {
     "name": "Microsoft Corporation",
     "email": "azsdkteam@microsoft.com",
@@ -21,8 +21,8 @@
     "autorest",
     "environment"
   ],
-  "main": "./dist/lib/msRestAzureNodeAuth.js",
-  "types": "./typings/lib/msRestAzureNodeAuth.d.ts",
+  "main": "./dist/lib/msRestNodeAuth.js",
+  "types": "./typings/lib/msRestNodeAuth.d.ts",
   "dependencies": {
     "ms-rest-azure-env": "azure/ms-rest-azure-env",
     "ms-rest-ts": "amarzavery/ms-rest#master",

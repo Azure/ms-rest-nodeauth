@@ -240,41 +240,52 @@ function withInteractiveWithAuthResponse(options) {
         let authorityUrl = interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
         let authContext = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
         interactiveOptions.context = authContext;
-        let tenantList = [];
-        let subscriptionList = [];
+        let userCodeResponse;
+        let creds;
         let getUserCode = new Promise((resolve, reject) => {
-            return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err, userCodeResponse) => {
+            return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err, userCodeRes) => {
                 if (err) {
                     return reject(err);
                 }
+                userCodeResponse = userCodeRes;
                 if (interactiveOptions.userCodeResponseLogger) {
                     interactiveOptions.userCodeResponseLogger(userCodeResponse.message);
                 }
                 else {
                     console.log(userCodeResponse.message);
                 }
-                return resolve(userCodeResponse.message);
+                return resolve(userCodeResponse);
             });
         });
-        return getUserCode.then((userCodeResponse) => {
-            return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => __awaiter(this, void 0, void 0, function* () {
-                if (error) {
-                    return Promise.reject(error);
-                }
-                interactiveOptions.username = tokenResponse.userId;
-                interactiveOptions.authorizationScheme = tokenResponse.tokenType;
-                try {
-                    let creds = new deviceTokenCredentials_1.DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName, interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);
-                    tenantList = yield subscriptionUtils_1.buildTenantList(creds);
-                    if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === authConstants_1.TokenAudience.graph)) {
-                        subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenantList);
+        function getSubscriptions(creds, tenants) {
+            if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === authConstants_1.TokenAudience.graph)) {
+                return subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenants);
+            }
+            return Promise.resolve([]);
+        }
+        return getUserCode.then(() => {
+            return new Promise((resolve, reject) => {
+                return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
+                    if (error) {
+                        return reject(error);
                     }
-                    return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
-                }
-                catch (err) {
-                    return Promise.reject(err);
-                }
-            }));
+                    interactiveOptions.username = tokenResponse.userId;
+                    interactiveOptions.authorizationScheme = tokenResponse.tokenType;
+                    try {
+                        creds = new deviceTokenCredentials_1.DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName, interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);
+                    }
+                    catch (err) {
+                        return reject(err);
+                    }
+                    return resolve(creds);
+                });
+            });
+        }).then((creds) => {
+            return subscriptionUtils_1.buildTenantList(creds);
+        }).then((tenants) => {
+            return getSubscriptions(creds, tenants);
+        }).then((subscriptions) => {
+            return Promise.resolve({ credentials: creds, subscriptions: subscriptions });
         });
     });
 }

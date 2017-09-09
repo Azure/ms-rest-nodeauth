@@ -4,9 +4,44 @@ This package provides a mechanism to access the Azure Endpoints in different Azu
 
 ### Example
 
+### username/password based login
 ```typescript
 import * as msRestNodeAuth from "ms-rest-nodeauth";
 
+const username = process.env["AZURE_USERNAME"];
+const password = process.env["AZURE_PASSWORD"];
+
+msRestNodeAuth.loginWithUsernamePasswordWithAuthResponse(username, password).then((authres) => {
+  console.dir(authres, { depth: null })
+}).catch((err) => {
+  console.log(err);
+});
+```
+
+### service-principal/secret based login
+```typescript
+import * as msRestNodeAuth from "ms-rest-nodeauth";
+
+const clientId = process.env["CLIENT_ID"];
+const secret = process.env["APPLICATION_SECRET"];
+const tenantId = process.env["DOMAIN"];
+
+msRestNodeAuth.loginWithServicePrincipalSecretWithAuthResponse(clientId, secret, tenantId).then((authres) => {
+  console.dir(authres, { depth: null })
+}).catch((err) => {
+  console.log(err);
+});
+```
+
+### interactive/device-code flow login
+```typescript
+import * as msRestNodeAuth from "ms-rest-nodeauth";
+
+msRestNodeAuth.interactiveLoginWithAuthResponse().then((authres) => {
+  console.dir(authres, { depth: null })
+}).catch((err) => {
+  console.log(err);
+});
 ```
 
 ### Contributing

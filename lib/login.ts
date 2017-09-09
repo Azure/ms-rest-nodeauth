@@ -316,42 +316,53 @@ export async function withInteractiveWithAuthResponse(options?: OptionalInteract
   let authorityUrl: string = interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
   let authContext: any = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
   interactiveOptions.context = authContext;
-  let tenantList: string[] = [];
-  let subscriptionList: SubscriptionInfo[] = [];
+  let userCodeResponse: any;
+  let creds: DeviceTokenCredentials;
   let getUserCode = new Promise<any>((resolve, reject) => {
-    return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err: Error, userCodeResponse: any) => {
+    return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err: Error, userCodeRes: any) => {
       if (err) {
         return reject(err);
       }
+      userCodeResponse = userCodeRes;
       if (interactiveOptions.userCodeResponseLogger) {
         interactiveOptions.userCodeResponseLogger(userCodeResponse.message);
       } else {
         console.log(userCodeResponse.message);
       }
-      return resolve(userCodeResponse.message);
+      return resolve(userCodeResponse);
     });
   });
 
-  return getUserCode.then((userCodeResponse) => {
-    return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, async (error: Error, tokenResponse: any) => {
-      if (error) {
-        return Promise.reject(error);
-      }
-      interactiveOptions.username = tokenResponse.userId;
-      interactiveOptions.authorizationScheme = tokenResponse.tokenType;
-      try {
-        let creds: DeviceTokenCredentials = new DeviceTokenCredentials(interactiveOptions.clientId,
-          interactiveOptions.domain, interactiveOptions.userName, interactiveOptions.tokenAudience,
-          interactiveOptions.environment, interactiveOptions.tokenCache);
-        tenantList = await buildTenantList(creds);
-        if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === TokenAudience.graph)) {
-          subscriptionList = await getSubscriptionsFromTenants(creds, tenantList);
+  function getSubscriptions(creds: DeviceTokenCredentials, tenants: string[]): Promise<SubscriptionInfo[]> {
+    if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === TokenAudience.graph)) {
+      return getSubscriptionsFromTenants(creds, tenants);
+    }
+    return Promise.resolve(([] as any[]));
+  }
+
+  return getUserCode.then(() => {
+    return new Promise<DeviceTokenCredentials>((resolve, reject) => {
+      return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
+        if (error) {
+          return reject(error);
         }
-        return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
-      } catch (err) {
-        return Promise.reject(err);
-      }
+        interactiveOptions.username = tokenResponse.userId;
+        interactiveOptions.authorizationScheme = tokenResponse.tokenType;
+        try {
+          creds = new DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName,
+            interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);
+        } catch (err) {
+          return reject(err);
+        }
+        return resolve(creds);
+      });
     });
+  }).then((creds) => {
+    return buildTenantList(creds);
+  }).then((tenants) => {
+    return getSubscriptions(creds, tenants);
+  }).then((subscriptions) => {
+    return Promise.resolve({ credentials: creds, subscriptions: subscriptions });
   });
 }
 
