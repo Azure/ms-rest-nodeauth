@@ -80,22 +80,218 @@ export interface OptionalMSIParameters {
      */
     aadEndpoint?: string;
 }
+/**
+ * Provides a UserTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
+ * This method is applicable only for organizational ids that are not 2FA enabled otherwise please use interactive login.
+ *
+ * @param {string} username The user name for the Organization Id account.
+ * @param {string} password The password for the Organization Id account.
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.clientId] The active directory application client id.
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided
+ * then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value 'common'.
+ * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ *
+ * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ */
 export declare function withUsernamePasswordWithAuthResponse(username: string, password: string, options?: OptionalUsernamePasswordParameters): Promise<AuthResponse>;
+/**
+ * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ *
+ * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} secret The application secret for the service principal.
+ * @param {string} domain The domain or tenant id containing this application.
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.
+ * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ *
+ * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ */
 export declare function withServicePrincipalSecretWithAuthResponse(clientId: string, secret: string, domain: string, options?: OptionalServicePrincipalParameters): Promise<AuthResponse>;
+/**
+ * Before using this method please install az cli from https://github.com/Azure/azure-cli/releases. Then execute `az ad sp create-for-rbac --sdk-auth > ${yourFilename.json}`.
+ * If you want to create the sp for a different cloud/environment then please execute:
+ * 1. az cloud list
+ * 2. az cloud set –n <name of the environment>
+ * 3. az ad sp create-for-rbac --sdk-auth > auth.json
+ *
+ * If the service principal is already created then login with service principal info:
+ * 3. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
+ * 4. az account show --sdk-auth > auth.json
+ *
+ * Authenticates using the service principal information provided in the auth file. This method will set
+ * the subscriptionId from the auth file to the user provided environment variable in the options
+ * parameter or the default 'AZURE_SUBSCRIPTION_ID'.
+ *
+ * @param {object} [options] - Optional parameters
+ * @param {string} [options.filePath] - Absolute file path to the auth file. If not provided
+ * then please set the environment variable AZURE_AUTH_LOCATION.
+ * @param {string} [options.subscriptionEnvVariableName] - The subscriptionId environment variable
+ * name. Default is 'AZURE_SUBSCRIPTION_ID'.
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ */
 export declare function withAuthFileWithAuthResponse(options?: OptionalAuthFileParameters): Promise<AuthResponse>;
+/**
+ * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
+ * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
+ *
+ * @param {object} [options] Object representing optional parameters.
+ *
+ * @param {string} [options.clientId] The active directory application client id.
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ *
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.If tokenAudience is provided
+ * then domain should also be provided its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ *
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value is 'common'.
+ *
+ * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
+ *
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ *
+ * @param {object} [options.language] The language code specifying how the message should be localized to. Default value 'en-us'.
+ *
+ * @param {object|function} [options.userCodeResponseLogger] A logger that logs the user code response message required for interactive login. When
+ * this option is specified the usercode response message will not be logged to console.
+ *
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ */
 export declare function withInteractiveWithAuthResponse(options?: OptionalInteractiveParameters): Promise<AuthResponse>;
+/**
+ * Before using this method please install az cli from https://github.com/Azure/azure-cli/releases. Then execute `az ad sp create-for-rbac --sdk-auth > ${yourFilename.json}`.
+ * If you want to create the sp for a different cloud/environment then please execute:
+ * 1. az cloud list
+ * 2. az cloud set –n <name of the environment>
+ * 3. az ad sp create-for-rbac --sdk-auth > auth.json
+ *
+ * If the service principal is already created then login with service principal info:
+ * 3. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
+ * 4. az account show --sdk-auth > auth.json
+ *
+ * Authenticates using the service principal information provided in the auth file. This method will set
+ * the subscriptionId from the auth file to the user provided environment variable in the options
+ * parameter or the default 'AZURE_SUBSCRIPTION_ID'.
+ *
+ * @param {object} [options] - Optional parameters
+ * @param {string} [options.filePath] - Absolute file path to the auth file. If not provided
+ * then please set the environment variable AZURE_AUTH_LOCATION.
+ * @param {string} [options.subscriptionEnvVariableName] - The subscriptionId environment variable
+ * name. Default is 'AZURE_SUBSCRIPTION_ID'.
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
+ *
+ *    {function} optionalCallback(err, credentials)
+ *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
+ *                 {ApplicationTokenCredentials} [credentials]  - The ApplicationTokenCredentials object.
+ *                 {Array}                [subscriptions]       - List of associated subscriptions across all the applicable tenants.
+ *    {Promise} A promise is returned.
+ *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
+ *             @reject {Error} - The error object.
+ */
 export declare function withAuthFile(): Promise<TokenCredentialsBase>;
 export declare function withAuthFile(options: OptionalAuthFileParameters): Promise<TokenCredentialsBase>;
 export declare function withAuthFile(options: OptionalAuthFileParameters, callback: Function): void;
 export declare function withAuthFile(callback: any): void;
+/**
+ * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
+ * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
+ *
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.clientId] The active directory application client id.
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.If tokenAudience is provided
+ * then domain should also be provided its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value is 'common'.
+ * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ * @param {object} [options.language] The language code specifying how the message should be localized to. Default value 'en-us'.
+ * @param {object|function} [options.userCodeResponseLogger] A logger that logs the user code response message required for interactive login. When
+ * this option is specified the usercode response message will not be logged to console.
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
+ *
+ *    {function} optionalCallback(err, credentials)
+ *                 {Error}  [err]                           - The Error object if an error occurred, null otherwise.
+ *                 {DeviceTokenCredentials} [credentials]   - The DeviceTokenCredentials object.
+ *                 {Array}                [subscriptions]   - List of associated subscriptions across all the applicable tenants.
+ *    {Promise} A promise is returned.
+ *             @resolve {DeviceTokenCredentials} The DeviceTokenCredentials object.
+ *             @reject {Error} - The error object.
+ */
 export declare function interactive(): Promise<TokenCredentialsBase>;
 export declare function interactive(options: OptionalInteractiveParameters): Promise<TokenCredentialsBase>;
 export declare function interactive(options: OptionalInteractiveParameters, callback: Function): void;
 export declare function interactive(callback: any): void;
+/**
+ * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ *
+ * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} secret The application secret for the service principal.
+ * @param {string} domain The domain or tenant id containing this application.
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.
+ * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
+ *
+ *    {function} optionalCallback(err, credentials)
+ *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
+ *                 {ApplicationTokenCredentials} [credentials]  - The ApplicationTokenCredentials object.
+ *                 {Array}                [subscriptions]       - List of associated subscriptions across all the applicable tenants.
+ *    {Promise} A promise is returned.
+ *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
+ *             @reject {Error} - The error object.
+ */
 export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string): Promise<TokenCredentialsBase>;
 export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: OptionalServicePrincipalParameters): Promise<TokenCredentialsBase>;
 export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: OptionalServicePrincipalParameters, callback: Function): void;
 export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, callback: any): void;
+/**
+ * Provides a UserTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
+ * This method is applicable only for organizational ids that are not 2FA enabled otherwise please use interactive login.
+ *
+ * @param {string} username The user name for the Organization Id account.
+ * @param {string} password The password for the Organization Id account.
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.clientId] The active directory application client id.
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided
+ * then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value 'common'.
+ * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
+ *
+ *    {function} optionalCallback(err, credentials)
+ *                 {Error}  [err]                         - The Error object if an error occurred, null otherwise.
+ *                 {UserTokenCredentials} [credentials]   - The UserTokenCredentials object.
+ *                 {Array}                [subscriptions] - List of associated subscriptions across all the applicable tenants.
+ *    {Promise} A promise is returned.
+ *             @resolve {UserTokenCredentials} The UserTokenCredentials object.
+ *             @reject {Error} - The error object.
+ */
 export declare function withUsernamePassword(username: string, password: string): Promise<TokenCredentialsBase>;
 export declare function withUsernamePassword(username: string, password: string, options: OptionalUsernamePasswordParameters): Promise<TokenCredentialsBase>;
 export declare function withUsernamePassword(username: string, password: string, callback: any): void;
