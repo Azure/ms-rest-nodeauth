@@ -44,6 +44,21 @@ msRestNodeAuth.interactiveLoginWithAuthResponse().then((authres) => {
 });
 ```
 
+### service-principal authentication from auth file on disk
+```typescript
+import * as msRestNodeAuth from "../lib/msRestNodeAuth";
+
+var options: msRestNodeAuth.OptionalAuthFileParameters = {
+  filePath: "<file path to auth file>",
+}
+msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
+  console.log(authRes);
+  console.log(process.env["AZURE_SUBSCRIPTION_ID"]);
+}).catch((err) => {
+  console.log(err);
+});
+```
+
 ### Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
