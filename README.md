@@ -1,6 +1,5 @@
-### Purpose
-
-This package provides a mechanism to access the Azure Endpoints in different Azure clouds. It also provides a mechanism to add a custom environment.
+This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing good typescrit experience.
+All the authentication methods support callback as well as promise. IF they are called within an async method in your application then you can use the async/await pattern as well.
 
 ### Example
 
@@ -48,12 +47,23 @@ msRestNodeAuth.interactiveLoginWithAuthResponse().then((authres) => {
 ```typescript
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 
-var options: msRestNodeAuth.OptionalAuthFileParameters = {
+const options: msRestNodeAuth.LoginWithAuthFileOptions = {
   filePath: "<file path to auth file>",
 }
 msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
   console.log(authRes);
   console.log(process.env["AZURE_SUBSCRIPTION_ID"]);
+}).catch((err) => {
+  console.log(err);
+});
+```
+
+### MSI(Managed Service Identity) based login from a virtual machine created in Azure.
+```typescript
+import * as msRestNodeAuth from "../lib/msRestNodeAuth";
+
+msRestNodeAuth.loginWithMSI("your-tenantId").then((msiTokenRes) => {
+  console.log(msiTokenRes);
 }).catch((err) => {
   console.log(err);
 });

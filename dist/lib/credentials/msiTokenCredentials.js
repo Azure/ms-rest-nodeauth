@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const msRest = require("ms-rest-ts");
+const msRest = require("ms-rest-js");
 /**
  * @class MSITokenCredentials - Provides information about managed service identity token credentials.
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
@@ -40,17 +40,17 @@ class MSITokenCredentials {
         this.port = port;
         this.resource = resource;
         this.aadEndpoint = aadEndpoint;
-        if (!Boolean(domain) || typeof domain.valueOf() !== 'string') {
-            throw new TypeError('domain must be a non empty string.');
+        if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+            throw new TypeError("domain must be a non empty string.");
         }
-        if (typeof port.valueOf() !== 'number') {
-            throw new Error('port must be a number.');
+        if (typeof port.valueOf() !== "number") {
+            throw new Error("port must be a number.");
         }
-        if (typeof resource.valueOf() !== 'string') {
-            throw new Error('resource must be a uri of type string.');
+        if (typeof resource.valueOf() !== "string") {
+            throw new Error("resource must be a uri of type string.");
         }
-        if (typeof aadEndpoint.valueOf() !== 'string') {
-            throw new Error('aadEndpoint must be a uri of type string.');
+        if (typeof aadEndpoint.valueOf() !== "string") {
+            throw new Error("aadEndpoint must be a uri of type string.");
         }
     }
     /**
@@ -63,7 +63,7 @@ class MSITokenCredentials {
     getToken() {
         return __awaiter(this, void 0, void 0, function* () {
             const reqOptions = this.prepareRequestOptions();
-            let client = new msRest.ServiceClient();
+            const client = new msRest.ServiceClient();
             let opRes;
             let result;
             try {
@@ -85,8 +85,8 @@ class MSITokenCredentials {
     prepareRequestOptions() {
         const resource = encodeURIComponent(this.resource);
         const aadEndpoint = encodeURIComponent(this.aadEndpoint);
-        const forwardSlash = encodeURIComponent('/');
-        let reqOptions = {
+        const forwardSlash = encodeURIComponent("/");
+        const reqOptions = {
             url: `http://localhost:${this.port}/oauth2/token`,
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -98,12 +98,12 @@ class MSITokenCredentials {
         return reqOptions;
     }
     /**
-    * Signs a request with the Authentication header.
-    *
-    * @param {webResource} The WebResource to be signed.
-    * @param {function(error)}  callback  The callback function.
-    * @return {undefined}
-    */
+     * Signs a request with the Authentication header.
+     *
+     * @param {webResource} The WebResource to be signed.
+     * @param {function(error)}  callback  The callback function.
+     * @return {undefined}
+     */
     signRequest(webResource) {
         return __awaiter(this, void 0, void 0, function* () {
             const tokenResponse = yield this.getToken();

@@ -1,11 +1,23 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as msRest from "ms-rest-ts";
+import * as msRest from "ms-rest-js";
 
+/**
+ * @interface MSITokenResponse - Describes the MSITokenResponse.
+ */
 export interface MSITokenResponse {
+  /**
+   * @property {string} token_type - The token type.
+   */
   readonly token_type: string;
+  /**
+   * @property {string} access_token - The access token.
+   */
   readonly access_token: string;
+  /**
+   * @property {any} any - Placeholder for unknown properties.
+   */
   readonly [x: string]: any;
 }
 
@@ -22,29 +34,29 @@ export class MSITokenCredentials {
     /**
      * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
      */
-    public port: number = 50342,
+    public port = 50342,
     /**
      * @property {string} resource - The resource uri or token audience for which the token is needed.
      * For e.g. it can be:
      * - resourcemanagement endpoint "https://management.azure.com"(default)
      * - management endpoint "https://management.core.windows.net/"
      */
-    public resource: string = "https://management.azure.com",
+    public resource = "https://management.azure.com",
     /**
      * @property {string} aadEndpoint - The add endpoint for authentication. default - "https://login.microsoftonline.com"
      */
     public aadEndpoint = "https://login.microsoftonline.com") {
-    if (!Boolean(domain) || typeof domain.valueOf() !== 'string') {
-      throw new TypeError('domain must be a non empty string.');
+    if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+      throw new TypeError("domain must be a non empty string.");
     }
-    if (typeof port.valueOf() !== 'number') {
-      throw new Error('port must be a number.');
+    if (typeof port.valueOf() !== "number") {
+      throw new Error("port must be a number.");
     }
-    if (typeof resource.valueOf() !== 'string') {
-      throw new Error('resource must be a uri of type string.');
+    if (typeof resource.valueOf() !== "string") {
+      throw new Error("resource must be a uri of type string.");
     }
-    if (typeof aadEndpoint.valueOf() !== 'string') {
-      throw new Error('aadEndpoint must be a uri of type string.');
+    if (typeof aadEndpoint.valueOf() !== "string") {
+      throw new Error("aadEndpoint must be a uri of type string.");
     }
   }
 
@@ -53,13 +65,13 @@ export class MSITokenCredentials {
    * @param  {function} callback  The callback in the form (err, result)
    * @return {function} callback
    *                       {Error} [err]  The error if any
-   *                       {object} [tokenResponse] The tokenResponse (token_type and access_token are the two important properties). 
+   *                       {object} [tokenResponse] The tokenResponse (token_type and access_token are the two important properties).
    */
   async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();
-    let client = new msRest.ServiceClient();
+    const client = new msRest.ServiceClient();
     let opRes: msRest.HttpOperationResponse;
-    let result: MSITokenResponse
+    let result: MSITokenResponse;
     try {
       opRes = await client.sendRequest(reqOptions);
       result = opRes.bodyAsJson as MSITokenResponse;
@@ -74,11 +86,11 @@ export class MSITokenCredentials {
     return Promise.resolve(result);
   }
 
-  prepareRequestOptions(): msRest.RequestPrepareOptions {
+  private prepareRequestOptions(): msRest.RequestPrepareOptions {
     const resource = encodeURIComponent(this.resource);
     const aadEndpoint = encodeURIComponent(this.aadEndpoint);
-    const forwardSlash = encodeURIComponent('/');
-    let reqOptions: msRest.RequestPrepareOptions = {
+    const forwardSlash = encodeURIComponent("/");
+    const reqOptions: msRest.RequestPrepareOptions = {
       url: `http://localhost:${this.port}/oauth2/token`,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -92,12 +104,12 @@ export class MSITokenCredentials {
   }
 
   /**
-  * Signs a request with the Authentication header.
-  *
-  * @param {webResource} The WebResource to be signed.
-  * @param {function(error)}  callback  The callback function.
-  * @return {undefined}
-  */
+   * Signs a request with the Authentication header.
+   *
+   * @param {webResource} The WebResource to be signed.
+   * @param {function(error)}  callback  The callback function.
+   * @return {undefined}
+   */
   public async signRequest(webResource: msRest.WebResource): Promise<msRest.WebResource> {
     const tokenResponse = await this.getToken();
     webResource.headers[msRest.Constants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;

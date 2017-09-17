@@ -14,10 +14,10 @@ class DeviceTokenCredentials extends tokenCredentialsBase_1.TokenCredentialsBase
      *
      * @constructor
      * @param {string} [clientId] The active directory application client id.
-     * @param {string} [domain] The domain or tenant id containing this application. Default value is 'common'
-     * @param {string} [username] The user name for account in the form: 'user@example.com'.
-     * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided
-     * then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+     * @param {string} [domain] The domain or tenant id containing this application. Default value is "common"
+     * @param {string} [username] The user name for account in the form: "user@example.com".
+     * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
+     * then domain should also be provided and its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
      * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
      * for an example.
      * @param {AzureEnvironment} [environment] The azure environment to authenticate with. Default environment is "Azure" popularly known as "Public Azure Cloud".

@@ -14,14 +14,14 @@ export class UserTokenCredentials extends TokenCredentialsBase {
    * Creates a new UserTokenCredentials object.
    *
    * @constructor
-   * @param {string} clientId The active directory application client id. 
-   * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net} 
+   * @param {string} clientId The active directory application client id.
+   * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
    * for an example.
    * @param {string} domain The domain or tenant id containing this application.
    * @param {string} username The user name for the Organization Id account.
    * @param {string} password The password for the Organization Id account.
-   * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided 
-   * then domain should also be provided its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+   * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
+   * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
    * @param {AzureEnvironment} [environment] The azure environment to authenticate with.
    * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
    */
@@ -34,20 +34,20 @@ export class UserTokenCredentials extends TokenCredentialsBase {
     environment?: AzureEnvironment,
     tokenCache?: any) {
 
-    if (!Boolean(clientId) || typeof clientId.valueOf() !== 'string') {
-      throw new Error('clientId must be a non empty string.');
+    if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
+      throw new Error("clientId must be a non empty string.");
     }
 
-    if (!Boolean(domain) || typeof domain.valueOf() !== 'string') {
-      throw new Error('domain must be a non empty string.');
+    if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+      throw new Error("domain must be a non empty string.");
     }
 
-    if (!Boolean(username) || typeof username.valueOf() !== 'string') {
-      throw new Error('username must be a non empty string.');
+    if (!Boolean(username) || typeof username.valueOf() !== "string") {
+      throw new Error("username must be a non empty string.");
     }
 
-    if (!Boolean(password) || typeof password.valueOf() !== 'string') {
-      throw new Error('password must be a non empty string.');
+    if (!Boolean(password) || typeof password.valueOf() !== "string") {
+      throw new Error("password must be a non empty string.");
     }
 
     super(clientId, domain, tokenAudience, environment as any, tokenCache);
@@ -57,8 +57,8 @@ export class UserTokenCredentials extends TokenCredentialsBase {
   }
 
   private crossCheckUserNameWithToken(username: string, userIdFromToken: string): boolean {
-    //to maintain the casing consistency between 'azureprofile.json' and token cache. (RD 1996587)
-    //use the 'userId' here, which should be the same with "username" except the casing.
+    // to maintain the casing consistency between "azureprofile.json" and token cache. (RD 1996587)
+    // use the "userId" here, which should be the same with "username" except the casing.
     return (username.toLowerCase() === userIdFromToken.toLowerCase());
   }
 
@@ -84,7 +84,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
             if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId)) {
               resolve((tokenResponse as TokenResponse));
             } else {
-              reject(`The userId "${tokenResponse.userId}" in access token doesn't match the username "${self.username}" provided during authentication.`);
+              reject(`The userId "${tokenResponse.userId}" in access token doesn"t match the username "${self.username}" provided during authentication.`);
             }
           });
       });

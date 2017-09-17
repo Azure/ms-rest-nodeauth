@@ -1,34 +1,56 @@
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
+import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
+import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
+import { UserTokenCredentials } from "./credentials/userTokenCredentials";
 import { TokenAudience } from "./util/authConstants";
-import { SubscriptionInfo } from "./subscriptionManagement/subscriptionUtils";
+import { LinkedSubscription } from "./subscriptionManagement/subscriptionUtils";
 import { MSITokenResponse } from "./credentials/msiTokenCredentials";
 /**
- * @interface OptionalInteractiveParameters - Describes optional parameters for serviceprincipal/secret authentication.
+ * @interface AzureTokenCredentialsOptions - Describes optional parameters for serviceprincipal/secret authentication.
  */
-export interface OptionalServicePrincipalParameters {
+export interface AzureTokenCredentialsOptions {
+    /**
+     * @property {TokenAudience} [tokenAudience] - The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
+     * then domain should also be provided and its value should not be the default "common" tenant.
+     * It must be a string (preferrably in a guid format).
+     */
     tokenAudience?: TokenAudience;
+    /**
+     * @property {AzureEnvironment} [environment] - The Azure environment to authenticate with.
+     */
     environment?: AzureEnvironment;
+    /**
+     * @property {any} [tokenCache] - The token cache. Default value is MemoryCache from adal.
+     */
     tokenCache?: any;
 }
 /**
- * @interface OptionalInteractiveParameters - Describes optional parameters for username/password authentication.
+ * @interface LoginWithUsernamePasswordOptions - Describes optional parameters for username/password authentication.
  */
-export interface OptionalUsernamePasswordParameters extends OptionalServicePrincipalParameters {
+export interface LoginWithUsernamePasswordOptions extends AzureTokenCredentialsOptions {
+    /**
+     * @property {string} [clientId] - The active directory application client id.
+     * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+     * for an example.
+     */
     clientId?: string;
+    /**
+     * @property {string} [domain] - The domain or tenant id containing this application. Default value is "common".
+     */
     domain?: string;
 }
 /**
- * @interface OptionalInteractiveParameters - Describes optional parameters for interactive authentication.
+ * @interface InteractiveLoginOptions - Describes optional parameters for interactive authentication.
  */
-export interface OptionalInteractiveParameters extends OptionalUsernamePasswordParameters {
+export interface InteractiveLoginOptions extends LoginWithUsernamePasswordOptions {
     /**
      * @property {object|function} [userCodeResponseLogger] A logger that logs the user code response message required for interactive login. When
      * this option is specified the usercode response message will not be logged to console.
      */
     userCodeResponseLogger?: any;
     /**
-     * @property {string} [language] The language code specifying how the message should be localized to. Default value 'en-us'.
+     * @property {string} [language] The language code specifying how the message should be localized to. Default value "en-us".
      */
     language?: string;
 }
@@ -41,14 +63,14 @@ export interface AuthResponse {
      */
     credentials: TokenCredentialsBase;
     /**
-     * @property {Array<SubscriptionInfo>} [subscriptions] List of associated subscriptions.
+     * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions.
      */
-    subscriptions?: SubscriptionInfo[];
+    subscriptions?: LinkedSubscription[];
 }
 /**
- * @interface OptionalAuthFileParameters - Describes optional parameters for login withAuthFile.
+ * @interface LoginWithAuthFileOptions - Describes optional parameters for login withAuthFile.
  */
-export interface OptionalAuthFileParameters {
+export interface LoginWithAuthFileOptions {
     /**
      * @property {string} [filePath] - Absolute file path to the auth file. If not provided
      * then please set the environment variable AZURE_AUTH_LOCATION.
@@ -56,14 +78,14 @@ export interface OptionalAuthFileParameters {
     filePath?: string;
     /**
      * @property {string} [subscriptionEnvVariableName] - The subscriptionId environment variable
-     * name. Default is 'AZURE_SUBSCRIPTION_ID'.
+     * name. Default is "AZURE_SUBSCRIPTION_ID".
      */
     subscriptionEnvVariableName?: string;
 }
 /**
- * @interface OptionalMSIParameters - Describes optional parameters for MSI authentication.
+ * @interface LoginWithMSIOptions - Describes optional parameters for MSI authentication.
  */
-export interface OptionalMSIParameters {
+export interface LoginWithMSIOptions {
     /**
      * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
      */
@@ -90,15 +112,15 @@ export interface OptionalMSIParameters {
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided
- * then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value 'common'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
+ * then domain should also be provided and its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
  * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export declare function withUsernamePasswordWithAuthResponse(username: string, password: string, options?: OptionalUsernamePasswordParameters): Promise<AuthResponse>;
+export declare function withUsernamePasswordWithAuthResponse(username: string, password: string, options?: LoginWithUsernamePasswordOptions): Promise<AuthResponse>;
 /**
  * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
  *
@@ -108,13 +130,13 @@ export declare function withUsernamePasswordWithAuthResponse(username: string, p
  * @param {string} secret The application secret for the service principal.
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
  * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export declare function withServicePrincipalSecretWithAuthResponse(clientId: string, secret: string, domain: string, options?: OptionalServicePrincipalParameters): Promise<AuthResponse>;
+export declare function withServicePrincipalSecretWithAuthResponse(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse>;
 /**
  * Before using this method please install az cli from https://github.com/Azure/azure-cli/releases. Then execute `az ad sp create-for-rbac --sdk-auth > ${yourFilename.json}`.
  * If you want to create the sp for a different cloud/environment then please execute:
@@ -128,18 +150,18 @@ export declare function withServicePrincipalSecretWithAuthResponse(clientId: str
  *
  * Authenticates using the service principal information provided in the auth file. This method will set
  * the subscriptionId from the auth file to the user provided environment variable in the options
- * parameter or the default 'AZURE_SUBSCRIPTION_ID'.
+ * parameter or the default "AZURE_SUBSCRIPTION_ID".
  *
  * @param {object} [options] - Optional parameters
  * @param {string} [options.filePath] - Absolute file path to the auth file. If not provided
  * then please set the environment variable AZURE_AUTH_LOCATION.
  * @param {string} [options.subscriptionEnvVariableName] - The subscriptionId environment variable
- * name. Default is 'AZURE_SUBSCRIPTION_ID'.
+ * name. Default is "AZURE_SUBSCRIPTION_ID".
  * @param {function} [optionalCallback] The optional callback.
  *
  * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export declare function withAuthFileWithAuthResponse(options?: OptionalAuthFileParameters): Promise<AuthResponse>;
+export declare function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOptions): Promise<AuthResponse>;
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
  * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
@@ -150,16 +172,16 @@ export declare function withAuthFileWithAuthResponse(options?: OptionalAuthFileP
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  *
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.If tokenAudience is provided
- * then domain should also be provided its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
+ * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
  *
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value is 'common'.
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
  *
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  *
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
- * @param {object} [options.language] The language code specifying how the message should be localized to. Default value 'en-us'.
+ * @param {object} [options.language] The language code specifying how the message should be localized to. Default value "en-us".
  *
  * @param {object|function} [options.userCodeResponseLogger] A logger that logs the user code response message required for interactive login. When
  * this option is specified the usercode response message will not be logged to console.
@@ -168,7 +190,7 @@ export declare function withAuthFileWithAuthResponse(options?: OptionalAuthFileP
  *
  * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export declare function withInteractiveWithAuthResponse(options?: OptionalInteractiveParameters): Promise<AuthResponse>;
+export declare function withInteractiveWithAuthResponse(options?: InteractiveLoginOptions): Promise<AuthResponse>;
 /**
  * Before using this method please install az cli from https://github.com/Azure/azure-cli/releases. Then execute `az ad sp create-for-rbac --sdk-auth > ${yourFilename.json}`.
  * If you want to create the sp for a different cloud/environment then please execute:
@@ -182,13 +204,13 @@ export declare function withInteractiveWithAuthResponse(options?: OptionalIntera
  *
  * Authenticates using the service principal information provided in the auth file. This method will set
  * the subscriptionId from the auth file to the user provided environment variable in the options
- * parameter or the default 'AZURE_SUBSCRIPTION_ID'.
+ * parameter or the default "AZURE_SUBSCRIPTION_ID".
  *
  * @param {object} [options] - Optional parameters
  * @param {string} [options.filePath] - Absolute file path to the auth file. If not provided
  * then please set the environment variable AZURE_AUTH_LOCATION.
  * @param {string} [options.subscriptionEnvVariableName] - The subscriptionId environment variable
- * name. Default is 'AZURE_SUBSCRIPTION_ID'.
+ * name. Default is "AZURE_SUBSCRIPTION_ID".
  * @param {function} [optionalCallback] The optional callback.
  *
  * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
@@ -202,8 +224,10 @@ export declare function withInteractiveWithAuthResponse(options?: OptionalIntera
  *             @reject {Error} - The error object.
  */
 export declare function withAuthFile(): Promise<TokenCredentialsBase>;
-export declare function withAuthFile(options: OptionalAuthFileParameters): Promise<TokenCredentialsBase>;
-export declare function withAuthFile(options: OptionalAuthFileParameters, callback: Function): void;
+export declare function withAuthFile(options: LoginWithAuthFileOptions): Promise<TokenCredentialsBase>;
+export declare function withAuthFile(options: LoginWithAuthFileOptions, callback: {
+    (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void;
+}): void;
 export declare function withAuthFile(callback: any): void;
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
@@ -213,12 +237,12 @@ export declare function withAuthFile(callback: any): void;
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.If tokenAudience is provided
- * then domain should also be provided its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value is 'common'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
+ * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
- * @param {object} [options.language] The language code specifying how the message should be localized to. Default value 'en-us'.
+ * @param {object} [options.language] The language code specifying how the message should be localized to. Default value "en-us".
  * @param {object|function} [options.userCodeResponseLogger] A logger that logs the user code response message required for interactive login. When
  * this option is specified the usercode response message will not be logged to console.
  * @param {function} [optionalCallback] The optional callback.
@@ -234,8 +258,10 @@ export declare function withAuthFile(callback: any): void;
  *             @reject {Error} - The error object.
  */
 export declare function interactive(): Promise<TokenCredentialsBase>;
-export declare function interactive(options: OptionalInteractiveParameters): Promise<TokenCredentialsBase>;
-export declare function interactive(options: OptionalInteractiveParameters, callback: Function): void;
+export declare function interactive(options: InteractiveLoginOptions): Promise<TokenCredentialsBase>;
+export declare function interactive(options: InteractiveLoginOptions, callback: {
+    (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void;
+}): void;
 export declare function interactive(callback: any): void;
 /**
  * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
@@ -246,7 +272,7 @@ export declare function interactive(callback: any): void;
  * @param {string} secret The application secret for the service principal.
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
@@ -262,8 +288,10 @@ export declare function interactive(callback: any): void;
  *             @reject {Error} - The error object.
  */
 export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string): Promise<TokenCredentialsBase>;
-export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: OptionalServicePrincipalParameters): Promise<TokenCredentialsBase>;
-export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: OptionalServicePrincipalParameters, callback: Function): void;
+export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions): Promise<TokenCredentialsBase>;
+export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions, callback: {
+    (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void;
+}): void;
 export declare function withServicePrincipalSecret(clientId: string, secret: string, domain: string, callback: any): void;
 /**
  * Provides a UserTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
@@ -275,9 +303,9 @@ export declare function withServicePrincipalSecret(clientId: string, secret: str
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided
- * then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value 'common'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
+ * then domain should also be provided and its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
@@ -293,9 +321,11 @@ export declare function withServicePrincipalSecret(clientId: string, secret: str
  *             @reject {Error} - The error object.
  */
 export declare function withUsernamePassword(username: string, password: string): Promise<TokenCredentialsBase>;
-export declare function withUsernamePassword(username: string, password: string, options: OptionalUsernamePasswordParameters): Promise<TokenCredentialsBase>;
+export declare function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions): Promise<TokenCredentialsBase>;
 export declare function withUsernamePassword(username: string, password: string, callback: any): void;
-export declare function withUsernamePassword(username: string, password: string, options: OptionalUsernamePasswordParameters, callback: Function): void;
+export declare function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions, callback: {
+    (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void;
+}): void;
 /**
  * Before using this method please install az cli from https://github.com/Azure/azure-cli/releases.
  * If you have an Azure virtual machine provisioned with az cli and has MSI enabled,
@@ -335,6 +365,8 @@ export declare function withUsernamePassword(username: string, password: string,
  *             @reject {Error} - The error object.
  */
 export declare function withMSI(domain: string): Promise<MSITokenResponse>;
-export declare function withMSI(domain: string, options: OptionalMSIParameters): Promise<MSITokenResponse>;
-export declare function withMSI(domain: string, options: OptionalMSIParameters, callback: Function): void;
+export declare function withMSI(domain: string, options: LoginWithMSIOptions): Promise<MSITokenResponse>;
+export declare function withMSI(domain: string, options: LoginWithMSIOptions, callback: {
+    (err: Error, credentials: MSITokenResponse): void;
+}): void;
 export declare function withMSI(domain: string, callback: any): any;

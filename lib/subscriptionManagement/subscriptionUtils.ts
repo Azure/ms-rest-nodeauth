@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as msRest from "ms-rest-ts";
+import * as msRest from "ms-rest-js";
 import { TokenCredentialsBase } from "../credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "../credentials/applicationTokenCredentials";
-import { AuthConstants } from "../util/authConstants"
+import { AuthConstants } from "../util/authConstants";
 
 /**
  * @interface UserType Provides information about user type. It can currently be "user" or "servicePrincipal".
@@ -12,9 +12,9 @@ import { AuthConstants } from "../util/authConstants"
 export type UserType = "user" | "servicePrincipal";
 
 /**
- * @interface User Provides information about a user from the authentication perspective.
+ * @interface LinkedUser Provides information about a user from the authentication perspective.
  */
-export interface User {
+export interface LinkedUser {
   /**
    * @property {string} name - The user name. For ApplicationTokenCredentials it can be the clientId or SPN.
    */
@@ -22,26 +22,26 @@ export interface User {
   /**
    * @property {string} type - The user type. "user" | "servicePrincipal".
    */
-  type: UserType
+  type: UserType;
 }
 
 /**
- * @interface SubscriptionInfo Provides information about subscription that was found 
- * during the authentication process. The structure of this type is different from the 
+ * @interface LinkedSubscription Provides information about subscription that was found
+ * during the authentication process. The structure of this type is different from the
  * subscription object that one gets by making a request to the ResourceManager API.
  */
-export interface SubscriptionInfo {
+export interface LinkedSubscription {
   /**
-   * @property {string}
+   * @property {string} tenantId - The tenant that the subscription belongs to.
    */
   readonly tenantId: string;
   /**
-   * @property {string}
+   * @property {string} user - The user associated with the subscription. This could be a user or a serviceprincipal.
    */
-  readonly user: User;
+  readonly user: LinkedUser;
   /**
-   * @property {string} environmentName - The environment name in which the subscription exists. 
-   * Possible values: "Azure", "AzureChina", "AzureUSGovernment", "AzureGermanCloud" or 
+   * @property {string} environmentName - The environment name in which the subscription exists.
+   * Possible values: "Azure", "AzureChina", "AzureUSGovernment", "AzureGermanCloud" or
    * some other custom/internal environment name like "Dogfood".
    */
   readonly environmentName: string;
@@ -50,18 +50,29 @@ export interface SubscriptionInfo {
    */
   readonly name: string;
   /**
-   * @property {string} id - The subscription id, usually a guid.
+   * @property {string} id - The subscription id, usually a GUID.
    */
   readonly id: string;
   /**
-   * @property {any} any Placeholder for unknown properties
+   * @property {string} authorizationSource - The authorization source of the subscription: "RoleBased",
+   *  "Legacy", "Bypassed"," Direct", "Management". It could also be a comma separated string containing
+   *  more values "Bypassed, Direct, Management".
+   */
+  readonly authorizationSource: string;
+  /**
+   * @property {string} state - The state of the subscription. Example values: "Enabled", "Disabled",
+   *  "Warned", "PastDue", "Deleted".
+   */
+  readonly state: string;
+  /**
+   * @property {any} any Placeholder for unknown properties.
    */
   readonly [x: string]: any;
 }
 
 /**
  * Builds an array of tenantIds.
- * @param {TokenCredentialsBase} credentials 
+ * @param {TokenCredentialsBase} credentials The credentials.
  * @param {string} apiVersion default value 2016-06-01
  * @returns {Promise<string[]>} resolves to an array of tenantIds and rejects with an error.
  */
@@ -70,47 +81,47 @@ export async function buildTenantList(credentials: TokenCredentialsBase, apiVers
     return Promise.resolve([credentials.domain]);
   }
 
-  let client = new msRest.ServiceClient(credentials);
-  let baseUrl = credentials.environment.resourceManagerEndpointUrl;
-  let reqUrl = `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}tenants?api-version=${apiVersion}`;
-  let req: msRest.RequestPrepareOptions = {
+  const client = new msRest.ServiceClient(credentials);
+  const baseUrl = credentials.environment.resourceManagerEndpointUrl;
+  const reqUrl = `${baseUrl}${baseUrl.endsWith("/") ? "" : "/"}tenants?api-version=${apiVersion}`;
+  const req: msRest.RequestPrepareOptions = {
     url: reqUrl,
     method: "GET",
-  }
+  };
   let res: msRest.HttpOperationResponse;
   try {
     res = await client.sendRequest(req);
   } catch (err) {
     return Promise.reject(err);
   }
-  let result: string[] = [];
-  let tenants: any = res.bodyAsJson;
-  for (let tenant in tenants.value) {
-    result.push((<any>tenant).tenantId)
+  const result: string[] = [];
+  const tenants: any = res.bodyAsJson;
+  for (const tenant in tenants.value) {
+    result.push((<any>tenant).tenantId);
   }
   return Promise.resolve(result);
 }
 
-export async function getSubscriptionsFromTenants(credentials: TokenCredentialsBase, tenantList: string[], apiVersion = "2016-06-01"): Promise<SubscriptionInfo[]> {
-  let subscriptions: SubscriptionInfo[] = [];
-  let userType = 'user';
+export async function getSubscriptionsFromTenants(credentials: TokenCredentialsBase, tenantList: string[], apiVersion = "2016-06-01"): Promise<LinkedSubscription[]> {
+  let subscriptions: LinkedSubscription[] = [];
+  let userType = "user";
   let username: string;
-  let originalDomain = credentials.domain;
+  const originalDomain = credentials.domain;
   if (credentials instanceof ApplicationTokenCredentials) {
-    userType = 'servicePrincipal';
+    userType = "servicePrincipal";
     username = credentials.clientId;
   } else {
     username = (<any>credentials).username;
   }
-  for (let tenant of tenantList) {
+  for (const tenant of tenantList) {
     credentials.domain = tenant;
-    let client = new msRest.ServiceClient(credentials);
-    let baseUrl = credentials.environment.resourceManagerEndpointUrl;
-    let reqUrl = `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}subscriptions?api-version=${apiVersion}`;
-    let req: msRest.RequestPrepareOptions = {
+    const client = new msRest.ServiceClient(credentials);
+    const baseUrl = credentials.environment.resourceManagerEndpointUrl;
+    const reqUrl = `${baseUrl}${baseUrl.endsWith("/") ? "" : "/"}subscriptions?api-version=${apiVersion}`;
+    const req: msRest.RequestPrepareOptions = {
       url: reqUrl,
       method: "GET",
-    }
+    };
     let res: msRest.HttpOperationResponse;
     try {
       res = await client.sendRequest(req);
@@ -118,7 +129,7 @@ export async function getSubscriptionsFromTenants(credentials: TokenCredentialsB
       return Promise.reject(err);
     }
 
-    let subscriptionList: any[] = (<any>res.bodyAsJson).value;
+    const subscriptionList: any[] = (<any>res.bodyAsJson).value;
     subscriptions = subscriptions.concat(subscriptionList.map((s: any) => {
       s.tenantId = tenant;
       s.user = { name: username, type: userType };

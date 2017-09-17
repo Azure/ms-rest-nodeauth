@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ms_rest_ts_1 = require("ms-rest-ts");
+const ms_rest_js_1 = require("ms-rest-js");
 const ms_rest_azure_env_1 = require("ms-rest-azure-env");
 const authConstants_1 = require("../util/authConstants");
 const adal = require("adal-node");
@@ -21,11 +21,11 @@ class TokenCredentialsBase {
         this.tokenAudience = tokenAudience;
         this.environment = environment;
         this.tokenCache = tokenCache;
-        if (!Boolean(clientId) || typeof clientId.valueOf() !== 'string') {
-            throw new Error('clientId must be a non empty string.');
+        if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
+            throw new Error("clientId must be a non empty string.");
         }
-        if (!Boolean(domain) || typeof domain.valueOf() !== 'string') {
-            throw new Error('domain must be a non empty string.');
+        if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+            throw new Error("domain must be a non empty string.");
         }
         if (this.tokenAudience === authConstants_1.TokenAudience.graph) {
             this.isGraphContext = true;
@@ -55,10 +55,17 @@ class TokenCredentialsBase {
             });
         });
     }
+    /**
+     * Signs a request with the Authentication header.
+     *
+     * @param {webResource} The WebResource to be signed.
+     * @param {function(error)}  callback  The callback function.
+     * @return {undefined}
+     */
     signRequest(webResource) {
         return __awaiter(this, void 0, void 0, function* () {
             const tokenResponse = yield this.getToken();
-            webResource.headers[ms_rest_ts_1.Constants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
+            webResource.headers[ms_rest_js_1.Constants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
             return Promise.resolve(webResource);
         });
     }

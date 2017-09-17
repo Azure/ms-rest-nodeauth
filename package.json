@@ -3,29 +3,33 @@
   "author": {
     "name": "Microsoft Corporation",
     "email": "azsdkteam@microsoft.com",
-    "url": "https://github.com/Azure/azure-sdk-for-node"
+    "url": "https://github.com/Azure/ms-rest-nodeauth"
   },
   "version": "0.1.0",
-  "description": "Azure endpoints for different Azure Environments/Clouds.",
+  "description": "Azure Authentication library in node.js with type definitions.",
   "tags": [
     "node",
     "isomorphic",
-    "microsoft",
+    "browser",
+    "azure",
     "autorest",
+    "authentication",
     "environment"
   ],
   "keywords": [
     "node",
     "isomorphic",
-    "microsoft",
+    "browser",
+    "azure",
     "autorest",
+    "authentication",
     "environment"
   ],
   "main": "./dist/lib/msRestNodeAuth.js",
   "types": "./typings/lib/msRestNodeAuth.d.ts",
   "dependencies": {
-    "ms-rest-azure-env": "azure/ms-rest-azure-env",
-    "ms-rest-ts": "amarzavery/ms-rest#master",
+    "ms-rest-azure-env": "^0.1.0",
+    "ms-rest-js": "^0.1.0",
     "adal-node": "^0.1.22"
   },
   "license": "MIT",
@@ -37,18 +41,19 @@
     "tslint": "^5.2.0",
     "typescript": "^2.5.2"
   },
-  "homepage": "https://github.com/Azure/azure-sdk-for-node/runtime/ms-rest",
+  "homepage": "https://github.com/Azure/ms-rest-nodeauth",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Azure/azure-sdk-for-node.git"
+    "url": "git@github.com:Azure/ms-rest-js.git"
   },
   "bugs": {
-    "url": "http://github.com/Azure/azure-sdk-for-node/issues"
+    "url": "http://github.com/Azure/ms-rest-nodeauth/issues"
   },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
-    "test": "npm install && npm -s run-script unit",
+    "test": "npm -s run-script tslint",
     "unit": "mocha -t 50000 dist/test",
-    "build": "npm -s run-script tsc"
+    "build": "npm -s run-script tsc",
+    "tslint": "tslint -p . -c tslint.json --exclude test/**/*.ts"
   }
 }

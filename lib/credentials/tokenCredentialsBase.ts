@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { Constants as MSRestConstants, WebResource } from "ms-rest-ts";
+import { Constants as MSRestConstants, WebResource } from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 const adal = require("adal-node");
@@ -23,12 +23,12 @@ export abstract class TokenCredentialsBase {
     public readonly environment = AzureEnvironment.Azure,
     public tokenCache: any = new adal.MemoryCache()) {
 
-    if (!Boolean(clientId) || typeof clientId.valueOf() !== 'string') {
-      throw new Error('clientId must be a non empty string.');
+    if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
+      throw new Error("clientId must be a non empty string.");
     }
 
-    if (!Boolean(domain) || typeof domain.valueOf() !== 'string') {
-      throw new Error('domain must be a non empty string.');
+    if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+      throw new Error("domain must be a non empty string.");
     }
 
     if (this.tokenAudience === TokenAudience.graph) {
@@ -66,8 +66,21 @@ export abstract class TokenCredentialsBase {
     });
   }
 
+  /**
+   * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
+   * @returns {Promise<TokenResponse>}
+   * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
+   * @memberof TokenCredentialsBase
+   */
   public async abstract getToken(): Promise<TokenResponse>;
 
+  /**
+   * Signs a request with the Authentication header.
+   *
+   * @param {webResource} The WebResource to be signed.
+   * @param {function(error)}  callback  The callback function.
+   * @return {undefined}
+   */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
     webResource.headers[MSRestConstants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;

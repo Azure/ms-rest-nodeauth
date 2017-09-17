@@ -7,10 +7,10 @@ import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
 import { MSITokenCredentials, MSITokenResponse } from "./credentials/msiTokenCredentials";
 import { AuthConstants, TokenAudience } from "./util/authConstants";
-import { SubscriptionInfo, User, UserType } from "./subscriptionManagement/subscriptionUtils";
+import { LinkedSubscription, LinkedUser, UserType } from "./subscriptionManagement/subscriptionUtils";
 import {
-  AuthResponse, OptionalAuthFileParameters, OptionalInteractiveParameters,
-  OptionalMSIParameters, OptionalServicePrincipalParameters, OptionalUsernamePasswordParameters,
+  AuthResponse, LoginWithAuthFileOptions, InteractiveLoginOptions,
+  LoginWithMSIOptions, AzureTokenCredentialsOptions, LoginWithUsernamePasswordOptions,
   interactive, withAuthFile, withAuthFileWithAuthResponse, withInteractiveWithAuthResponse,
   withMSI, withServicePrincipalSecret, withServicePrincipalSecretWithAuthResponse,
   withUsernamePassword, withUsernamePasswordWithAuthResponse
@@ -19,8 +19,8 @@ import {
 export {
   TokenCredentialsBase, TokenResponse, ApplicationTokenCredentials, DeviceTokenCredentials,
   UserTokenCredentials, MSITokenCredentials, MSITokenResponse, AuthConstants, TokenAudience,
-  AuthResponse, OptionalAuthFileParameters, OptionalInteractiveParameters, OptionalMSIParameters,
-  OptionalServicePrincipalParameters, OptionalUsernamePasswordParameters,
+  AuthResponse, LoginWithAuthFileOptions, InteractiveLoginOptions, LoginWithMSIOptions,
+  AzureTokenCredentialsOptions, LoginWithUsernamePasswordOptions,
   interactive as interactiveLogin,
   withInteractiveWithAuthResponse as interactiveLoginWithAuthResponse,
   withUsernamePassword as loginWithUsernamePassword,
@@ -30,5 +30,5 @@ export {
   withAuthFile as loginWithAuthFile,
   withAuthFileWithAuthResponse as loginWithAuthFileWithAuthResponse,
   withMSI as loginWithMSI,
-  SubscriptionInfo, User, UserType
+  LinkedSubscription, LinkedUser, UserType
 };

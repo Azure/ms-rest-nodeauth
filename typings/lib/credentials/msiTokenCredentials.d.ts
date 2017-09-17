@@ -1,7 +1,19 @@
-import * as msRest from "ms-rest-ts";
+import * as msRest from "ms-rest-js";
+/**
+ * @interface MSITokenResponse - Describes the MSITokenResponse.
+ */
 export interface MSITokenResponse {
+    /**
+     * @property {string} token_type - The token type.
+     */
     readonly token_type: string;
+    /**
+     * @property {string} access_token - The access token.
+     */
     readonly access_token: string;
+    /**
+     * @property {any} any - Placeholder for unknown properties.
+     */
     readonly [x: string]: any;
 }
 /**
@@ -56,13 +68,13 @@ export declare class MSITokenCredentials {
      *                       {object} [tokenResponse] The tokenResponse (token_type and access_token are the two important properties).
      */
     getToken(): Promise<MSITokenResponse>;
-    prepareRequestOptions(): msRest.RequestPrepareOptions;
+    private prepareRequestOptions();
     /**
-    * Signs a request with the Authentication header.
-    *
-    * @param {webResource} The WebResource to be signed.
-    * @param {function(error)}  callback  The callback function.
-    * @return {undefined}
-    */
+     * Signs a request with the Authentication header.
+     *
+     * @param {webResource} The WebResource to be signed.
+     * @param {function(error)}  callback  The callback function.
+     * @return {undefined}
+     */
     signRequest(webResource: msRest.WebResource): Promise<msRest.WebResource>;
 }

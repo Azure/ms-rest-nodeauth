@@ -13,22 +13,22 @@ class ApplicationTokenCredentials extends tokenCredentialsBase_1.TokenCredential
      * @param {string} clientId The active directory application client id.
      * @param {string} domain The domain or tenant id containing this application.
      * @param {string} secret The authentication secret for the application.
-     * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is 'graph'. If tokenAudience is provided
-     * then domain should also be provided its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+     * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
+     * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
      * @param {AzureEnvironment} [environment] The azure environment to authenticate with.
      * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
      */
     constructor(clientId, domain, secret, tokenAudience, environment, tokenCache) {
-        if (!Boolean(secret) || typeof secret.valueOf() !== 'string') {
-            throw new Error('secret must be a non empty string.');
+        if (!Boolean(secret) || typeof secret.valueOf() !== "string") {
+            throw new Error("secret must be a non empty string.");
         }
         super(clientId, domain, tokenAudience, environment, tokenCache);
         this.secret = secret;
     }
     /**
-    * Tries to get the token from cache initially. If that is unsuccessfull then it tries to get the token from ADAL.
-    * @returns {Promise<TokenResponse>} A promise that resolves to TokenResponse and rejects with an Error.
-    */
+     * Tries to get the token from cache initially. If that is unsuccessfull then it tries to get the token from ADAL.
+     * @returns {Promise<TokenResponse>} A promise that resolves to TokenResponse and rejects with an Error.
+     */
     getToken() {
         return this.getTokenFromCache()
             .then((tokenResponse) => tokenResponse)
@@ -60,7 +60,7 @@ class ApplicationTokenCredentials extends tokenCredentialsBase_1.TokenCredential
                 if (status.result) {
                     return Promise.reject(error);
                 }
-                let msg = status && status.details && status.details.message ? status.details.message : status.details;
+                const msg = status && status.details && status.details.message ? status.details.message : status.details;
                 return Promise.reject(new Error(authConstants_1.AuthConstants.SDK_INTERNAL_ERROR + " : "
                     + "critical failure while removing expired token for service principal from token cache. "
                     + msg));
@@ -83,7 +83,7 @@ class ApplicationTokenCredentials extends tokenCredentialsBase_1.TokenCredential
                     return resolve({ result: false, details: error });
                 }
                 if (entries && entries.length > 0) {
-                    //return resolve(self.tokenCache.remove(entries, () => resolve({ result: true })));
+                    // return resolve(self.tokenCache.remove(entries, () => resolve({ result: true })));
                     return new Promise((resolve) => {
                         return self.tokenCache.remove(entries, (err) => {
                             if (err) {
