@@ -39,7 +39,7 @@ function buildTenantList(credentials, apiVersion = "2016-06-01") {
             return Promise.reject(err);
         }
         const result = [];
-        const tenants = res.bodyAsJson;
+        const tenants = res.parsedBody;
         for (const tenant in tenants.value) {
             result.push(tenant.tenantId);
         }
@@ -76,7 +76,7 @@ function getSubscriptionsFromTenants(credentials, tenantList, apiVersion = "2016
             catch (err) {
                 return Promise.reject(err);
             }
-            const subscriptionList = res.bodyAsJson.value;
+            const subscriptionList = res.parsedBody.value;
             subscriptions = subscriptions.concat(subscriptionList.map((s) => {
                 s.tenantId = tenant;
                 s.user = { name: username, type: userType };

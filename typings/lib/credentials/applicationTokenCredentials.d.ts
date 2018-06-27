@@ -31,5 +31,5 @@ export declare class ApplicationTokenCredentials extends TokenCredentialsBase {
      * @param {object} query The query to be used for finding the token for service principal from the cache
      * @returns {result: boolean, details?: Error} resultObject with more info.
      */
-    private removeInvalidItemsFromCache(query);
+    private removeInvalidItemsFromCache;
 }
