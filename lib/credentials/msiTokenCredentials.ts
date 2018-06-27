@@ -74,7 +74,7 @@ export class MSITokenCredentials {
     let result: MSITokenResponse;
     try {
       opRes = await client.sendRequest(reqOptions);
-      result = opRes.bodyAsJson as MSITokenResponse;
+      result = opRes.parsedBody as MSITokenResponse;
       if (!result.token_type) {
         throw new Error(`Invalid token response, did not find token_type. Response body is: ${opRes.bodyAsText}`);
       } else if (!result.access_token) {
@@ -112,7 +112,7 @@ export class MSITokenCredentials {
    */
   public async signRequest(webResource: msRest.WebResource): Promise<msRest.WebResource> {
     const tokenResponse = await this.getToken();
-    webResource.headers[msRest.Constants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
+    webResource.headers.set(msRest.Constants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
     return Promise.resolve(webResource);
   }
 }

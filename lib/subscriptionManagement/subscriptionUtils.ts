@@ -95,7 +95,7 @@ export async function buildTenantList(credentials: TokenCredentialsBase, apiVers
     return Promise.reject(err);
   }
   const result: string[] = [];
-  const tenants: any = res.bodyAsJson;
+  const tenants: any = res.parsedBody;
   for (const tenant in tenants.value) {
     result.push((<any>tenant).tenantId);
   }
@@ -129,7 +129,7 @@ export async function getSubscriptionsFromTenants(credentials: TokenCredentialsB
       return Promise.reject(err);
     }
 
-    const subscriptionList: any[] = (<any>res.bodyAsJson).value;
+    const subscriptionList: any[] = (<any>res.parsedBody).value;
     subscriptions = subscriptions.concat(subscriptionList.map((s: any) => {
       s.tenantId = tenant;
       s.user = { name: username, type: userType };

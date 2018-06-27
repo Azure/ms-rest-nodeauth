@@ -38,6 +38,8 @@ export abstract class TokenCredentialsBase {
         throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
           It must be the actual tenant (preferrably a string in a guid format)."}`);
       }
+    } else {
+      this.isGraphContext = false;
     }
 
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
@@ -83,7 +85,7 @@ export abstract class TokenCredentialsBase {
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
-    webResource.headers[MSRestConstants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
+    webResource.headers.set(MSRestConstants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
     return Promise.resolve(webResource);
   }
 }

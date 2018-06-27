@@ -5,7 +5,7 @@ const adal = require("adal-node");
 import * as fs from "fs";
 import * as msRest from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
-import { TokenResponse, TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
+import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
 import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
@@ -163,12 +163,11 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     options.domain = AuthConstants.AAD_COMMON_TENANT;
   }
   let creds: UserTokenCredentials;
-  let result: TokenResponse;
   let tenantList: string[] = [];
   let subscriptionList: LinkedSubscription[] = [];
   try {
     creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment);
-    result = await creds.getToken();
+    await creds.getToken();
     // The token cache gets propulated for all the tenants as a part of building the tenantList.
     tenantList = await buildTenantList(creds);
     // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
@@ -201,11 +200,10 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
     options = {};
   }
   let creds: ApplicationTokenCredentials;
-  let result: TokenResponse;
   let subscriptionList: LinkedSubscription[] = [];
   try {
     creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
-    result = await creds.getToken();
+    await creds.getToken();
     // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
     if (!(options.tokenAudience && options.tokenAudience === TokenAudience.graph)) {
       subscriptionList = await getSubscriptionsFromTenants(creds, [domain]);
