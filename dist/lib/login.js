@@ -66,12 +66,11 @@ function withUsernamePasswordWithAuthResponse(username, password, options) {
             options.domain = authConstants_1.AuthConstants.AAD_COMMON_TENANT;
         }
         let creds;
-        let result;
         let tenantList = [];
         let subscriptionList = [];
         try {
             creds = new userTokenCredentials_1.UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment);
-            result = yield creds.getToken();
+            yield creds.getToken();
             // The token cache gets propulated for all the tenants as a part of building the tenantList.
             tenantList = yield subscriptionUtils_1.buildTenantList(creds);
             // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
@@ -107,11 +106,10 @@ function withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, op
             options = {};
         }
         let creds;
-        let result;
         let subscriptionList = [];
         try {
             creds = new applicationTokenCredentials_1.ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
-            result = yield creds.getToken();
+            yield creds.getToken();
             // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
             if (!(options.tokenAudience && options.tokenAudience === authConstants_1.TokenAudience.graph)) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, [domain]);

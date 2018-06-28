@@ -8,7 +8,7 @@ export interface TokenResponse {
 export declare abstract class TokenCredentialsBase {
     readonly clientId: string;
     domain: string;
-    readonly tokenAudience: TokenAudience | undefined;
+    readonly tokenAudience?: TokenAudience | undefined;
     readonly environment: {
         name: string;
         portalUrl: string;

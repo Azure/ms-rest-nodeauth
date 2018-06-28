@@ -6,5 +6,5 @@ export declare const AuthConstants: {
     "AZURE_AUTH_LOCATION": string;
 };
 export declare enum TokenAudience {
-    graph = 0,
+    graph = 0
 }

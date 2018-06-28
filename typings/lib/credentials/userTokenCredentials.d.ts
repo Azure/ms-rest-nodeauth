@@ -20,7 +20,7 @@ export declare class UserTokenCredentials extends TokenCredentialsBase {
      * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
      */
     constructor(clientId: string, domain: string, username: string, password: string, tokenAudience?: TokenAudience, environment?: AzureEnvironment, tokenCache?: any);
-    private crossCheckUserNameWithToken(username, userIdFromToken);
+    private crossCheckUserNameWithToken;
     /**
      * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
      * @returns {Promise<TokenResponse>}

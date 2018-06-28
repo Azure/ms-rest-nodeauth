@@ -17,25 +17,25 @@ const msRest = require("ms-rest-js");
  */
 class MSITokenCredentials {
     constructor(
-        /**
-         * @property {string} domain - The domain or tenant id for which the token is required.
-         */
-        domain, 
-        /**
-         * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
-         */
-        port = 50342, 
-        /**
-         * @property {string} resource - The resource uri or token audience for which the token is needed.
-         * For e.g. it can be:
-         * - resourcemanagement endpoint "https://management.azure.com"(default)
-         * - management endpoint "https://management.core.windows.net/"
-         */
-        resource = "https://management.azure.com", 
-        /**
-         * @property {string} aadEndpoint - The add endpoint for authentication. default - "https://login.microsoftonline.com"
-         */
-        aadEndpoint = "https://login.microsoftonline.com") {
+    /**
+     * @property {string} domain - The domain or tenant id for which the token is required.
+     */
+    domain, 
+    /**
+     * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
+     */
+    port = 50342, 
+    /**
+     * @property {string} resource - The resource uri or token audience for which the token is needed.
+     * For e.g. it can be:
+     * - resourcemanagement endpoint "https://management.azure.com"(default)
+     * - management endpoint "https://management.core.windows.net/"
+     */
+    resource = "https://management.azure.com", 
+    /**
+     * @property {string} aadEndpoint - The add endpoint for authentication. default - "https://login.microsoftonline.com"
+     */
+    aadEndpoint = "https://login.microsoftonline.com") {
         this.domain = domain;
         this.port = port;
         this.resource = resource;
@@ -68,7 +68,7 @@ class MSITokenCredentials {
             let result;
             try {
                 opRes = yield client.sendRequest(reqOptions);
-                result = opRes.bodyAsJson;
+                result = opRes.parsedBody;
                 if (!result.token_type) {
                     throw new Error(`Invalid token response, did not find token_type. Response body is: ${opRes.bodyAsText}`);
                 }
@@ -107,7 +107,7 @@ class MSITokenCredentials {
     signRequest(webResource) {
         return __awaiter(this, void 0, void 0, function* () {
             const tokenResponse = yield this.getToken();
-            webResource.headers[msRest.Constants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
+            webResource.headers.set(msRest.Constants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
             return Promise.resolve(webResource);
         });
     }

@@ -34,6 +34,9 @@ class TokenCredentialsBase {
           It must be the actual tenant (preferrably a string in a guid format)."}`);
             }
         }
+        else {
+            this.isGraphContext = false;
+        }
         const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
         this.authContext = new adal.AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
     }
@@ -65,7 +68,7 @@ class TokenCredentialsBase {
     signRequest(webResource) {
         return __awaiter(this, void 0, void 0, function* () {
             const tokenResponse = yield this.getToken();
-            webResource.headers[ms_rest_js_1.Constants.HeaderConstants.AUTHORIZATION] = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
+            webResource.headers.set(ms_rest_js_1.Constants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
             return Promise.resolve(webResource);
         });
     }
