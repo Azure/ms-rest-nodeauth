@@ -5,7 +5,7 @@
     "email": "azsdkteam@microsoft.com",
     "url": "https://github.com/Azure/ms-rest-nodeauth"
   },
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Azure Authentication library in node.js with type definitions.",
   "tags": [
     "node",
@@ -30,7 +30,7 @@
   "dependencies": {
     "adal-node": "^0.1.22",
     "ms-rest-azure-env": "^0.1.0",
-    "ms-rest-js": "^0.14.326"
+    "ms-rest-js": "^0.17.376"
   },
   "license": "MIT",
   "devDependencies": {
