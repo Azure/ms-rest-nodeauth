@@ -359,7 +359,7 @@ function withInteractiveWithAuthResponse(options) {
                     if (error) {
                         return reject(error);
                     }
-                    interactiveOptions.username = tokenResponse.userId;
+                    interactiveOptions.userName = tokenResponse.userId;
                     interactiveOptions.authorizationScheme = tokenResponse.tokenType;
                     try {
                         creds = new deviceTokenCredentials_1.DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName, interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);

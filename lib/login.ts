@@ -455,7 +455,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
         if (error) {
           return reject(error);
         }
-        interactiveOptions.username = tokenResponse.userId;
+        interactiveOptions.userName = tokenResponse.userId;
         interactiveOptions.authorizationScheme = tokenResponse.tokenType;
         try {
           creds = new DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName,
