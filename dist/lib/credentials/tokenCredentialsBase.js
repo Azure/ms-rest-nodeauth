@@ -40,7 +40,7 @@ class TokenCredentialsBase {
             if (this.tokenAudience === "graph") {
                 resource = this.environment.activeDirectoryGraphResourceId;
             }
-            else if (this.tokenAudience === "graph") {
+            else if (this.tokenAudience === "batch") {
                 resource = this.environment.batchResourceId;
             }
         }
