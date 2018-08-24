@@ -40,9 +40,12 @@ class TokenCredentialsBase {
         this.authContext = new adal.AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
     }
     getActiveDirectoryResourceId() {
-        const resource = this.isGraphContext
+        let resource = this.isGraphContext
             ? this.environment.activeDirectoryGraphResourceId
             : this.environment.activeDirectoryResourceId;
+        if (this.tokenAudience) {
+            resource = this.tokenAudience;
+        }
         return resource;
     }
     getTokenFromCache(userName) {
