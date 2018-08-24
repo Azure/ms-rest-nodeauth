@@ -37,7 +37,7 @@ if (process.env["AZURE_ADAL_LOGGING_ENABLED"]) {
  */
 export interface AzureTokenCredentialsOptions {
   /**
-   * @property {TokenAudience} [tokenAudience] - The audience for which the token is requested. Valid values are 'graph' or any other resource like 'https://vault.azure.com/'.
+   * @property {TokenAudience} [tokenAudience] - The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
    * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
    */
   tokenAudience?: TokenAudience;
@@ -143,7 +143,7 @@ export interface LoginWithMSIOptions {
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph' or any other resource like 'https://vault.azure.com/'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
@@ -661,7 +661,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph' or any other resource like 'https://vault.azure.com/'.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
