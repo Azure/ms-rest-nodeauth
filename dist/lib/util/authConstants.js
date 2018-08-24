@@ -9,14 +9,4 @@ exports.AuthConstants = {
     "DEFAULT_LANGUAGE": "en-us",
     "AZURE_AUTH_LOCATION": "AZURE_AUTH_LOCATION"
 };
-exports.ManagementPlaneTokenAudiences = [
-    "https://management.core.windows.net/",
-    "https://management.core.chinacloudapi.cn/",
-    "https://management.core.usgovcloudapi.net/",
-    "https://management.core.cloudapi.de/",
-    "https://management.core.windows.net",
-    "https://management.core.chinacloudapi.cn",
-    "https://management.core.usgovcloudapi.net",
-    "https://management.core.cloudapi.de",
-];
 //# sourceMappingURL=authConstants.js.map

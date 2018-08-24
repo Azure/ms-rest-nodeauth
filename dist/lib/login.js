@@ -65,6 +65,9 @@ function withUsernamePasswordWithAuthResponse(username, password, options) {
         if (!options.domain) {
             options.domain = authConstants_1.AuthConstants.AAD_COMMON_TENANT;
         }
+        if (!options.environment) {
+            options.environment = ms_rest_azure_env_1.AzureEnvironment.Azure;
+        }
         let creds;
         let tenantList = [];
         let subscriptionList = [];
@@ -73,8 +76,8 @@ function withUsernamePasswordWithAuthResponse(username, password, options) {
             yield creds.getToken();
             // The token cache gets propulated for all the tenants as a part of building the tenantList.
             tenantList = yield subscriptionUtils_1.buildTenantList(creds);
-            // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-            if (options.tokenAudience && authConstants_1.ManagementPlaneTokenAudiences.includes(options.tokenAudience)) {
+            // We only need to get the subscriptionList if the tokenAudience is for a management client.
+            if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenantList);
             }
         }
@@ -105,13 +108,16 @@ function withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, op
         if (!options) {
             options = {};
         }
+        if (!options.environment) {
+            options.environment = ms_rest_azure_env_1.AzureEnvironment.Azure;
+        }
         let creds;
         let subscriptionList = [];
         try {
             creds = new applicationTokenCredentials_1.ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
             yield creds.getToken();
-            // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-            if (options.tokenAudience && authConstants_1.ManagementPlaneTokenAudiences.includes(options.tokenAudience)) {
+            // We only need to get the subscriptionList if the tokenAudience is for a management client.
+            if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, [domain]);
             }
         }
@@ -342,7 +348,7 @@ function withInteractiveWithAuthResponse(options) {
             });
         });
         function getSubscriptions(creds, tenants) {
-            if (interactiveOptions.tokenAudience && authConstants_1.ManagementPlaneTokenAudiences.includes(interactiveOptions.tokenAudience)) {
+            if (interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === interactiveOptions.environment.activeDirectoryResourceId) {
                 return subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenants);
             }
             return Promise.resolve([]);

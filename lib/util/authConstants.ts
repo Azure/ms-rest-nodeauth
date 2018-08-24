@@ -10,14 +10,3 @@ export const AuthConstants = {
 };
 
 export type TokenAudience = string | "graph";
-
-export const ManagementPlaneTokenAudiences = [
-  "https://management.core.windows.net/",
-  "https://management.core.chinacloudapi.cn/",
-  "https://management.core.usgovcloudapi.net/",
-  "https://management.core.cloudapi.de/",
-  "https://management.core.windows.net",
-  "https://management.core.chinacloudapi.cn",
-  "https://management.core.usgovcloudapi.net",
-  "https://management.core.cloudapi.de",
-];
