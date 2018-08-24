@@ -319,6 +319,9 @@ function withInteractiveWithAuthResponse(options) {
         if (!options.language) {
             options.language = authConstants_1.AuthConstants.DEFAULT_LANGUAGE;
         }
+        if (!options.tokenAudience) {
+            options.tokenAudience = options.environment.activeDirectoryResourceId;
+        }
         const interactiveOptions = {};
         interactiveOptions.tokenAudience = options.tokenAudience;
         interactiveOptions.environment = options.environment;
@@ -332,10 +335,17 @@ function withInteractiveWithAuthResponse(options) {
         interactiveOptions.context = authContext;
         let userCodeResponse;
         let creds;
-        const getUserCode = new Promise((resolve, reject) => {
-            return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err, userCodeRes) => {
+        function tryAcquireToken(interactiveOptions, resolve, reject) {
+            authContext.acquireUserCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, interactiveOptions.language, (err, userCodeRes) => {
                 if (err) {
-                    return reject(err);
+                    if (err.error === "authorization_pending") {
+                        setTimeout(() => {
+                            tryAcquireToken(interactiveOptions, resolve, reject);
+                        }, 1000);
+                    }
+                    else {
+                        return reject(err);
+                    }
                 }
                 userCodeResponse = userCodeRes;
                 if (interactiveOptions.userCodeResponseLogger) {
@@ -346,6 +356,9 @@ function withInteractiveWithAuthResponse(options) {
                 }
                 return resolve(userCodeResponse);
             });
+        }
+        const getUserCode = new Promise((resolve, reject) => {
+            return tryAcquireToken(interactiveOptions, resolve, reject);
         });
         function getSubscriptions(creds, tenants) {
             if (interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === interactiveOptions.environment.activeDirectoryResourceId) {
@@ -355,7 +368,7 @@ function withInteractiveWithAuthResponse(options) {
         }
         return getUserCode.then(() => {
             return new Promise((resolve, reject) => {
-                return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
+                return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
                     if (error) {
                         return reject(error);
                     }

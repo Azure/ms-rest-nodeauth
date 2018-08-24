@@ -28,7 +28,6 @@ export declare abstract class TokenCredentialsBase {
         validateAuthority: boolean;
     };
     tokenCache: any;
-    protected readonly isGraphContext: boolean;
     protected readonly authContext: any;
     constructor(clientId: string, domain: string, tokenAudience?: string | undefined, environment?: {
         name: string;

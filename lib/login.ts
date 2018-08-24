@@ -413,6 +413,10 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   if (!options.language) {
     options.language = AuthConstants.DEFAULT_LANGUAGE;
   }
+
+  if (!options.tokenAudience) {
+    options.tokenAudience = options.environment.activeDirectoryResourceId;
+  }
   const interactiveOptions: any = {};
   interactiveOptions.tokenAudience = options.tokenAudience;
   interactiveOptions.environment = options.environment;
@@ -426,10 +430,17 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   interactiveOptions.context = authContext;
   let userCodeResponse: any;
   let creds: DeviceTokenCredentials;
-  const getUserCode = new Promise<any>((resolve, reject) => {
-    return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err: Error, userCodeRes: any) => {
+
+  function tryAcquireToken(interactiveOptions: InteractiveLoginOptions, resolve: any, reject: any) {
+    authContext.acquireUserCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, interactiveOptions.language, (err: any, userCodeRes: any) => {
       if (err) {
-        return reject(err);
+        if (err.error === "authorization_pending") {
+          setTimeout(() => {
+            tryAcquireToken(interactiveOptions, resolve, reject);
+          }, 1000);
+        } else {
+          return reject(err);
+        }
       }
       userCodeResponse = userCodeRes;
       if (interactiveOptions.userCodeResponseLogger) {
@@ -439,6 +450,10 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
       }
       return resolve(userCodeResponse);
     });
+  }
+
+  const getUserCode = new Promise<any>((resolve, reject) => {
+    return tryAcquireToken(interactiveOptions, resolve, reject);
   });
 
   function getSubscriptions(creds: DeviceTokenCredentials, tenants: string[]): Promise<LinkedSubscription[]> {
@@ -450,7 +465,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
 
   return getUserCode.then(() => {
     return new Promise<DeviceTokenCredentials>((resolve, reject) => {
-      return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
+      return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
         if (error) {
           return reject(error);
         }
