@@ -9,4 +9,4 @@ export const AuthConstants = {
   "AZURE_AUTH_LOCATION": "AZURE_AUTH_LOCATION"
 };
 
-export type TokenAudience = "graph" | "batch" | string;
+export type TokenAudience = "graph" | "batch" | string | undefined;
