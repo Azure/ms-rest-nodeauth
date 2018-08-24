@@ -6,3 +6,4 @@ export declare const AuthConstants: {
     "AZURE_AUTH_LOCATION": string;
 };
 export declare type TokenAudience = string | "graph";
+export declare const ManagementPlaneTokenAudiences: string[];

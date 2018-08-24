@@ -9,7 +9,7 @@ import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
 import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
-import { AuthConstants, TokenAudience } from "./util/authConstants";
+import { AuthConstants, TokenAudience, ManagementPlaneTokenAudiences } from "./util/authConstants";
 import { buildTenantList, getSubscriptionsFromTenants, LinkedSubscription } from "./subscriptionManagement/subscriptionUtils";
 import { MSITokenCredentials, MSITokenResponse } from "./credentials/msiTokenCredentials";
 
@@ -171,7 +171,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     // The token cache gets propulated for all the tenants as a part of building the tenantList.
     tenantList = await buildTenantList(creds);
     // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-    if (!(options.tokenAudience && options.tokenAudience === "graph")) {
+    if (options.tokenAudience && ManagementPlaneTokenAudiences.includes(options.tokenAudience)) {
       subscriptionList = await getSubscriptionsFromTenants(creds, tenantList);
     }
   } catch (err) {
@@ -205,7 +205,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
     creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
     await creds.getToken();
     // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-    if (!(options.tokenAudience && options.tokenAudience === "graph")) {
+    if (options.tokenAudience && ManagementPlaneTokenAudiences.includes(options.tokenAudience)) {
       subscriptionList = await getSubscriptionsFromTenants(creds, [domain]);
     }
   } catch (err) {
@@ -437,7 +437,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   });
 
   function getSubscriptions(creds: DeviceTokenCredentials, tenants: string[]): Promise<LinkedSubscription[]> {
-    if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === "graph")) {
+    if (interactiveOptions.tokenAudience && ManagementPlaneTokenAudiences.includes(interactiveOptions.tokenAudience)) {
       return getSubscriptionsFromTenants(creds, tenants);
     }
     return Promise.resolve(([] as any[]));

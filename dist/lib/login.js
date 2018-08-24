@@ -74,7 +74,7 @@ function withUsernamePasswordWithAuthResponse(username, password, options) {
             // The token cache gets propulated for all the tenants as a part of building the tenantList.
             tenantList = yield subscriptionUtils_1.buildTenantList(creds);
             // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-            if (!(options.tokenAudience && options.tokenAudience === "graph")) {
+            if (options.tokenAudience && authConstants_1.ManagementPlaneTokenAudiences.includes(options.tokenAudience)) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenantList);
             }
         }
@@ -111,7 +111,7 @@ function withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, op
             creds = new applicationTokenCredentials_1.ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
             yield creds.getToken();
             // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-            if (!(options.tokenAudience && options.tokenAudience === "graph")) {
+            if (options.tokenAudience && authConstants_1.ManagementPlaneTokenAudiences.includes(options.tokenAudience)) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, [domain]);
             }
         }
@@ -342,7 +342,7 @@ function withInteractiveWithAuthResponse(options) {
             });
         });
         function getSubscriptions(creds, tenants) {
-            if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === "graph")) {
+            if (interactiveOptions.tokenAudience && authConstants_1.ManagementPlaneTokenAudiences.includes(interactiveOptions.tokenAudience)) {
                 return subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenants);
             }
             return Promise.resolve([]);
