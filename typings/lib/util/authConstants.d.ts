@@ -5,4 +5,4 @@ export declare const AuthConstants: {
     "DEFAULT_LANGUAGE": string;
     "AZURE_AUTH_LOCATION": string;
 };
-export declare type TokenAudience = "graph" | "batch" | string | undefined;
+export declare type TokenAudience = "graph" | "batch" | string;
