@@ -11,8 +11,8 @@ export declare class ApplicationTokenCredentials extends TokenCredentialsBase {
      * @param {string} clientId The active directory application client id.
      * @param {string} domain The domain or tenant id containing this application.
      * @param {string} secret The authentication secret for the application.
-     * @param {string} [tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
-     * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+     * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph' or any other resource like 'https://vault.azure.com/'.
+     * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
      * @param {AzureEnvironment} [environment] The azure environment to authenticate with.
      * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
      */
