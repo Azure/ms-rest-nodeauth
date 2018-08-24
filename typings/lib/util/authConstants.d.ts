@@ -5,6 +5,4 @@ export declare const AuthConstants: {
     "DEFAULT_LANGUAGE": string;
     "AZURE_AUTH_LOCATION": string;
 };
-export declare enum TokenAudience {
-    graph = 0
-}
+export declare type TokenAudience = "graph" | string;

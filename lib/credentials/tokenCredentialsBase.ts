@@ -31,7 +31,7 @@ export abstract class TokenCredentialsBase {
       throw new Error("domain must be a non empty string.");
     }
 
-    if (this.tokenAudience === TokenAudience.graph) {
+    if (this.tokenAudience === "graph") {
       this.isGraphContext = true;
 
       if (this.domain.toLowerCase() === "common") {
@@ -47,9 +47,13 @@ export abstract class TokenCredentialsBase {
   }
 
   protected getActiveDirectoryResourceId(): string {
-    const resource = this.isGraphContext
+    let resource = this.isGraphContext
       ? this.environment.activeDirectoryGraphResourceId
       : this.environment.activeDirectoryResourceId;
+
+    if (this.tokenAudience) {
+      resource =  this.tokenAudience;
+    }
 
     return resource;
   }
