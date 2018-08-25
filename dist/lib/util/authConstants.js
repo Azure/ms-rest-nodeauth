@@ -9,8 +9,4 @@ exports.AuthConstants = {
     "DEFAULT_LANGUAGE": "en-us",
     "AZURE_AUTH_LOCATION": "AZURE_AUTH_LOCATION"
 };
-var TokenAudience;
-(function (TokenAudience) {
-    TokenAudience[TokenAudience["graph"] = 0] = "graph";
-})(TokenAudience = exports.TokenAudience || (exports.TokenAudience = {}));
 //# sourceMappingURL=authConstants.js.map

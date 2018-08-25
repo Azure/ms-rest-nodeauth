@@ -1,5 +1,4 @@
 import { WebResource } from "ms-rest-js";
-import { TokenAudience } from "../util/authConstants";
 export interface TokenResponse {
     readonly tokenType: string;
     readonly accessToken: string;
@@ -8,7 +7,7 @@ export interface TokenResponse {
 export declare abstract class TokenCredentialsBase {
     readonly clientId: string;
     domain: string;
-    readonly tokenAudience?: TokenAudience | undefined;
+    readonly tokenAudience?: string | undefined;
     readonly environment: {
         name: string;
         portalUrl: string;
@@ -29,9 +28,8 @@ export declare abstract class TokenCredentialsBase {
         validateAuthority: boolean;
     };
     tokenCache: any;
-    protected readonly isGraphContext: boolean;
     protected readonly authContext: any;
-    constructor(clientId: string, domain: string, tokenAudience?: TokenAudience | undefined, environment?: {
+    constructor(clientId: string, domain: string, tokenAudience?: string | undefined, environment?: {
         name: string;
         portalUrl: string;
         publishingProfileUrl: string;

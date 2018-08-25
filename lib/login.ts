@@ -37,9 +37,8 @@ if (process.env["AZURE_ADAL_LOGGING_ENABLED"]) {
  */
 export interface AzureTokenCredentialsOptions {
   /**
-   * @property {TokenAudience} [tokenAudience] - The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
-   * then domain should also be provided and its value should not be the default "common" tenant.
-   * It must be a string (preferrably in a guid format).
+   * @property {TokenAudience} [tokenAudience] - The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+   * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
    */
   tokenAudience?: TokenAudience;
   /**
@@ -144,8 +143,8 @@ export interface LoginWithMSIOptions {
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
- * then domain should also be provided and its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
@@ -162,6 +161,9 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
   if (!options.domain) {
     options.domain = AuthConstants.AAD_COMMON_TENANT;
   }
+  if (!options.environment) {
+    options.environment = AzureEnvironment.Azure;
+  }
   let creds: UserTokenCredentials;
   let tenantList: string[] = [];
   let subscriptionList: LinkedSubscription[] = [];
@@ -170,8 +172,8 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     await creds.getToken();
     // The token cache gets propulated for all the tenants as a part of building the tenantList.
     tenantList = await buildTenantList(creds);
-    // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-    if (!(options.tokenAudience && options.tokenAudience === TokenAudience.graph)) {
+    // We only need to get the subscriptionList if the tokenAudience is for a management client.
+    if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
       subscriptionList = await getSubscriptionsFromTenants(creds, tenantList);
     }
   } catch (err) {
@@ -199,13 +201,16 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
   if (!options) {
     options = {};
   }
+  if (!options.environment) {
+    options.environment = AzureEnvironment.Azure;
+  }
   let creds: ApplicationTokenCredentials;
   let subscriptionList: LinkedSubscription[] = [];
   try {
     creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
     await creds.getToken();
-    // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-    if (!(options.tokenAudience && options.tokenAudience === TokenAudience.graph)) {
+    // We only need to get the subscriptionList if the tokenAudience is for a management client.
+    if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
       subscriptionList = await getSubscriptionsFromTenants(creds, [domain]);
     }
   } catch (err) {
@@ -408,6 +413,10 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   if (!options.language) {
     options.language = AuthConstants.DEFAULT_LANGUAGE;
   }
+
+  if (!options.tokenAudience) {
+    options.tokenAudience = options.environment.activeDirectoryResourceId;
+  }
   const interactiveOptions: any = {};
   interactiveOptions.tokenAudience = options.tokenAudience;
   interactiveOptions.environment = options.environment;
@@ -421,10 +430,17 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   interactiveOptions.context = authContext;
   let userCodeResponse: any;
   let creds: DeviceTokenCredentials;
-  const getUserCode = new Promise<any>((resolve, reject) => {
-    return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err: Error, userCodeRes: any) => {
+
+  function tryAcquireToken(interactiveOptions: InteractiveLoginOptions, resolve: any, reject: any) {
+    authContext.acquireUserCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, interactiveOptions.language, (err: any, userCodeRes: any) => {
       if (err) {
-        return reject(err);
+        if (err.error === "authorization_pending") {
+          setTimeout(() => {
+            tryAcquireToken(interactiveOptions, resolve, reject);
+          }, 1000);
+        } else {
+          return reject(err);
+        }
       }
       userCodeResponse = userCodeRes;
       if (interactiveOptions.userCodeResponseLogger) {
@@ -434,10 +450,14 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
       }
       return resolve(userCodeResponse);
     });
+  }
+
+  const getUserCode = new Promise<any>((resolve, reject) => {
+    return tryAcquireToken(interactiveOptions, resolve, reject);
   });
 
   function getSubscriptions(creds: DeviceTokenCredentials, tenants: string[]): Promise<LinkedSubscription[]> {
-    if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === TokenAudience.graph)) {
+    if (interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === interactiveOptions.environment.activeDirectoryResourceId) {
       return getSubscriptionsFromTenants(creds, tenants);
     }
     return Promise.resolve(([] as any[]));
@@ -445,11 +465,11 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
 
   return getUserCode.then(() => {
     return new Promise<DeviceTokenCredentials>((resolve, reject) => {
-      return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
+      return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
         if (error) {
           return reject(error);
         }
-        interactiveOptions.username = tokenResponse.userId;
+        interactiveOptions.userName = tokenResponse.userId;
         interactiveOptions.authorizationScheme = tokenResponse.tokenType;
         try {
           creds = new DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName,
@@ -641,8 +661,8 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
- * then domain should also be provided and its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.

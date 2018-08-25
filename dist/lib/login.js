@@ -46,8 +46,8 @@ if (process.env["AZURE_ADAL_LOGGING_ENABLED"]) {
  * @param {string} [options.clientId] The active directory application client id.
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph". If tokenAudience is provided
- * then domain should also be provided and its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
@@ -65,6 +65,9 @@ function withUsernamePasswordWithAuthResponse(username, password, options) {
         if (!options.domain) {
             options.domain = authConstants_1.AuthConstants.AAD_COMMON_TENANT;
         }
+        if (!options.environment) {
+            options.environment = ms_rest_azure_env_1.AzureEnvironment.Azure;
+        }
         let creds;
         let tenantList = [];
         let subscriptionList = [];
@@ -73,8 +76,8 @@ function withUsernamePasswordWithAuthResponse(username, password, options) {
             yield creds.getToken();
             // The token cache gets propulated for all the tenants as a part of building the tenantList.
             tenantList = yield subscriptionUtils_1.buildTenantList(creds);
-            // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-            if (!(options.tokenAudience && options.tokenAudience === authConstants_1.TokenAudience.graph)) {
+            // We only need to get the subscriptionList if the tokenAudience is for a management client.
+            if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenantList);
             }
         }
@@ -105,13 +108,16 @@ function withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, op
         if (!options) {
             options = {};
         }
+        if (!options.environment) {
+            options.environment = ms_rest_azure_env_1.AzureEnvironment.Azure;
+        }
         let creds;
         let subscriptionList = [];
         try {
             creds = new applicationTokenCredentials_1.ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
             yield creds.getToken();
-            // We dont need to get the subscriptionList if the tokenAudience is graph as graph clients are tenant based.
-            if (!(options.tokenAudience && options.tokenAudience === authConstants_1.TokenAudience.graph)) {
+            // We only need to get the subscriptionList if the tokenAudience is for a management client.
+            if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
                 subscriptionList = yield subscriptionUtils_1.getSubscriptionsFromTenants(creds, [domain]);
             }
         }
@@ -313,6 +319,9 @@ function withInteractiveWithAuthResponse(options) {
         if (!options.language) {
             options.language = authConstants_1.AuthConstants.DEFAULT_LANGUAGE;
         }
+        if (!options.tokenAudience) {
+            options.tokenAudience = options.environment.activeDirectoryResourceId;
+        }
         const interactiveOptions = {};
         interactiveOptions.tokenAudience = options.tokenAudience;
         interactiveOptions.environment = options.environment;
@@ -326,10 +335,17 @@ function withInteractiveWithAuthResponse(options) {
         interactiveOptions.context = authContext;
         let userCodeResponse;
         let creds;
-        const getUserCode = new Promise((resolve, reject) => {
-            return authContext.acquireUserCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, interactiveOptions.language, (err, userCodeRes) => {
+        function tryAcquireToken(interactiveOptions, resolve, reject) {
+            authContext.acquireUserCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, interactiveOptions.language, (err, userCodeRes) => {
                 if (err) {
-                    return reject(err);
+                    if (err.error === "authorization_pending") {
+                        setTimeout(() => {
+                            tryAcquireToken(interactiveOptions, resolve, reject);
+                        }, 1000);
+                    }
+                    else {
+                        return reject(err);
+                    }
                 }
                 userCodeResponse = userCodeRes;
                 if (interactiveOptions.userCodeResponseLogger) {
@@ -340,20 +356,23 @@ function withInteractiveWithAuthResponse(options) {
                 }
                 return resolve(userCodeResponse);
             });
+        }
+        const getUserCode = new Promise((resolve, reject) => {
+            return tryAcquireToken(interactiveOptions, resolve, reject);
         });
         function getSubscriptions(creds, tenants) {
-            if (!(interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === authConstants_1.TokenAudience.graph)) {
+            if (interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === interactiveOptions.environment.activeDirectoryResourceId) {
                 return subscriptionUtils_1.getSubscriptionsFromTenants(creds, tenants);
             }
             return Promise.resolve([]);
         }
         return getUserCode.then(() => {
             return new Promise((resolve, reject) => {
-                return authContext.acquireTokenWithDeviceCode(interactiveOptions.environment.activeDirectoryResourceId, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
+                return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
                     if (error) {
                         return reject(error);
                     }
-                    interactiveOptions.username = tokenResponse.userId;
+                    interactiveOptions.userName = tokenResponse.userId;
                     interactiveOptions.authorizationScheme = tokenResponse.tokenType;
                     try {
                         creds = new deviceTokenCredentials_1.DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName, interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);

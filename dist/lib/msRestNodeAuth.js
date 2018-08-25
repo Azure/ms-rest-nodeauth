@@ -14,7 +14,6 @@ const msiTokenCredentials_1 = require("./credentials/msiTokenCredentials");
 exports.MSITokenCredentials = msiTokenCredentials_1.MSITokenCredentials;
 const authConstants_1 = require("./util/authConstants");
 exports.AuthConstants = authConstants_1.AuthConstants;
-exports.TokenAudience = authConstants_1.TokenAudience;
 const login_1 = require("./login");
 exports.interactiveLogin = login_1.interactive;
 exports.loginWithAuthFile = login_1.withAuthFile;

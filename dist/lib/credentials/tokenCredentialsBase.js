@@ -12,7 +12,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const ms_rest_js_1 = require("ms-rest-js");
 const ms_rest_azure_env_1 = require("ms-rest-azure-env");
-const authConstants_1 = require("../util/authConstants");
 const adal = require("adal-node");
 class TokenCredentialsBase {
     constructor(clientId, domain, tokenAudience, environment = ms_rest_azure_env_1.AzureEnvironment.Azure, tokenCache = new adal.MemoryCache()) {
@@ -27,23 +26,24 @@ class TokenCredentialsBase {
         if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
             throw new Error("domain must be a non empty string.");
         }
-        if (this.tokenAudience === authConstants_1.TokenAudience.graph) {
-            this.isGraphContext = true;
-            if (this.domain.toLowerCase() === "common") {
-                throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
-          It must be the actual tenant (preferrably a string in a guid format)."}`);
-            }
-        }
-        else {
-            this.isGraphContext = false;
+        if (this.tokenAudience === "graph" && this.domain.toLowerCase() === "common") {
+            throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
+        It must be the actual tenant (preferrably a string in a guid format)."}`);
         }
         const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
         this.authContext = new adal.AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
     }
     getActiveDirectoryResourceId() {
-        const resource = this.isGraphContext
-            ? this.environment.activeDirectoryGraphResourceId
-            : this.environment.activeDirectoryResourceId;
+        let resource = this.environment.activeDirectoryResourceId;
+        if (this.tokenAudience) {
+            resource = this.tokenAudience;
+            if (this.tokenAudience === "graph") {
+                resource = this.environment.activeDirectoryGraphResourceId;
+            }
+            else if (this.tokenAudience === "batch") {
+                resource = this.environment.batchResourceId;
+            }
+        }
         return resource;
     }
     getTokenFromCache(userName) {

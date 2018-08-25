@@ -9,6 +9,4 @@ export const AuthConstants = {
   "AZURE_AUTH_LOCATION": "AZURE_AUTH_LOCATION"
 };
 
-export enum TokenAudience {
-  graph,
-}
+export type TokenAudience = "graph" | "batch" | string | undefined;

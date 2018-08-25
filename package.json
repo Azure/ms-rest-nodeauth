@@ -29,7 +29,7 @@
   "types": "./typings/lib/msRestNodeAuth.d.ts",
   "dependencies": {
     "adal-node": "^0.1.22",
-    "ms-rest-azure-env": "^0.1.0",
+    "ms-rest-azure-env": "^0.1.1",
     "ms-rest-js": "~0.19.379"
   },
   "license": "MIT",

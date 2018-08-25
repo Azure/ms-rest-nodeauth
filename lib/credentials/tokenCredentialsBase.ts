@@ -13,7 +13,6 @@ export interface TokenResponse {
 }
 
 export abstract class TokenCredentialsBase {
-  protected readonly isGraphContext: boolean;
   protected readonly authContext: any;
 
   public constructor(
@@ -31,15 +30,9 @@ export abstract class TokenCredentialsBase {
       throw new Error("domain must be a non empty string.");
     }
 
-    if (this.tokenAudience === TokenAudience.graph) {
-      this.isGraphContext = true;
-
-      if (this.domain.toLowerCase() === "common") {
-        throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
-          It must be the actual tenant (preferrably a string in a guid format)."}`);
-      }
-    } else {
-      this.isGraphContext = false;
+    if (this.tokenAudience === "graph" && this.domain.toLowerCase() === "common") {
+      throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
+        It must be the actual tenant (preferrably a string in a guid format)."}`);
     }
 
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
@@ -47,10 +40,15 @@ export abstract class TokenCredentialsBase {
   }
 
   protected getActiveDirectoryResourceId(): string {
-    const resource = this.isGraphContext
-      ? this.environment.activeDirectoryGraphResourceId
-      : this.environment.activeDirectoryResourceId;
-
+    let resource = this.environment.activeDirectoryResourceId;
+    if (this.tokenAudience) {
+      resource = this.tokenAudience;
+      if (this.tokenAudience === "graph") {
+        resource = this.environment.activeDirectoryGraphResourceId;
+      } else if (this.tokenAudience === "batch") {
+        resource = this.environment.batchResourceId;
+      }
+    }
     return resource;
   }
 
