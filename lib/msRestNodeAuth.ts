@@ -10,7 +10,7 @@ import { AuthConstants, TokenAudience } from "./util/authConstants";
 import { LinkedSubscription, LinkedUser, UserType } from "./subscriptionManagement/subscriptionUtils";
 import {
   AuthResponse, LoginWithAuthFileOptions, InteractiveLoginOptions,
-  LoginWithMSIOptions, AzureTokenCredentialsOptions, LoginWithUsernamePasswordOptions,
+  MSIOptions, AzureTokenCredentialsOptions, LoginWithUsernamePasswordOptions,
   interactive, withAuthFile, withAuthFileWithAuthResponse, withInteractiveWithAuthResponse,
   withMSI, withServicePrincipalSecret, withServicePrincipalSecretWithAuthResponse,
   withUsernamePassword, withUsernamePasswordWithAuthResponse
@@ -19,7 +19,7 @@ import {
 export {
   TokenCredentialsBase, TokenResponse, ApplicationTokenCredentials, DeviceTokenCredentials,
   UserTokenCredentials, MSITokenCredentials, MSITokenResponse, AuthConstants, TokenAudience,
-  AuthResponse, LoginWithAuthFileOptions, InteractiveLoginOptions, LoginWithMSIOptions,
+  AuthResponse, LoginWithAuthFileOptions, InteractiveLoginOptions, MSIOptions,
   AzureTokenCredentialsOptions, LoginWithUsernamePasswordOptions,
   interactive as interactiveLogin,
   withInteractiveWithAuthResponse as interactiveLoginWithAuthResponse,
