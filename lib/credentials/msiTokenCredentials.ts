@@ -4,6 +4,9 @@
 import * as msRest from "ms-rest-js";
 import { MSIOptions } from "../login";
 
+const defaultPort = 50342;
+const defaultResource = "https://management.azure.com/";
+
 /**
  * @interface MSITokenResponse - Describes the MSITokenResponse.
  */
@@ -27,28 +30,27 @@ export interface MSITokenResponse {
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
 export class MSITokenCredentials {
-  private static readonly defaultPort = 50342;
-  private static readonly defaultResource = "https://management.azure.com/";
+
 
   port: number;
   resource: string;
 
   public constructor(
     /**
-     * @property {LoginWithMSIOptions} options - Optional parameters
+     * @property {LoginWithMSIOptions} options Optional parameters
      */
     public options: MSIOptions) {
 
     if (!options) options = {};
 
-    if (!options.port) {
-      options.port = MSITokenCredentials.defaultPort;
-    } else if (typeof options.port.valueOf() !== "number") {
+    if (options.port === undefined) {
+      options.port = defaultPort;
+    } else if (typeof options.port !== "number") {
       throw new Error("port must be a number.");
     }
 
     if (!options.resource) {
-      options.resource = MSITokenCredentials.defaultResource;
+      options.resource = defaultResource;
     } else if (typeof options.resource.valueOf() !== "string") {
       throw new Error("resource must be a uri.");
     }
