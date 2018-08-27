@@ -2,6 +2,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as msRest from "ms-rest-js";
+import { MSIOptions } from "../login";
+
+const defaultPort = 50342;
+const defaultResource = "https://management.azure.com/";
 
 /**
  * @interface MSITokenResponse - Describes the MSITokenResponse.
@@ -26,38 +30,33 @@ export interface MSITokenResponse {
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
 export class MSITokenCredentials {
+
+
+  port: number;
+  resource: string;
+
   public constructor(
     /**
-     * @property {string} domain - The domain or tenant id for which the token is required.
+     * @property {LoginWithMSIOptions} options Optional parameters
      */
-    public domain: string,
-    /**
-     * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
-     */
-    public port = 50342,
-    /**
-     * @property {string} resource - The resource uri or token audience for which the token is needed.
-     * For e.g. it can be:
-     * - resourcemanagement endpoint "https://management.azure.com"(default)
-     * - management endpoint "https://management.core.windows.net/"
-     */
-    public resource = "https://management.azure.com",
-    /**
-     * @property {string} aadEndpoint - The add endpoint for authentication. default - "https://login.microsoftonline.com"
-     */
-    public aadEndpoint = "https://login.microsoftonline.com") {
-    if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
-      throw new TypeError("domain must be a non empty string.");
-    }
-    if (typeof port.valueOf() !== "number") {
+    public options: MSIOptions) {
+
+    if (!options) options = {};
+
+    if (options.port === undefined) {
+      options.port = defaultPort;
+    } else if (typeof options.port !== "number") {
       throw new Error("port must be a number.");
     }
-    if (typeof resource.valueOf() !== "string") {
-      throw new Error("resource must be a uri of type string.");
+
+    if (!options.resource) {
+      options.resource = defaultResource;
+    } else if (typeof options.resource.valueOf() !== "string") {
+      throw new Error("resource must be a uri.");
     }
-    if (typeof aadEndpoint.valueOf() !== "string") {
-      throw new Error("aadEndpoint must be a uri of type string.");
-    }
+
+    this.port = options.port;
+    this.resource = options.resource;
   }
 
   /**
@@ -88,15 +87,13 @@ export class MSITokenCredentials {
 
   private prepareRequestOptions(): msRest.RequestPrepareOptions {
     const resource = encodeURIComponent(this.resource);
-    const aadEndpoint = encodeURIComponent(this.aadEndpoint);
-    const forwardSlash = encodeURIComponent("/");
     const reqOptions: msRest.RequestPrepareOptions = {
       url: `http://localhost:${this.port}/oauth2/token`,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Metadata": "true"
       },
-      body: `authority=${aadEndpoint}${forwardSlash}${this.domain}&resource=${resource}`,
+      body: `resource=${resource}`,
       method: "POST"
     };
 

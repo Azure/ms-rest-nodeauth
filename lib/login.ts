@@ -113,9 +113,9 @@ export interface LoginWithAuthFileOptions {
 }
 
 /**
- * @interface LoginWithMSIOptions - Describes optional parameters for MSI authentication.
+ * @interface MSIOptions - Describes optional parameters for MSI authentication.
  */
-export interface LoginWithMSIOptions {
+export interface MSIOptions {
   /**
    * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
    */
@@ -714,7 +714,7 @@ export function withUsernamePassword(username: string, password: string, options
  * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {any} callback - the callback function.
  */
-function _withMSI(domain: string, options?: LoginWithMSIOptions): Promise<MSITokenResponse> {
+function _withMSI(domain: string, options?: MSIOptions): Promise<MSITokenResponse> {
   if (!options) {
     options = {};
   }
@@ -761,10 +761,10 @@ function _withMSI(domain: string, options?: LoginWithMSIOptions): Promise<MSITok
  *             @reject {Error} - The error object.
  */
 export function withMSI(domain: string): Promise<MSITokenResponse>;
-export function withMSI(domain: string, options: LoginWithMSIOptions): Promise<MSITokenResponse>;
-export function withMSI(domain: string, options: LoginWithMSIOptions, callback: { (err: Error, credentials: MSITokenResponse): void }): void;
+export function withMSI(domain: string, options: MSIOptions): Promise<MSITokenResponse>;
+export function withMSI(domain: string, options: MSIOptions, callback: { (err: Error, credentials: MSITokenResponse): void }): void;
 export function withMSI(domain: string, callback: any): any;
-export function withMSI(domain: string, options?: LoginWithMSIOptions, callback?: { (err: Error, credentials: MSITokenResponse): void }): any {
+export function withMSI(domain: string, options?: MSIOptions, callback?: { (err: Error, credentials: MSITokenResponse): void }): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
