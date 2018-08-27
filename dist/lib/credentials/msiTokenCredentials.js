@@ -18,40 +18,26 @@ const msRest = require("ms-rest-js");
 class MSITokenCredentials {
     constructor(
     /**
-     * @property {string} domain - The domain or tenant id for which the token is required.
+     * @property {LoginWithMSIOptions} options - Optional parameters
      */
-    domain, 
-    /**
-     * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
-     */
-    port = 50342, 
-    /**
-     * @property {string} resource - The resource uri or token audience for which the token is needed.
-     * For e.g. it can be:
-     * - resourcemanagement endpoint "https://management.azure.com"(default)
-     * - management endpoint "https://management.core.windows.net/"
-     */
-    resource = "https://management.azure.com", 
-    /**
-     * @property {string} aadEndpoint - The add endpoint for authentication. default - "https://login.microsoftonline.com"
-     */
-    aadEndpoint = "https://login.microsoftonline.com") {
-        this.domain = domain;
-        this.port = port;
-        this.resource = resource;
-        this.aadEndpoint = aadEndpoint;
-        if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
-            throw new TypeError("domain must be a non empty string.");
+    options) {
+        this.options = options;
+        if (!options)
+            options = {};
+        if (!options.port) {
+            options.port = MSITokenCredentials.defaultPort;
         }
-        if (typeof port.valueOf() !== "number") {
+        else if (typeof options.port.valueOf() !== "number") {
             throw new Error("port must be a number.");
         }
-        if (typeof resource.valueOf() !== "string") {
-            throw new Error("resource must be a uri of type string.");
+        if (!options.resource) {
+            options.resource = MSITokenCredentials.defaultResource;
         }
-        if (typeof aadEndpoint.valueOf() !== "string") {
-            throw new Error("aadEndpoint must be a uri of type string.");
+        else if (typeof options.resource.valueOf() !== "string") {
+            throw new Error("resource must be a uri.");
         }
+        this.port = options.port;
+        this.resource = options.resource;
     }
     /**
      * Prepares and sends a POST request to a service endpoint hosted on the Azure VM, which responds with the access token.
@@ -84,15 +70,13 @@ class MSITokenCredentials {
     }
     prepareRequestOptions() {
         const resource = encodeURIComponent(this.resource);
-        const aadEndpoint = encodeURIComponent(this.aadEndpoint);
-        const forwardSlash = encodeURIComponent("/");
         const reqOptions = {
             url: `http://localhost:${this.port}/oauth2/token`,
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 "Metadata": "true"
             },
-            body: `authority=${aadEndpoint}${forwardSlash}${this.domain}&resource=${resource}`,
+            body: `resource=${resource}`,
             method: "POST"
         };
         return reqOptions;
@@ -112,5 +96,7 @@ class MSITokenCredentials {
         });
     }
 }
+MSITokenCredentials.defaultPort = 50342;
+MSITokenCredentials.defaultResource = "https://management.azure.com/";
 exports.MSITokenCredentials = MSITokenCredentials;
 //# sourceMappingURL=msiTokenCredentials.js.map

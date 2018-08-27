@@ -82,9 +82,9 @@ export interface LoginWithAuthFileOptions {
     subscriptionEnvVariableName?: string;
 }
 /**
- * @interface LoginWithMSIOptions - Describes optional parameters for MSI authentication.
+ * @interface MSIOptions - Describes optional parameters for MSI authentication.
  */
-export interface LoginWithMSIOptions {
+export interface MSIOptions {
     /**
      * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
      */
@@ -364,8 +364,8 @@ export declare function withUsernamePassword(username: string, password: string,
  *             @reject {Error} - The error object.
  */
 export declare function withMSI(domain: string): Promise<MSITokenResponse>;
-export declare function withMSI(domain: string, options: LoginWithMSIOptions): Promise<MSITokenResponse>;
-export declare function withMSI(domain: string, options: LoginWithMSIOptions, callback: {
+export declare function withMSI(domain: string, options: MSIOptions): Promise<MSITokenResponse>;
+export declare function withMSI(domain: string, options: MSIOptions, callback: {
     (err: Error, credentials: MSITokenResponse): void;
 }): void;
 export declare function withMSI(domain: string, callback: any): any;

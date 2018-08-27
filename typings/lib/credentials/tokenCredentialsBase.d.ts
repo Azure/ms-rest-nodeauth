@@ -20,6 +20,7 @@ export declare abstract class TokenCredentialsBase {
         activeDirectoryEndpointUrl: string;
         activeDirectoryResourceId: string;
         activeDirectoryGraphResourceId: string;
+        batchResourceId: string;
         activeDirectoryGraphApiVersion: string;
         storageEndpointSuffix: string;
         keyVaultDnsSuffix: string;
@@ -41,6 +42,7 @@ export declare abstract class TokenCredentialsBase {
         activeDirectoryEndpointUrl: string;
         activeDirectoryResourceId: string;
         activeDirectoryGraphResourceId: string;
+        batchResourceId: string;
         activeDirectoryGraphApiVersion: string;
         storageEndpointSuffix: string;
         keyVaultDnsSuffix: string;

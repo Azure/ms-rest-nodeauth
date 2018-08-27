@@ -1,3 +1,7 @@
+### 0.1.1 - 2018/08/27
+- Domain is no more a required parameter for MSITokenCredentials.
+- Rename LoginWithMSIOptions interface to MSIOptions
+
 ### 0.1.0 - 2017/09/16
 - Initial version of ms-rest-nodeauth
 - Provides following flavors of authentication in different Azure Clouds
