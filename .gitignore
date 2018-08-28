@@ -54,3 +54,6 @@ jspm_packages/
 # dotenv environment variables file
 .env
 
+# TypeScript
+*.js.map
+*.d.ts
