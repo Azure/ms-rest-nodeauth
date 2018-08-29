@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-const adal = require("adal-node");
+import adal = require("adal-node");
 import * as fs from "fs";
 import * as msRest from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
@@ -155,6 +155,16 @@ export interface MSIVmOptions extends MSIOptions {
    * @prop {number} [port] - port on which the MSI service is running on the host VM. Default port is 50342
    */
   port?: number;
+}
+
+export interface TokenResponse extends adal.TokenResponse {
+  /**
+   * @property {number} [notBefore] The time from which the access token becomes usable.
+   * The date is represented as the number of seconds from 1970-01-01T0:0:0Z UTC until time of validity for the token.
+   */
+  notBefore?: number;
+
+  [x: string]: any;
 }
 
 /**

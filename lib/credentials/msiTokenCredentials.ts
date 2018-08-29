@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { MSIOptions } from "../login";
-import { Constants } from "ms-rest-js";
+import { MSIOptions, TokenResponse } from "../login";
+import { Constants, WebResource } from "ms-rest-js";
+import { CoreOptions as HttpRequestOptions } from "request";
 
 /**
  * @interface MSITokenResponse - Describes the MSITokenResponse.
@@ -34,7 +35,7 @@ export class MSITokenCredentials {
    * @param {object} [options] - Optional parameters
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
-   * - resourcemanagement endpoint "https://management.azure.com"(default)
+   * - resource management endpoint "https://management.azure.com"(default)
    * - management endpoint "https://management.core.windows.net/"
    */
   constructor(options: MSIOptions) {
@@ -109,12 +110,13 @@ export class MSITokenCredentials {
    *                       {Error} [err]  The error if any
    *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  getToken(callback: () => MSITokenResponse): MSITokenResponse {
-    return callback();
+  getToken(callback: (error: Error, result?: TokenResponse) => MSITokenResponse): MSITokenResponse {
+    // TODO: Unknown parameters
+    return callback(???);
   }
 
   prepareRequestOptions() {
-    const reqOptions = {
+    const reqOptions: HttpRequestOptions = {
       headers: {},
       body: ""
     };
@@ -129,11 +131,12 @@ export class MSITokenCredentials {
    * @param {function(error)}  callback  The callback function.
    * @return {undefined}
    */
-  signRequest(webResource, callback: Function) {
-    this.getToken(function (err, result: MSITokenResponse) {
+  signRequest(webResource: WebResource, callback: (err: Error) => void): void {
+    this.getToken((err, result) => {
       if (err) return callback(err);
-      webResource.headers[Constants.HeaderConstants.AUTHORIZATION] = `${result.tokenType} ${result.accessToken}`;
-      return callback(undefined);
+      const authorizationHeader = `${result.tokenType} ${result.accessToken}`
+      webResource.headers.set(Constants.HeaderConstants.AUTHORIZATION, authorizationHeader);
+      return callback(???);
     });
   }
 }
