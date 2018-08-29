@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { MSIOptions, TokenResponse } from "../login";
+import { MSIOptions, TokenResponse, Callback } from "../login";
 import { Constants, WebResource } from "ms-rest-js";
 import { CoreOptions as HttpRequestOptions } from "request";
 
@@ -110,9 +110,8 @@ export class MSITokenCredentials {
    *                       {Error} [err]  The error if any
    *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  getToken(callback: (error: Error, result?: TokenResponse) => MSITokenResponse): MSITokenResponse {
-    // TODO: Unknown parameters
-    return callback(???);
+  getToken(callback: Callback<TokenResponse>): void {
+    return callback(undefined);
   }
 
   prepareRequestOptions() {
@@ -132,11 +131,11 @@ export class MSITokenCredentials {
    * @return {undefined}
    */
   signRequest(webResource: WebResource, callback: (err: Error) => void): void {
-    this.getToken((err, result) => {
+    this.getToken((err?: Error, result?: TokenResponse) => {
       if (err) return callback(err);
-      const authorizationHeader = `${result.tokenType} ${result.accessToken}`
+      const authorizationHeader = `${result!.tokenType} ${result!.accessToken}`;
       webResource.headers.set(Constants.HeaderConstants.AUTHORIZATION, authorizationHeader);
-      return callback(???);
+      return callback(undefined as any);
     });
   }
 }

@@ -1,6 +1,6 @@
-import { MSITokenCredentials, MSITokenResponse } from "./msiTokenCredentials";
-import { MSIVmOptions, TokenResponse } from "../login";
-import request from 'request';
+import { MSITokenCredentials } from "./msiTokenCredentials";
+import { MSIVmOptions, TokenResponse, Callback } from "../login";
+import request from "request";
 import { CoreOptions as HttpRequestOptions } from "request";
 
 /**
@@ -14,8 +14,8 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
     super(options);
     if (!options.port) {
       options.port = 50342; // default port where token service runs.
-    } else if (typeof options.port !== 'number') {
-      throw new Error('port must be a number.');
+    } else if (typeof options.port !== "number") {
+      throw new Error("port must be a number.");
     }
 
     this.port = options.port;
@@ -26,9 +26,9 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
    * @param  {function} callback  The callback in the form (err, result)
    * @return {function} callback
    *                       {Error} [err]  The error if any
-   *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties). 
+   *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  getToken(callback: (error: Error, result?: TokenResponse) => MSITokenResponse): MSITokenResponse {
+  getToken(callback: Callback<TokenResponse>): void {
     const postUrl = `http://localhost:${this.port}/oauth2/token`;
     const reqOptions = this.prepareRequestOptions();
     request.post(postUrl, reqOptions, (err, response, body) => {
@@ -36,14 +36,14 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
         return callback(err);
       }
       try {
-        let tokenResponse = this.parseTokenResponse(body);
+        const tokenResponse = this.parseTokenResponse(body);
         if (!tokenResponse.tokenType) {
           throw new Error(`Invalid token response, did not find tokenType. Response body is: ${body}`);
         } else if (!tokenResponse.accessToken) {
           throw new Error(`Invalid token response, did not find accessToken. Response body is: ${body}`);
         }
 
-        return callback(null, tokenResponse);
+        return callback(undefined, tokenResponse);
       } catch (error) {
         return callback(error);
       }
@@ -52,13 +52,13 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
 
   prepareRequestOptions(): HttpRequestOptions {
     const resource = encodeURIComponent(this.resource);
-    let reqOptions: HttpRequestOptions = {
+    const reqOptions: HttpRequestOptions = {
       headers: {},
-      body: ''
+      body: ""
     };
 
-    reqOptions.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-    reqOptions.headers['Metadata'] = 'true';
+    reqOptions.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+    reqOptions.headers["Metadata"] = "true";
     reqOptions.body = `resource=${resource}`;
 
     return reqOptions;
