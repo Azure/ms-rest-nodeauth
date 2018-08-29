@@ -119,7 +119,7 @@ export interface MSIOptions {
   /**
    * @prop {string} [resource] -  The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
-   * - resourcemanagement endpoint "https://management.azure.com"(default) 
+   * - resourcemanagement endpoint "https://management.azure.com"(default)
    * - management endpoint "https://management.core.windows.net/"
    */
   resource?: string;
