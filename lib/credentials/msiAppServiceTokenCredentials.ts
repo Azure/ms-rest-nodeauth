@@ -1,7 +1,28 @@
-import { MSITokenCredentials } from "./msiTokenCredentials";
-import { MSIAppServiceOptions, TokenResponse, Callback } from "../login";
+import { MSITokenCredentials, MSIOptions } from "./msiTokenCredentials";
 import * as request from "request";
 import { CoreOptions as HttpRequestOptions } from "request";
+
+/**
+ * @interface MSIAppServiceOptions Defines the optional parameters for authentication with MSI for AppService.
+ */
+export interface MSIAppServiceOptions extends MSIOptions {
+  /**
+   * @property {string} [msiEndpoint] - The local URL from which your app can request tokens.
+   * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
+   * For example: `export MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
+   */
+  msiEndpoint?: string;
+  /**
+   * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
+   * Either provide this parameter or set the environment varaible `MSI_SECRET`.
+   * For example: `export MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+   */
+  msiSecret?: string;
+  /**
+   * @property {string} [msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
+   */
+  msiApiVersion?: string;
+}
 
 /**
  * @class MSIAppServiceTokenCredentials

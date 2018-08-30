@@ -114,61 +114,6 @@ export interface LoginWithAuthFileOptions {
 }
 
 /**
- * @interface MSIOptions Defines the optional parameters for authentication with MSI.
- */
-export interface MSIOptions {
-  /**
-   * @prop {string} [resource] -  The resource uri or token audience for which the token is needed.
-   * For e.g. it can be:
-   * - resourcemanagement endpoint "https://management.azure.com"(default)
-   * - management endpoint "https://management.core.windows.net/"
-   */
-  resource?: string;
-}
-
-/**
- * @interface MSIAppServiceOptions Defines the optional parameters for authentication with MSI for AppService.
- */
-export interface MSIAppServiceOptions extends MSIOptions {
-  /**
-   * @property {string} [msiEndpoint] - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
-   * For example: `export MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
-   */
-  msiEndpoint?: string;
-  /**
-   * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment varaible `MSI_SECRET`.
-   * For example: `export MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
-   */
-  msiSecret?: string;
-  /**
-   * @property {string} [msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
-   */
-  msiApiVersion?: string;
-}
-
-/**
- * @interface MSIVmOptions Defines the optional parameters for authentication with MSI for Virtual Machine.
- */
-export interface MSIVmOptions extends MSIOptions {
-  /**
-   * @prop {number} [port] - port on which the MSI service is running on the host VM. Default port is 50342
-   */
-  port?: number;
-}
-
-export interface TokenResponse extends adal.TokenResponse {
-  /**
-   * @property {number} [notBefore] The time from which the access token becomes usable.
-   * The date is represented as the number of seconds from 1970-01-01T0:0:0Z UTC until time of validity for the token.
-   */
-  notBefore?: number;
-
-  [x: string]: any;
-}
-
-/**
  * Generic callback type definition.
  *
  * @property {Error} error - The error occurred if any, while executing the request; otherwise undefined

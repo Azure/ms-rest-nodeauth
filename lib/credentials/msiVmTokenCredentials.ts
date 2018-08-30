@@ -1,7 +1,18 @@
-import { MSITokenCredentials } from "./msiTokenCredentials";
-import { MSIVmOptions, TokenResponse, Callback } from "../login";
-import * as request from "request";
-import { CoreOptions as HttpRequestOptions } from "request";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
+import { RequestPrepareOptions, HttpOperationResponse, ServiceClient } from "ms-rest-js";
+
+/**
+ * @interface MSIVmOptions Defines the optional parameters for authentication with MSI for Virtual Machine.
+ */
+export interface MSIVmOptions extends MSIOptions {
+  /**
+   * @prop {number} [port] - port on which the MSI service is running on the host VM. Default port is 50342
+   */
+  port?: number;
+}
 
 /**
  * @class MSIVmTokenCredentials

@@ -1,22 +1,26 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { MSIOptions, TokenResponse, Callback } from "../login";
 import { Constants, WebResource } from "ms-rest-js";
-import { CoreOptions as HttpRequestOptions } from "request";
+import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
+
+/**
+ * @interface MSIOptions Defines the optional parameters for authentication with MSI.
+ */
+export interface MSIOptions {
+  /**
+   * @prop {string} [resource] -  The resource uri or token audience for which the token is needed.
+   * For e.g. it can be:
+   * - resourcemanagement endpoint "https://management.azure.com"(default)
+   * - management endpoint "https://management.core.windows.net/"
+   */
+  resource?: string;
+}
 
 /**
  * @interface MSITokenResponse - Describes the MSITokenResponse.
  */
-export interface MSITokenResponse {
-  /**
-   * @property {string} token_type - The token type.
-   */
-  readonly token_type: string;
-  /**
-   * @property {string} access_token - The access token.
-   */
-  readonly access_token: string;
+export interface MSITokenResponse extends TokenResponse {
   /**
    * @property {any} any - Placeholder for unknown properties.
    */
