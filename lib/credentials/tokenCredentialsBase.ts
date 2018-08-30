@@ -7,7 +7,6 @@ import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
 const adal = require("adal-node");
 
-
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
   protected readonly authContext: any;
 
