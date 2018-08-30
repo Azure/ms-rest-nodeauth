@@ -802,9 +802,11 @@ function _withMSI(options?: MSIOptions, callback?: Callback<MSITokenCredentials>
  *             @resolve {object} - tokenResponse.
  *             @reject {Error} - error object.
  */
-export function loginWithMSI(callback: { (err: Error, credentials: MSIVmTokenCredentials): void }): void;
-export function loginWithMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials>;
-export function loginWithMSI(options: MSIVmOptions, callback: { (err: Error, credentials: MSIVmTokenCredentials): void }): void {
+export function loginWithMSI(): Promise<MSITokenCredentials>;
+export function loginWithMSI(options: MSIOptions): Promise<MSITokenCredentials>;
+export function loginWithMSI(options: MSIOptions, callback: Callback<MSITokenCredentials>): void
+export function loginWithMSI(callback: Callback<MSITokenCredentials>): void;
+export function loginWithMSI(options?: MSIOptions | Callback<MSITokenCredentials>, callback?: Callback<MSITokenCredentials>): void | Promise<MSITokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
