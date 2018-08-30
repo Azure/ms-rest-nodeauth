@@ -1,6 +1,6 @@
-import { MSITokenCredentials, MSITokenResponse } from "./msiTokenCredentials";
+import { MSITokenCredentials } from "./msiTokenCredentials";
 import { MSIAppServiceOptions, TokenResponse, Callback } from "../login";
-import { request } from "request";
+import * as request from "request";
 import { CoreOptions as HttpRequestOptions } from "request";
 
 /**
@@ -75,7 +75,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
     const endpoint = this.msiEndpoint.endsWith("/") ? this.msiEndpoint : `${this.msiEndpoint}/`;
     const getUrl = `${endpoint}?resource=${this.resource}&api-version=${this.msiApiVersion}`;
     const reqOptions = this.prepareRequestOptions();
-    request.get(getUrl, reqOptions, (err, response, body) => {
+    request.get(getUrl, reqOptions, (err, _response, body) => {
       if (err) {
         return callback(err);
       }

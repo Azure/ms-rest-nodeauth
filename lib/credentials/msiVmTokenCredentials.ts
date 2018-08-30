@@ -1,6 +1,6 @@
 import { MSITokenCredentials } from "./msiTokenCredentials";
 import { MSIVmOptions, TokenResponse, Callback } from "../login";
-import request from "request";
+import * as request from "request";
 import { CoreOptions as HttpRequestOptions } from "request";
 
 /**
@@ -31,7 +31,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
   getToken(callback: Callback<TokenResponse>): void {
     const postUrl = `http://localhost:${this.port}/oauth2/token`;
     const reqOptions = this.prepareRequestOptions();
-    request.post(postUrl, reqOptions, (err, response, body) => {
+    request.post(postUrl, reqOptions, (err, _response, body) => {
       if (err) {
         return callback(err);
       }
@@ -53,13 +53,12 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
   prepareRequestOptions(): HttpRequestOptions {
     const resource = encodeURIComponent(this.resource);
     const reqOptions: HttpRequestOptions = {
-      headers: {},
-      body: ""
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Metadata": "true"
+      },
+      body: `resource=${resource}`
     };
-
-    reqOptions.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8";
-    reqOptions.headers["Metadata"] = "true";
-    reqOptions.body = `resource=${resource}`;
 
     return reqOptions;
   }
