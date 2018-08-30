@@ -39,36 +39,36 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
    *                       {Error} [err]  The error if any
    *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  getToken(callback: Callback<TokenResponse>): void {
-    const postUrl = `http://localhost:${this.port}/oauth2/token`;
+  async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();
-    request.post(postUrl, reqOptions, (err, _response, body) => {
-      if (err) {
-        return callback(err);
+    const client = new ServiceClient();
+    let opRes: HttpOperationResponse;
+    let result: MSITokenResponse;
+    try {
+      opRes = await client.sendRequest(reqOptions);
+      result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
+      if (!result.tokenType) {
+        throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
+      } else if (!result.accessToken) {
+        throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
       }
-      try {
-        const tokenResponse = this.parseTokenResponse(body);
-        if (!tokenResponse.tokenType) {
-          throw new Error(`Invalid token response, did not find tokenType. Response body is: ${body}`);
-        } else if (!tokenResponse.accessToken) {
-          throw new Error(`Invalid token response, did not find accessToken. Response body is: ${body}`);
-        }
+    } catch (err) {
+      return Promise.reject(err);
+    }
 
-        return callback(undefined, tokenResponse);
-      } catch (error) {
-        return callback(error);
-      }
-    });
+    return Promise.resolve(result);
   }
 
-  prepareRequestOptions(): HttpRequestOptions {
+  private prepareRequestOptions(): RequestPrepareOptions {
     const resource = encodeURIComponent(this.resource);
-    const reqOptions: HttpRequestOptions = {
+    const reqOptions: RequestPrepareOptions = {
+      url: `http://localhost:${this.port}/oauth2/token`,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Metadata": "true"
       },
-      body: `resource=${resource}`
+      body: `resource=${resource}`,
+      method: "POST"
     };
 
     return reqOptions;

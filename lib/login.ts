@@ -11,8 +11,9 @@ import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
 import { AuthConstants, TokenAudience } from "./util/authConstants";
 import { buildTenantList, getSubscriptionsFromTenants, LinkedSubscription } from "./subscriptionManagement/subscriptionUtils";
-import { MSIVmTokenCredentials } from "./credentials/msiVmTokenCredentials";
-import { MSIAppServiceTokenCredentials } from "./credentials/msiAppServiceTokenCredentials";
+import { MSIVmTokenCredentials, MSIVmOptions } from "./credentials/msiVmTokenCredentials";
+import { MSIAppServiceTokenCredentials, MSIAppServiceOptions } from "./credentials/msiAppServiceTokenCredentials";
+import { MSITokenResponse } from "./credentials/msiTokenCredentials";
 
 function turnOnLogging() {
   const log = adal.Logging;
@@ -694,20 +695,19 @@ export function withUsernamePassword(username: string, password: string, options
 /**
  * Initializes MSITokenCredentials class and calls getToken and returns a token response.
  *
+ * @param {string} domain - required. The tenant id.
  * @param {object} options - Optional parameters
  * @param {string} [options.port] - port on which the MSI service is running on the host VM. Default port is 50342
  * @param {string} [options.resource] - The resource uri or token audience for which the token is needed. Default - "https://management.azure.com"
+ * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {any} callback - the callback function.
  */
-function _withVmMSI(options?: MSIVmOptions, callback?: Callback<MSIVmTokenCredentials>): void {
-  if (!callback) {
-    throw new Error("callback cannot be null or undefined.");
+function _withMSI(options?: MSIVmOptions): Promise<MSITokenResponse> {
+  if (!options) {
+    options = {};
   }
   const creds = new MSIVmTokenCredentials(options);
-  creds.getToken(function (error?: Error) {
-    if (error) return callback(error);
-    return callback(undefined, creds);
-  });
+  return creds.getToken();
 }
 
 /**
@@ -754,45 +754,37 @@ export function interactive(callback: any): void;
 export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
 */
 
-export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
-export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
+export function loginWithVmMSI(): Promise<MSITokenResponse>;
+export function loginWithVmMSI(options: MSIVmOptions): Promise<MSITokenResponse>;
 export function loginWithVmMSI(options: MSIVmOptions, callback: Callback<MSIVmTokenCredentials>): void;
 export function loginWithVmMSI(callback: Callback<MSIVmTokenCredentials>): void;
-export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSIVmTokenCredentials> {
+export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSITokenResponse> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
   }
+  const cb = callback as Function;
   if (!callback) {
-    return new Promise((resolve, reject) => {
-      _withVmMSI(options as MSIVmOptions, (error?: Error, result?: MSIVmTokenCredentials) => {
-        if (error) { reject(error); }
-        else { resolve(result); }
-        return;
-      });
-    });
+    return _withMSI(options as MSIVmOptions);
   } else {
-    return _withVmMSI(options as MSIOptions, callback);
+    msRest.promiseToCallback(_withMSI(options as MSIVmOptions))((err: Error, tokenRes: MSITokenResponse) => {
+      if (err) {
+        return cb(err);
+      }
+      return cb(undefined, tokenRes);
+    });
   }
 }
 
 /**
  * Private method
  */
-function _withAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>) {
-  if (!callback) {
-    throw new Error("callback cannot be null or undefined.");
+function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSITokenResponse> {
+  if (!options) {
+    options = {};
   }
-  let creds: MSIAppServiceTokenCredentials;
-  try {
-    creds = new MSIAppServiceTokenCredentials(options);
-  } catch (err) {
-    return callback(err);
-  }
-  creds.getToken(function (err) {
-    if (err) return callback(err);
-    return callback(undefined, creds);
-  });
+  const creds = new MSIAppServiceTokenCredentials(options);
+  return creds.getToken();
 }
 
 /**
@@ -819,24 +811,24 @@ function _withAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MS
  *             @resolve {object} - tokenResponse.
  *             @reject {Error} - error object.
  */
-export function loginWithAppServiceMSI(): Promise<MSIAppServiceTokenCredentials>;
-export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(): Promise<MSITokenResponse>;
+export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSITokenResponse>;
 export function loginWithAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>): void;
 export function loginWithAppServiceMSI(callback: Callback<MSIAppServiceTokenCredentials>): void;
-export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSIAppServiceTokenCredentials> {
+export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSITokenResponse> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
   }
+  const cb = callback as Function;
   if (!callback) {
-    return new Promise((resolve, reject) => {
-      _withAppServiceMSI(options as MSIAppServiceOptions, (error?: Error, credentials?: MSIAppServiceTokenCredentials) => {
-        if (error) { reject(error); }
-        else { resolve(credentials); }
-        return;
-      });
-    });
+    return _withAppServiceMSI(options as MSIAppServiceOptions);
   } else {
-    return _withAppServiceMSI(options as MSIAppServiceOptions, callback);
+    msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))((err: Error, tokenRes: MSITokenResponse) => {
+      if (err) {
+        return cb(err);
+      }
+      return cb(undefined, tokenRes);
+    });
   }
 }

@@ -10,5 +10,5 @@ export interface TokenResponse {
 }
 
 export interface TokenClientCredentials extends ServiceClientCredentials {
-  getToken(): Promise<TokenResponse>;
+  getToken<TTokenResponse extends TokenResponse>(): Promise<TokenResponse | TTokenResponse>;
 }

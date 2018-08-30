@@ -31,7 +31,7 @@ export interface MSITokenResponse extends TokenResponse {
  * @class MSITokenCredentials - Provides information about managed service identity token credentials.
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
-export abstract class MSITokenCredentials {
+export abstract class MSITokenCredentials implements TokenClientCredentials {
   resource: string;
 
   /**
@@ -60,7 +60,7 @@ export abstract class MSITokenCredentials {
    * @param  {string} body  A json string
    * @return {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  parseTokenResponse(body: string) {
+  parseTokenResponse(body: string): TokenResponse {
     // Docs show different examples of possible MSI responses for different services. https://docs.microsoft.com/en-us/azure/active-directory/managed-service-identity/overview
     // expires_on - is a Date like string in this doc
     //   - https://docs.microsoft.com/en-us/azure/app-service/app-service-managed-service-identity#rest-protocol-examples
@@ -108,38 +108,24 @@ export abstract class MSITokenCredentials {
   }
 
   /**
-   * Prepares and sends a request to the MSI service endpoint which responds with the access token.
+   * Prepares and sends a POST request to a service endpoint hosted on the Azure VM, which responds with the access token.
    * @param  {function} callback  The callback in the form (err, result)
    * @return {function} callback
    *                       {Error} [err]  The error if any
    *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  getToken(callback: Callback<TokenResponse>): void {
-    return callback(undefined);
-  }
-
-  prepareRequestOptions() {
-    const reqOptions: HttpRequestOptions = {
-      headers: {},
-      body: ""
-    };
-
-    return reqOptions;
-  }
+  abstract async getToken(): Promise<MSITokenResponse>;
 
   /**
    * Signs a request with the Authentication header.
    *
-   * @param {webResource} webResource The WebResource to be signed.
+   * @param {webResource} The WebResource to be signed.
    * @param {function(error)}  callback  The callback function.
    * @return {undefined}
    */
-  signRequest(webResource: WebResource, callback: (err: Error) => void): void {
-    this.getToken((err?: Error, result?: TokenResponse) => {
-      if (err) return callback(err);
-      const authorizationHeader = `${result!.tokenType} ${result!.accessToken}`;
-      webResource.headers.set(Constants.HeaderConstants.AUTHORIZATION, authorizationHeader);
-      return callback(undefined as any);
-    });
+  public async signRequest(webResource: WebResource): Promise<WebResource> {
+    const tokenResponse = await this.getToken();
+    webResource.headers.set(Constants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
+    return Promise.resolve(webResource);
   }
 }

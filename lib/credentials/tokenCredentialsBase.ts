@@ -4,7 +4,8 @@
 import { Constants as MSRestConstants, WebResource } from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
-import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
+import { TokenClientCredentials } from "./tokenClientCredentials";
+import { TokenResponse } from "adal-node";
 const adal = require("adal-node");
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {

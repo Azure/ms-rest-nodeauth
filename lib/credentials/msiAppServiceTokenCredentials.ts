@@ -1,6 +1,5 @@
-import { MSITokenCredentials, MSIOptions } from "./msiTokenCredentials";
-import * as request from "request";
-import { CoreOptions as HttpRequestOptions } from "request";
+import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
+import { ServiceClient, HttpOperationResponse, RequestPrepareOptions } from "ms-rest-js";
 
 /**
  * @interface MSIAppServiceOptions Defines the optional parameters for authentication with MSI for AppService.
@@ -92,38 +91,42 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    *                       {Error} [err]  The error if any
    *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  getToken(callback: Callback<TokenResponse>) {
-    const endpoint = this.msiEndpoint.endsWith("/") ? this.msiEndpoint : `${this.msiEndpoint}/`;
-    const getUrl = `${endpoint}?resource=${this.resource}&api-version=${this.msiApiVersion}`;
+  async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();
-    request.get(getUrl, reqOptions, (err, _response, body) => {
-      if (err) {
-        return callback(err);
-      }
-      try {
-        if (body.indexOf("ExceptionMessage") !== -1) {
-          throw new Error(`MSI: Failed to retrieve a token from "${getUrl}" with an error: ${body}`);
-        }
-        const tokenResponse = this.parseTokenResponse(body);
-        if (!tokenResponse.tokenType) {
-          throw new Error(`Invalid token response, did not find tokenType. Response body is: ${body}`);
-        } else if (!tokenResponse.accessToken) {
-          throw new Error(`Invalid token response, did not find accessToken. Response body is: ${body}`);
-        }
+    const client = new ServiceClient();
+    let opRes: HttpOperationResponse;
+    let result: MSITokenResponse;
 
-        return callback(undefined, tokenResponse);
-      } catch (error) {
-        return callback(error);
+    try {
+      opRes = await client.sendRequest(reqOptions);
+      if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
+        throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
       }
-    });
+
+      result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
+      if (!result.tokenType) {
+        throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
+      } else if (!result.accessToken) {
+        throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
+      }
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    return Promise.resolve(result);
   }
 
-  // TODO: declare type?
-  prepareRequestOptions(): HttpRequestOptions {
-    const reqOptions: HttpRequestOptions = {
+  private prepareRequestOptions(): RequestPrepareOptions {
+    const endpoint = this.msiEndpoint.endsWith("/") ? this.msiEndpoint : `${this.msiEndpoint}/`;
+    const getUrl = `${endpoint}?resource=${this.resource}&api-version=${this.msiApiVersion}`;
+    const resource = encodeURIComponent(this.resource);
+    const reqOptions: RequestPrepareOptions = {
+      url: getUrl,
       headers: {
         "secret": this.msiSecret
-      }
+      },
+      body: `resource=${resource}`,
+      method: "POST"
     };
 
     return reqOptions;
