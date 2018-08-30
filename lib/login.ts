@@ -813,7 +813,7 @@ export function loginWithMSI(options?: MSIOptions | Callback<MSITokenCredentials
   }
   if (!callback) {
     return new Promise((resolve, reject) => {
-      _withMSI(options, (err, credentials) => {
+      _withMSI(options, (err: Error, credentials: MSITokenCredentials) => {
         if (err) { reject(err); }
         else { resolve(credentials); }
         return;
