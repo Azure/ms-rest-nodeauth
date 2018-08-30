@@ -27,7 +27,7 @@ export interface MSITokenResponse {
  * @class MSITokenCredentials - Provides information about managed service identity token credentials.
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
-export class MSITokenCredentials {
+export abstract class MSITokenCredentials {
   resource: string;
 
   /**
