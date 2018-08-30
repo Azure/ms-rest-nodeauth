@@ -755,7 +755,7 @@ export function withUsernamePassword(username: string, password: string, options
  * @param {string} [options.resource] - The resource uri or token audience for which the token is needed. Default - "https://management.azure.com"
  * @param {any} callback - the callback function.
  */
-function _withMSI(options: MSIOptions, callback: { (err: Error, credentials: MSITokenCredentials): void }): void {
+function _withMSI(options?: MSIOptions, callback?: Callback<MSITokenCredentials>): void {
   if (!callback) {
     throw new Error("callback cannot be null or undefined.");
   }
