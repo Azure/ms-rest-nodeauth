@@ -935,16 +935,18 @@ function _withAppServiceMSI(options, callback) {
  *             @resolve {object} - tokenResponse.
  *             @reject {Error} - error object.
  */
-export function loginWithAppServiceMSI(callback: { (err: Error, credentials: MSIAppServiceTokenCredentials): void }): void;
-export function loginWithAppServiceMSI(options?: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials>;
-export function loginWithAppServiceMSI(options: MSIAppServiceOptions, callback: { (err: Error, credentials: MSIAppServiceTokenCredentials): void }): void {
+export function loginWithAppServiceMSI(): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>): void;
+export function loginWithAppServiceMSI(callback: Callback<MSIAppServiceTokenCredentials>): void;
+export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSIAppServiceTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
   }
   if (!callback) {
     return new Promise((resolve, reject) => {
-      _withAppServiceMSI(options, (err, credentials) => {
+      _withAppServiceMSI(options, (err: Error, credentials: MSIAppServiceTokenCredentials) => {
         if (err) { reject(err); }
         else { resolve(credentials); }
         return;
