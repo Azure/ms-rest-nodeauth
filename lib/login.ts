@@ -760,8 +760,8 @@ function _withMSI(options?: MSIOptions, callback?: Callback<MSITokenCredentials>
     throw new Error("callback cannot be null or undefined.");
   }
   const creds = new MSIVmTokenCredentials(options);
-  creds.getToken(function (err: Error) {
-    if (err) return callback(err);
+  creds.getToken(function (error?: Error) {
+    if (error) return callback(error);
     return callback(undefined, creds);
   });
 }
@@ -813,14 +813,14 @@ export function loginWithMSI(options?: MSIOptions | Callback<MSITokenCredentials
   }
   if (!callback) {
     return new Promise((resolve, reject) => {
-      _withMSI(options, (err: Error, credentials: MSITokenCredentials) => {
-        if (err) { reject(err); }
-        else { resolve(credentials); }
+      _withMSI(options as MSIOptions, (error?: Error, result?: MSITokenCredentials) => {
+        if (error) { reject(error); }
+        else { resolve(result); }
         return;
       });
     });
   } else {
-    return _withMSI(options, callback);
+    return _withMSI(options as MSIOptions, callback);
   }
 }
 
@@ -879,14 +879,14 @@ export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCrede
   }
   if (!callback) {
     return new Promise((resolve, reject) => {
-      _withAppServiceMSI(options, (err, credentials) => {
-        if (err) { reject(err); }
-        else { resolve(credentials); }
+      _withAppServiceMSI(options as MSIVmOptions, (error?: Error, result?: MSIVmTokenCredentials) => {
+        if (error) { reject(error); }
+        else { resolve(result); }
         return;
       });
     });
   } else {
-    return _withAppServiceMSI(options, callback);
+    return _withAppServiceMSI(options as MSIVmOptions, callback);
   }
 }
 
@@ -895,13 +895,13 @@ loginWithVmMSI()
 /**
  * Private method
  */
-function _withAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>) {
+function _withAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIVmTokenCredentials>) {
   if (!callback) {
     throw new Error("callback cannot be null or undefined.");
   }
-  let creds: MSIAppServiceTokenCredentials;
+  let creds: MSIVmTokenCredentials;
   try {
-    creds = new MSIAppServiceTokenCredentials(options);
+    creds = new MSIVmTokenCredentials(options);
   } catch (err) {
     return callback(err);
   }
@@ -946,13 +946,13 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
   }
   if (!callback) {
     return new Promise((resolve, reject) => {
-      _withAppServiceMSI(options, (err: Error, credentials: MSIAppServiceTokenCredentials) => {
-        if (err) { reject(err); }
+      _withAppServiceMSI(options as MSIAppServiceOptions, (error?: Error, credentials?: MSIAppServiceTokenCredentials) => {
+        if (error) { reject(error); }
         else { resolve(credentials); }
         return;
       });
     });
   } else {
-    return _withAppServiceMSI(options, callback);
+    return _withAppServiceMSI(options as MSIAppServiceOptions, callback);
   }
 }
