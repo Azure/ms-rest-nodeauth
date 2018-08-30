@@ -870,9 +870,9 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
 
 export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
 export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
-export function loginWithVmMSI(options: MSIVmOptions, callback: { (err: Error, credentials: MSIVmTokenCredentials): void }): void;
-export function loginWithVmMSI(callback: { (err: Error, credentials: MSIVmTokenCredentials): void }): void;
-export function loginWithVmMSI(options?: MSIVmOptions | { (err: Error, credentials: MSIVmTokenCredentials): void }, callback?: { (err: Error, credentials: MSIVmTokenCredentials): void }): void | Promise<MSIVmTokenCredentials> {
+export function loginWithVmMSI(options: MSIVmOptions, callback: Callback<MSIVmTokenCredentials>): void;
+export function loginWithVmMSI(callback: Callback<MSIVmTokenCredentials>): void;
+export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSIVmTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
