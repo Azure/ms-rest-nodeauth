@@ -20,7 +20,6 @@ import { expect } from "chai";
 
 describe("MSI App Service Authentication", function () {
   function setupNockResponse(resource?: string, response?: any, error?: any) {
-
     if (!resource) {
       resource = "https://management.azure.com/";
     }
@@ -35,129 +34,121 @@ describe("MSI App Service Authentication", function () {
 
 
   describe("Credential getToken()", () => {
-    it("should get token from the App service MSI by providing optional properties", function (done) {
-      const response = {
+    it("should get token from the App service MSI by providing optional properties", async function (done) {
+      const mockResponse = {
         access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
         expires_in: "3599",
         expires_on: "1502930996",
         resource: "https://management.azure.com/",
-        token_type: "Bearer"
+        tokenType: "Bearer"
       };
 
-      setupNockResponse(undefined, response);
+      setupNockResponse(undefined, mockResponse);
 
       const msiCredsObj = new MSIAppServiceTokenCredentials({
         msiEndpoint: "http://127.0.0.1:41741/MSI/token/",
         msiSecret: "69418689F1E342DD946CB82994CDA3CB"
       });
-      msiCredsObj.getToken((err, response) => {
-        expect(err).to.not.exist;
-        expect(response).to.exist;
-        expect(response!.accessToken).to.exist;
-        expect(response!.accessToken).to.exist;
-        done();
-      });
+      const response = await msiCredsObj.getToken();
+      expect(response).to.exist;
+      expect(response!.accessToken).to.exist;
+      expect(response!.tokenType).to.exist;
     });
 
     it("should get token from the App service MSI by reading the environment variables", function (done) {
-      const response = {
+      const mockResponse = {
         access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
         expires_in: "3599",
         expires_on: "1502930996",
         resource: "https://management.azure.com/",
-        token_type: "Bearer"
+        tokenType: "Bearer"
       };
 
-      setupNockResponse(undefined, response);
+      setupNockResponse(undefined, mockResponse);
       process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
       process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
       const msiCredsObj = new MSIAppServiceTokenCredentials();
-      msiCredsObj.getToken((err, response) => {
-        expect(err).to.not.exist;
-        expect(response).to.exist;
-        expect(response!.accessToken).to.exist;
-        expect(response!.accessToken).to.exist;
-        done();
-      });
-    });
-
-    it('should throw if the response contains "ExceptionMessage"', function (done) {
-      const errorResponse = {
-        "error": "unkwnown",
-        "error_description": "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
-      };
-
-      setupNockResponse(undefined, undefined, errorResponse);
-      process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
-      process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
-      const msiCredsObj = new MSIAppServiceTokenCredentials();
-      msiCredsObj.getToken((err, response) => {
-        expect(err).to.exist;
-        expect(response).to.not.exist;
-        done();
-      });
+      const response = await msiCredsObj.getToken();
+      expect(response).to.exist;
+      expect(response!.accessToken).to.exist;
+      expect(response!.tokenType).to.exist;
     });
   });
 
-  describe("loginWithAppServiceMSI", () => {
+  it('should throw if the response contains "ExceptionMessage"', function (done) {
+    const errorResponse = {
+      "error": "unkwnown",
+      "error_description": "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
+    };
 
-    it("should successfully provide MSIAppServiceTokenCredentials object by providing optional properties", function (done) {
-      const response = {
-        access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
-        expires_in: "3599",
-        expires_on: "1502930996",
-        resource: "https://management.azure.com/",
-        token_type: "Bearer"
-      };
+    setupNockResponse(undefined, undefined, errorResponse);
+    process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
+    process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
+    const msiCredsObj = new MSIAppServiceTokenCredentials();
+    const response = msiCredsObj.getToken();
+    expect(response).to.not.exist;
+  });
+});
 
-      setupNockResponse(undefined, response);
+describe("loginWithAppServiceMSI", () => {
 
-      const options = {
-        msiEndpoint: "http://127.0.0.1:41741/MSI/token/",
-        msiSecret: "69418689F1E342DD946CB82994CDA3CB"
-      };
-      msRestAzure.loginWithAppServiceMSI(options, (err, response) => {
-        expect(err).to.not.exist;
-        expect(response).to.exist;
-        expect(response instanceof MSIAppServiceTokenCredentials).to.be.true;
-        done();
-      });
-    });
+  it("should successfully provide MSIAppServiceTokenCredentials object by providing optional properties", function (done) {
+    const response = {
+      access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
+      expires_in: "3599",
+      expires_on: "1502930996",
+      resource: "https://management.azure.com/",
+      tokenType: "Bearer"
+    };
 
-    it("should successfully provide MSIAppServiceTokenCredentials object by reading the environment variables", function (done) {
-      const response = {
-        access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
-        expires_in: "3599",
-        expires_on: "1502930996",
-        resource: "https://management.azure.com/",
-        token_type: "Bearer"
-      };
+    setupNockResponse(undefined, response);
 
-      setupNockResponse(undefined, response);
-      process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
-      process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
-      msRestAzure.loginWithAppServiceMSI((err, response) => {
-        expect(err).to.not.exist;
-        expect(response).to.exist;
-        expect(response instanceof MSIAppServiceTokenCredentials).to.be.true;
-        done();
-      });
-    });
-
-    it('should throw if the response contains "ExceptionMessage"', function (done) {
-      const errorResponse = {
-        "error": "unkwnown",
-        "error_description": "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
-      };
-
-      setupNockResponse(undefined, undefined, errorResponse);
-      process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
-      process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
-      msRestAzure.loginWithAppServiceMSI((err, response) => {
-        expect(err).to.exist;
-        expect(response).to.not.exist;
-        done();
-      });
+    const options = {
+      msiEndpoint: "http://127.0.0.1:41741/MSI/token/",
+      msiSecret: "69418689F1E342DD946CB82994CDA3CB"
+    };
+    msRestAzure.loginWithAppServiceMSI(options, (err, response) => {
+      expect(err).to.not.exist;
+      expect(response).to.exist;
+      expect(response instanceof MSIAppServiceTokenCredentials).to.be.true;
+      done();
     });
   });
+
+  it("should successfully provide MSIAppServiceTokenCredentials object by reading the environment variables", function (done) {
+    const response = {
+      access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
+      expires_in: "3599",
+      expires_on: "1502930996",
+      resource: "https://management.azure.com/",
+      tokenType: "Bearer"
+    };
+
+    setupNockResponse(undefined, response);
+    process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
+    process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
+    msRestAzure.loginWithAppServiceMSI((err, response) => {
+      expect(err).to.not.exist;
+      expect(response).to.exist;
+      expect(response instanceof MSIAppServiceTokenCredentials).to.be.true;
+      done();
+    });
+  });
+
+  it('should throw if the response contains "ExceptionMessage"', function (done) {
+    const errorResponse = {
+      "error": "unkwnown",
+      "error_description": "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
+    };
+
+    setupNockResponse(undefined, undefined, errorResponse);
+    process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
+    process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
+    msRestAzure.loginWithAppServiceMSI((err, response) => {
+      expect(err).to.exist;
+      expect(response).to.not.exist;
+      done();
+    });
+  });
+});
 });

@@ -50,42 +50,40 @@ describe("MSI Vm Authentication", function () {
     }
   }
 
-  it("should get token from the virtual machine with MSI service running at default port", function (done) {
-    const response = {
+  it("should get token from the virtual machine with MSI service running at default port", async function (done) {
+    const mockResponse = {
       access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
       refresh_token: "",
       expires_in: "3599",
       expires_on: "1502930996",
       not_before: "1502927096",
       resource: "https://management.azure.com/",
-      token_type: "Bearer"
+      tokenType: "Bearer"
     };
 
     const requestBodyToMatch = {
       "resource": "https://management.azure.com/"
     };
 
-    setupNockResponse(undefined, requestBodyToMatch, response);
+    setupNockResponse(undefined, requestBodyToMatch, mockResponse);
 
     const msiCredsObj = new MSIVmTokenCredentials();
-    msiCredsObj.getToken((err, response) => {
-      expect(err).to.not.exist;
-      expect(response).to.exist;
-      expect(response!.accessToken).to.exist;
-      expect(response!.tokenType).to.exist;
-      done();
-    });
+    const response = await msiCredsObj.getToken();
+    expect(response).to.exist;
+    expect(response!.accessToken).to.exist;
+    expect(response!.tokenType).to.exist;
+    done();
   });
 
-  it("should get token from the virtual machine with MSI service running at custom port", function (done) {
-    const response = {
+  it("should get token from the virtual machine with MSI service running at custom port", async function (done) {
+    const mockResponse = {
       access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
       refresh_token: "",
       expires_in: "3599",
       expires_on: "1502930996",
       not_before: "1502927096",
       resource: "https://management.azure.com/",
-      token_type: "Bearer"
+      tokenType: "Bearer"
     };
 
     const requestBodyToMatch = {
@@ -93,16 +91,13 @@ describe("MSI Vm Authentication", function () {
     };
 
     const customPort = 50341;
-    setupNockResponse(customPort, requestBodyToMatch, response);
+    setupNockResponse(customPort, requestBodyToMatch, mockResponse);
 
     const msiCredsObj = new MSIVmTokenCredentials({ port: customPort });
-    msiCredsObj.getToken((err, response) => {
-      expect(err).to.not.exist;
-      expect(response).to.exist;
-      expect(response!.accessToken).to.exist;
-      expect(response!.tokenType).to.exist;
-      done();
-    });
+    const response = await msiCredsObj.getToken();
+    expect(response).to.exist;
+    expect(response!.accessToken).to.exist;
+    expect(response!.tokenType).to.exist;
   });
 
   it("should throw on requests with bad resource", function (done) {
