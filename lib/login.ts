@@ -895,7 +895,7 @@ loginWithVmMSI()
 /**
  * Private method
  */
-function _withAppServiceMSI(options, callback) {
+function _withAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>) {
   if (!callback) {
     throw new Error("callback cannot be null or undefined.");
   }
