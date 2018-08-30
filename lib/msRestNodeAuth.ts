@@ -19,5 +19,4 @@ export {
   withServicePrincipalSecretWithAuthResponse as loginWithServicePrincipalSecretWithAuthResponse,
   withAuthFile as loginWithAuthFile,
   withAuthFileWithAuthResponse as loginWithAuthFileWithAuthResponse,
-  withMSI as loginWithMSI,
 } from "./login";
