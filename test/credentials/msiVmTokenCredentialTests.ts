@@ -17,7 +17,7 @@ import * as nock from "nock";
 import { MSIVmTokenCredentials } from "../../lib/credentials/msiVmTokenCredentials";
 import { expect } from "chai";
 
-describe("MSI Vm Authentication", function () {
+describe("MSI Vm Authentication", () => {
   before(function (done) {
     done();
   });
@@ -50,7 +50,7 @@ describe("MSI Vm Authentication", function () {
     }
   }
 
-  it("should get token from the virtual machine with MSI service running at default port", async function (done) {
+  it("should get token from the virtual machine with MSI service running at default port", async (done) => {
     const mockResponse = {
       access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
       refresh_token: "",
@@ -75,7 +75,7 @@ describe("MSI Vm Authentication", function () {
     done();
   });
 
-  it("should get token from the virtual machine with MSI service running at custom port", async function (done) {
+  it("should get token from the virtual machine with MSI service running at custom port", async (done) => {
     const mockResponse = {
       access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
       refresh_token: "",
@@ -98,9 +98,10 @@ describe("MSI Vm Authentication", function () {
     expect(response).to.exist;
     expect(response!.accessToken).to.exist;
     expect(response!.tokenType).to.exist;
+    done();
   });
 
-  it("should throw on requests with bad resource", function (done) {
+  it("should throw on requests with bad resource", async (done) => {
     const errorResponse = {
       "error": "unkwnown",
       "error_description": "Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
@@ -113,14 +114,14 @@ describe("MSI Vm Authentication", function () {
     setupNockResponse(undefined, requestBodyToMatch, undefined, errorResponse);
 
     const msiCredsObj = new MSIVmTokenCredentials({ "resource": "badvalue" });
-    msiCredsObj.getToken((err, response) => {
-      expect(err).to.exist;
-      expect(response).to.not.exist;
-      done();
-    });
+    const response = await msiCredsObj.getToken();
+    //expect(err).to.exist;
+    //expect((err as any).error).to.equal("bad_resource_200");
+    expect(response).to.not.exist;
+    done();
   });
 
-  it("should throw on request with empty resource", function (done) {
+  it("should throw on request with empty resource", async (done) => {
     const errorResponse = { "error": "bad_resource_200", "error_description": "Invalid Resource" };
 
     const requestBodyToMatch = {
@@ -130,11 +131,10 @@ describe("MSI Vm Authentication", function () {
     setupNockResponse(undefined, requestBodyToMatch, undefined, errorResponse);
 
     const msiCredsObj = new MSIVmTokenCredentials({ "resource": "  " });
-    msiCredsObj.getToken((err, response) => {
-      expect(err).to.exist;
-      expect((err as any).error).to.equal("bad_resource_200");
-      expect(response).to.not.exist;
-      done();
-    });
+    const response = await msiCredsObj.getToken();
+    //expect(err).to.exist;
+    //expect((err as any).error).to.equal("bad_resource_200");
+    expect(response).to.not.exist;
+    done();
   });
 });

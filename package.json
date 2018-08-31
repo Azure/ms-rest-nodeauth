@@ -58,9 +58,8 @@
   },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
-    "test": "run-p test:tslint test:unit",
+    "test": "run-p tslint test:unit",
     "test:unit": "nyc mocha",
-    "test:tslint": "tslint -p . -c tslint.json --exclude test/**/*.ts",
     "unit": "mocha -t 50000 dist/test",
     "build": "npm -s run-script tsc",
     "tslint": "tslint -p . -c tslint.json --exclude test/**/*.ts"
