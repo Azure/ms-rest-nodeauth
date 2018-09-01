@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { Constants, WebResource } from "ms-rest-js";
+import { Constants, WebResource, HttpClient, DefaultHttpClient } from "ms-rest-js";
 import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
 
 /**
@@ -15,6 +15,11 @@ export interface MSIOptions {
    * - management endpoint "https://management.core.windows.net/"
    */
   resource?: string;
+
+  /**
+   * TODO
+   */
+  httpClient?: HttpClient;
 }
 
 /**
@@ -33,6 +38,7 @@ export interface MSITokenResponse extends TokenResponse {
  */
 export abstract class MSITokenCredentials implements TokenClientCredentials {
   resource: string;
+  protected httpClient: HttpClient;
 
   /**
    * Creates an instance of MSITokenCredentials.
@@ -52,6 +58,7 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
     }
 
     this.resource = options.resource;
+    this.httpClient = options.httpClient || new DefaultHttpClient();
   }
 
   /**
@@ -115,6 +122,8 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
    *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    */
   abstract async getToken(): Promise<MSITokenResponse>;
+
+  protected abstract prepareRequestOptions(): WebResource;
 
   /**
    * Signs a request with the Authentication header.

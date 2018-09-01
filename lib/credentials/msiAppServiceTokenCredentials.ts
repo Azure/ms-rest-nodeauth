@@ -1,5 +1,5 @@
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
-import { ServiceClient, HttpOperationResponse, RequestPrepareOptions } from "ms-rest-js";
+import { HttpOperationResponse, RequestPrepareOptions, WebResource } from "ms-rest-js";
 
 /**
  * @interface MSIAppServiceOptions Defines the optional parameters for authentication with MSI for AppService.
@@ -93,12 +93,11 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    */
   async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();
-    const client = new ServiceClient();
     let opRes: HttpOperationResponse;
     let result: MSITokenResponse;
 
     try {
-      opRes = await client.sendRequest(reqOptions);
+      opRes = await this.httpClient.sendRequest(reqOptions);
       if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
         throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
       }
@@ -116,7 +115,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
     return Promise.resolve(result);
   }
 
-  private prepareRequestOptions(): RequestPrepareOptions {
+  protected prepareRequestOptions(): WebResource {
     const endpoint = this.msiEndpoint.endsWith("/") ? this.msiEndpoint : `${this.msiEndpoint}/`;
     const getUrl = `${endpoint}?resource=${this.resource}&api-version=${this.msiApiVersion}`;
     const resource = encodeURIComponent(this.resource);
@@ -129,6 +128,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
       method: "POST"
     };
 
-    return reqOptions;
+    const webResource = new WebResource();
+    return webResource.prepare(reqOptions);
   }
 }

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
-import { RequestPrepareOptions, HttpOperationResponse, ServiceClient } from "ms-rest-js";
+import { RequestPrepareOptions, HttpOperationResponse, WebResource } from "ms-rest-js";
 
 /**
  * @interface MSIVmOptions Defines the optional parameters for authentication with MSI for Virtual Machine.
@@ -41,11 +41,10 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
    */
   async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();
-    const client = new ServiceClient();
     let opRes: HttpOperationResponse;
     let result: MSITokenResponse;
     try {
-      opRes = await client.sendRequest(reqOptions);
+      opRes = await this.httpClient.sendRequest(reqOptions);
       result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
       if (!result.tokenType) {
         throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
@@ -59,7 +58,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
     return Promise.resolve(result);
   }
 
-  private prepareRequestOptions(): RequestPrepareOptions {
+  protected prepareRequestOptions(): WebResource {
     const resource = encodeURIComponent(this.resource);
     const reqOptions: RequestPrepareOptions = {
       url: `http://localhost:${this.port}/oauth2/token`,
@@ -71,6 +70,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
       method: "POST"
     };
 
-    return reqOptions;
+    const webResource = new WebResource();
+    return webResource.prepare(reqOptions);
   }
 }
