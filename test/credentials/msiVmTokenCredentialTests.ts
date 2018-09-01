@@ -18,21 +18,6 @@ import { MSIVmTokenCredentials } from "../../lib/credentials/msiVmTokenCredentia
 import { expect } from "chai";
 
 describe("MSI Vm Authentication", () => {
-  before(function (done) {
-    done();
-  });
-
-  after(function (done) {
-    done();
-  });
-
-  beforeEach(function (done) {
-    done();
-  });
-
-  afterEach(function (done) {
-    done();
-  });
 
   function setupNockResponse(port?: number, requestBodyToMatch?: any, response?: any, error?: any) {
 
