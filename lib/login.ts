@@ -754,14 +754,6 @@ function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> {
  *             @resolve {object} - tokenResponse.
  *             @reject {Error} - error object.
  */
-/*
-export function interactive(): Promise<TokenCredentialsBase>;
-export function interactive(options: InteractiveLoginOptions): Promise<TokenCredentialsBase>;
-export function interactive(options: InteractiveLoginOptions, callback: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
-export function interactive(callback: any): void;
-export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
-*/
-
 export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
 export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
 export function loginWithVmMSI(options: MSIVmOptions, callback: Callback<MSIVmTokenCredentials>): void;
