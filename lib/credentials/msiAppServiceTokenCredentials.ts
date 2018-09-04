@@ -96,23 +96,19 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
     let opRes: HttpOperationResponse;
     let result: MSITokenResponse;
 
-    try {
-      opRes = await this.httpClient.sendRequest(reqOptions);
-      if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
-        throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
-      }
-
-      result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
-      if (!result.tokenType) {
-        throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
-      } else if (!result.accessToken) {
-        throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
-      }
-    } catch (err) {
-      return Promise.reject(err);
+    opRes = await this.httpClient.sendRequest(reqOptions);
+    if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
+      throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
     }
 
-    return Promise.resolve(result);
+    result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
+    if (!result.tokenType) {
+      throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
+    } else if (!result.accessToken) {
+      throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
+    }
+
+    return result;
   }
 
   protected prepareRequestOptions(): WebResource {

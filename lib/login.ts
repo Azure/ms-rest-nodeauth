@@ -702,12 +702,20 @@ export function withUsernamePassword(username: string, password: string, options
  * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {any} callback - the callback function.
  */
-function _withMSI(options?: MSIVmOptions): Promise<MSITokenResponse> {
+function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> {
   if (!options) {
     options = {};
   }
-  const creds = new MSIVmTokenCredentials(options);
-  return creds.getToken();
+
+  return new Promise((resolve, reject) => {
+    const creds = new MSIVmTokenCredentials(options);
+    creds.getToken().then((_tokenResponse) => {
+      // We ignore the token response, it's put in the cache.
+      return resolve(creds);
+    }).catch(error => {
+      reject(error);
+    });
+  });
 }
 
 /**
@@ -754,11 +762,11 @@ export function interactive(callback: any): void;
 export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
 */
 
-export function loginWithVmMSI(): Promise<MSITokenResponse>;
-export function loginWithVmMSI(options: MSIVmOptions): Promise<MSITokenResponse>;
+export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
+export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
 export function loginWithVmMSI(options: MSIVmOptions, callback: Callback<MSIVmTokenCredentials>): void;
 export function loginWithVmMSI(callback: Callback<MSIVmTokenCredentials>): void;
-export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSITokenResponse> {
+export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSIVmTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
@@ -779,12 +787,20 @@ export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCrede
 /**
  * Private method
  */
-function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSITokenResponse> {
+function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials> {
   if (!options) {
     options = {};
   }
-  const creds = new MSIAppServiceTokenCredentials(options);
-  return creds.getToken();
+
+  return new Promise((resolve, reject) => {
+    const creds = new MSIAppServiceTokenCredentials(options);
+    creds.getToken().then((_tokenResponse) => {
+      // We ignore the token response, it's put in the cache.
+      return resolve(creds);
+    }).catch(error => {
+      reject(error);
+    });
+  });
 }
 
 /**
@@ -811,11 +827,11 @@ function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSITokenResp
  *             @resolve {object} - tokenResponse.
  *             @reject {Error} - error object.
  */
-export function loginWithAppServiceMSI(): Promise<MSITokenResponse>;
-export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSITokenResponse>;
+export function loginWithAppServiceMSI(): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials>;
 export function loginWithAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>): void;
 export function loginWithAppServiceMSI(callback: Callback<MSIAppServiceTokenCredentials>): void;
-export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSITokenResponse> {
+export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSIAppServiceTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
