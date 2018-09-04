@@ -17,7 +17,8 @@ export interface MSIOptions {
   resource?: string;
 
   /**
-   * TODO
+   * @property {HttpClient} [httpClient] - The client responsible for sending HTTP requests.
+   * By default it is Axios-based {@link DefaultHttpClient}.
    */
   httpClient?: HttpClient;
 }
