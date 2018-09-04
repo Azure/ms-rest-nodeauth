@@ -3,6 +3,7 @@
 
 import { Constants, WebResource, HttpClient, DefaultHttpClient } from "ms-rest-js";
 import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
+import { AuthConstants } from "../util/authConstants";
 
 /**
  * @interface MSIOptions Defines the optional parameters for authentication with MSI.
@@ -11,7 +12,7 @@ export interface MSIOptions {
   /**
    * @prop {string} [resource] -  The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
-   * - resourcemanagement endpoint "https://management.azure.com"(default)
+   * - resourcemanagement endpoint "https://management.azure.com/" (default)
    * - management endpoint "https://management.core.windows.net/"
    */
   resource?: string;
@@ -46,14 +47,14 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
    * @param {object} [options] - Optional parameters
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
-   * - resource management endpoint "https://management.azure.com"(default)
+   * - resource management endpoint "https://management.azure.com/"(default)
    * - management endpoint "https://management.core.windows.net/"
    */
   constructor(options: MSIOptions) {
     if (!options) options = {};
 
     if (!options.resource) {
-      options.resource = "https://management.azure.com/";
+      options.resource = AuthConstants.RESOURCE_MANAGER_ENDPOINT;
     } else if (typeof options.resource.valueOf() !== "string") {
       throw new Error("resource must be a uri.");
     }

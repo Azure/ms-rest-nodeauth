@@ -57,7 +57,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
-   * - resource management endpoint "https://management.azure.com"(default)
+   * - resource management endpoint "https://management.azure.com/" (default)
    * - management endpoint "https://management.core.windows.net/"
    * @param {string} [options.msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
    */

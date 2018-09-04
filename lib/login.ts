@@ -698,7 +698,7 @@ export function withUsernamePassword(username: string, password: string, options
  * @param {string} domain - required. The tenant id.
  * @param {object} options - Optional parameters
  * @param {string} [options.port] - port on which the MSI service is running on the host VM. Default port is 50342
- * @param {string} [options.resource] - The resource uri or token audience for which the token is needed. Default - "https://management.azure.com"
+ * @param {string} [options.resource] - The resource uri or token audience for which the token is needed. Default - "https://management.azure.com/"
  * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {any} callback - the callback function.
  */
