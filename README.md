@@ -58,11 +58,31 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 });
 ```
 
-### MSI(Managed Service Identity) based login from a virtual machine created in Azure.
+### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
 ```typescript
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 
-msRestNodeAuth.loginWithMSI("your-tenantId").then((msiTokenRes) => {
+const options: msRestNodeAuth.MSIVmOptions = {
+  port: 50342;
+}
+
+msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
+  console.log(msiTokenRes);
+}).catch((err) => {
+  console.log(err);
+});
+```
+
+
+### MSI (Managed Service Identity) based login from an AppService or Azure Function created in Azure.
+```typescript
+import * as msRestNodeAuth from "../lib/msRestNodeAuth";
+
+const options: msRestNodeAuth.MSIAppServiceOptions = {
+  msiEndpoint: "http://127.0.0.1:41741/MSI/token/";
+}
+
+msRestNodeAuth.loginWithAppServiceMSI(options).then((msiTokenRes) => {
   console.log(msiTokenRes);
 }).catch((err) => {
   console.log(err);
