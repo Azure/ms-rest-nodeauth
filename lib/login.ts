@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-const adal = require("adal-node");
+import * as adal from "adal-node";
 import * as fs from "fs";
 import * as msRest from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
@@ -11,13 +11,15 @@ import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
 import { AuthConstants, TokenAudience } from "./util/authConstants";
 import { buildTenantList, getSubscriptionsFromTenants, LinkedSubscription } from "./subscriptionManagement/subscriptionUtils";
-import { MSITokenCredentials, MSITokenResponse } from "./credentials/msiTokenCredentials";
+import { MSIVmTokenCredentials, MSIVmOptions } from "./credentials/msiVmTokenCredentials";
+import { MSIAppServiceTokenCredentials, MSIAppServiceOptions } from "./credentials/msiAppServiceTokenCredentials";
+import { MSITokenResponse } from "./credentials/msiTokenCredentials";
 
 function turnOnLogging() {
   const log = adal.Logging;
   log.setLoggingOptions(
     {
-      level: log.LOGGING_LEVEL.VERBOSE,
+      level: 3, // Please use log.LOGGING_LEVEL.VERBOSE once AD TypeScript mappings are updated,
       log: function (level: any, message: any, error: any) {
         level;
         console.info(message);
@@ -113,26 +115,12 @@ export interface LoginWithAuthFileOptions {
 }
 
 /**
- * @interface MSIOptions - Describes optional parameters for MSI authentication.
+ * Generic callback type definition.
+ *
+ * @property {Error} error - The error occurred if any, while executing the request; otherwise undefined
+ * @property {TResult} result - Result when call was successful.
  */
-export interface MSIOptions {
-  /**
-   * @property {number} port - Port on which the MSI service is running on the host VM. Default port is 50342
-   */
-  port?: number;
-  /**
-   * @property {string} resource - The resource uri or token audience for which the token is needed.
-   * For e.g. it can be:
-   * - resourcemanagement endpoint "https://management.azure.com"(default)
-   * - management endpoint "https://management.core.windows.net/"
-   */
-  resource?: string;
-  /**
-   * @property {string} aadEndpoint - The add endpoint for authentication. default - "https://login.microsoftonline.com"
-   */
-  aadEndpoint?: string;
-}
-
+export type Callback<TResult> = (error?: Error, result?: TResult) => void;
 /**
  * Provides a UserTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
  * This method is applicable only for organizational ids that are not 2FA enabled otherwise please use interactive login.
@@ -710,16 +698,24 @@ export function withUsernamePassword(username: string, password: string, options
  * @param {string} domain - required. The tenant id.
  * @param {object} options - Optional parameters
  * @param {string} [options.port] - port on which the MSI service is running on the host VM. Default port is 50342
- * @param {string} [options.resource] - The resource uri or token audience for which the token is needed. Default - "https://management.azure.com"
+ * @param {string} [options.resource] - The resource uri or token audience for which the token is needed. Default - "https://management.azure.com/"
  * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {any} callback - the callback function.
  */
-function _withMSI(domain: string, options?: MSIOptions): Promise<MSITokenResponse> {
+function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> {
   if (!options) {
     options = {};
   }
-  const creds = new MSITokenCredentials(domain, options.port, options.resource, options.aadEndpoint);
-  return creds.getToken();
+
+  return new Promise((resolve, reject) => {
+    const creds = new MSIVmTokenCredentials(options);
+    creds.getToken().then((_tokenResponse) => {
+      // We ignore the token response, it's put in the cache.
+      return resolve(creds);
+    }).catch(error => {
+      reject(error);
+    });
+  });
 }
 
 /**
@@ -741,39 +737,102 @@ function _withMSI(domain: string, options?: MSIOptions): Promise<MSITokenRespons
  * This method makes a request to the authentication service hosted on the VM
  * and gets back an access token.
  *
- * @param {string} [domain] - The domain or tenant id. This is a required parameter.
  * @param {object} [options] - Optional parameters
  * @param {string} [options.port] - port on which the MSI service is running on the host VM. Default port is 50342
  * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
  * For e.g. it can be:
- * - resourcemanagement endpoint "https://management.azure.com"(default)
+ * - resourcemanagement endpoint "https://management.azure.com/"(default)
  * - management endpoint "https://management.core.windows.net/"
- * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {function} [optionalCallback] The optional callback.
  *
  * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
  *
  *    {function} optionalCallback(err, credentials)
- *                 {Error}  [err]            - The Error object if an error occurred, null otherwise.
- *                 {object} [tokenResponse]  - The tokenResponse (token_type and access_token are the two important properties)
+ *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
+ *                 {object} [tokenResponse]                     - The tokenResponse (tokenType and accessToken are the two important properties)
  *    {Promise} A promise is returned.
- *             @resolve {MSITokenResponse} - The tokenResponse.
- *             @reject {Error} - The error object.
+ *             @resolve {object} - tokenResponse.
+ *             @reject {Error} - error object.
  */
-export function withMSI(domain: string): Promise<MSITokenResponse>;
-export function withMSI(domain: string, options: MSIOptions): Promise<MSITokenResponse>;
-export function withMSI(domain: string, options: MSIOptions, callback: { (err: Error, credentials: MSITokenResponse): void }): void;
-export function withMSI(domain: string, callback: any): any;
-export function withMSI(domain: string, options?: MSIOptions, callback?: { (err: Error, credentials: MSITokenResponse): void }): any {
+export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
+export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
+export function loginWithVmMSI(options: MSIVmOptions, callback: Callback<MSIVmTokenCredentials>): void;
+export function loginWithVmMSI(callback: Callback<MSIVmTokenCredentials>): void;
+export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSIVmTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
   }
   const cb = callback as Function;
   if (!callback) {
-    return _withMSI(domain, options);
+    return _withMSI(options as MSIVmOptions);
   } else {
-    msRest.promiseToCallback(_withMSI(domain, options))((err: Error, tokenRes: MSITokenResponse) => {
+    msRest.promiseToCallback(_withMSI(options as MSIVmOptions))((err: Error, tokenRes: MSITokenResponse) => {
+      if (err) {
+        return cb(err);
+      }
+      return cb(undefined, tokenRes);
+    });
+  }
+}
+
+/**
+ * Private method
+ */
+function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials> {
+  if (!options) {
+    options = {};
+  }
+
+  return new Promise((resolve, reject) => {
+    const creds = new MSIAppServiceTokenCredentials(options);
+    creds.getToken().then((_tokenResponse) => {
+      // We ignore the token response, it's put in the cache.
+      return resolve(creds);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
+
+/**
+ * Authenticate using the App Service MSI.
+ * @param {object} [options] - Optional parameters
+ * @param {string} [options.msiEndpoint] - The local URL from which your app can request tokens.
+ * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
+ * For example: `MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
+ * @param {string} [options.msiSecret] - The secret used in communication between your code and the local MSI agent.
+ * Either provide this parameter or set the environment varaible `MSI_SECRET`.
+ * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+ * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
+ * For example, it can be:
+ * - resourcemanagement endpoint "https://management.azure.com/"(default)
+ * - management endpoint "https://management.core.windows.net/"
+ * @param {string} [options.msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
+ * @param {function} [optionalCallback] -  The optional callback.
+ * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
+ *
+ *    {function} optionalCallback(err, credentials)
+ *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
+ *                 {object} [tokenResponse]                     - The tokenResponse (tokenType and accessToken are the two important properties)
+ *    {Promise} A promise is returned.
+ *             @resolve {object} - tokenResponse.
+ *             @reject {Error} - error object.
+ */
+export function loginWithAppServiceMSI(): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>): void;
+export function loginWithAppServiceMSI(callback: Callback<MSIAppServiceTokenCredentials>): void;
+export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSIAppServiceTokenCredentials> {
+  if (!callback && typeof options === "function") {
+    callback = options;
+    options = {};
+  }
+  const cb = callback as Function;
+  if (!callback) {
+    return _withAppServiceMSI(options as MSIAppServiceOptions);
+  } else {
+    msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))((err: Error, tokenRes: MSITokenResponse) => {
       if (err) {
         return cb(err);
       }

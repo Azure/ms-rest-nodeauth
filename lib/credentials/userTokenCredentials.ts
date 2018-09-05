@@ -1,9 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { TokenCredentialsBase, TokenResponse } from "./tokenCredentialsBase";
+import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
+import { TokenResponse } from "adal-node";
 
 export class UserTokenCredentials extends TokenCredentialsBase {
 
@@ -81,7 +82,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
             if (error) {
               reject(error);
             }
-            if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId)) {
+            if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId!)) {
               resolve((tokenResponse as TokenResponse));
             } else {
               reject(`The userId "${tokenResponse.userId}" in access token doesn"t match the username "${self.username}" provided during authentication.`);

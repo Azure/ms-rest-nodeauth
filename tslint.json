@@ -50,6 +50,7 @@
         "prefer-const": true,
         "no-switch-case-fall-through": true,
         "triple-equals": true,
-        "jsdoc-format": true
+        "jsdoc-format": true,
+        "max-classes-per-file": [true, 1]
     }
 }

@@ -54,3 +54,10 @@ jspm_packages/
 # dotenv environment variables file
 .env
 
+# Typescript output
+.nyc_output/
+coverage/
+dist/
+typings/
+*.js
+*.js.map
