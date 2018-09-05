@@ -741,7 +741,7 @@ function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> {
  * @param {string} [options.port] - port on which the MSI service is running on the host VM. Default port is 50342
  * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
  * For e.g. it can be:
- * - resourcemanagement endpoint "https://management.azure.com"(default)
+ * - resourcemanagement endpoint "https://management.azure.com/"(default)
  * - management endpoint "https://management.core.windows.net/"
  * @param {function} [optionalCallback] The optional callback.
  *
@@ -806,7 +806,7 @@ function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServic
  * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
  * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
  * For example, it can be:
- * - resourcemanagement endpoint "https://management.azure.com"(default)
+ * - resourcemanagement endpoint "https://management.azure.com/"(default)
  * - management endpoint "https://management.core.windows.net/"
  * @param {string} [options.msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
  * @param {function} [optionalCallback] -  The optional callback.
