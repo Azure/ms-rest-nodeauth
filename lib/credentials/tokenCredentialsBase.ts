@@ -38,9 +38,9 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     let resource = this.environment.activeDirectoryResourceId;
     if (this.tokenAudience) {
       resource = this.tokenAudience;
-      if (this.tokenAudience === "graph") {
+      if (this.tokenAudience.toLowerCase() === "graph") {
         resource = this.environment.activeDirectoryGraphResourceId;
-      } else if (this.tokenAudience === "batch") {
+      } else if (this.tokenAudience.toLowerCase() === "batch") {
         resource = this.environment.batchResourceId;
       }
     }
