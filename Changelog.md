@@ -1,8 +1,34 @@
-### 0.1.1 - 2018/08/27
+# Changelog
+
+## 0.5.1 - 2018/09/18
+
+- Add TopicCredentials
+
+## 0.5.0 - 2018/08/16
+
+- Added support for MSI authentication
+- Updated ms-rest-js package to 0.19 version
+- Updated ms-rest-azure-env package to 0.1.1 version
+
+## 0.4.0 - 2018/08/08
+
+- Updated ms-rest-js package to 0.18 version
+
+## 0.3.0 - 2018/08/06
+
+- Updated ms-rest-js package to 0.17 version
+
+## 0.2.0 - 2018/07/27
+
+- Updated ms-rest-js package to 0.14 version
+
+## 0.1.1 - 2018/08/27
+
 - Domain is no longer a required parameter for MSITokenCredentials.
 - Rename LoginWithMSIOptions interface to MSIOptions
 
-### 0.1.0 - 2017/09/16
+## 0.1.0 - 2017/09/16
+
 - Initial version of ms-rest-nodeauth
 - Provides following flavors of authentication in different Azure Clouds
   - Authentication via service principal
