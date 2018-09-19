@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.5.2 - 2018/09/18
+
+- Added KeyVaultCredentials
+
 ## 0.5.1 - 2018/09/18
 
-- Add TopicCredentials
+- Added TopicCredentials
 
 ## 0.5.0 - 2018/08/16
 

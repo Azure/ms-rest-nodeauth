@@ -99,7 +99,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
     let opRes: HttpOperationResponse;
     let result: MSITokenResponse;
 
-    opRes = await this.httpClient.sendRequest(reqOptions);
+    opRes = await this._httpClient.sendRequest(reqOptions);
     if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
       throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
     }
