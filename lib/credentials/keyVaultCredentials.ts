@@ -49,7 +49,7 @@ export class KeyVaultCredentials implements ServiceClientCredentials {
     }
 
     if (!this.authenticator) {
-      this.authenticator = this._authenticatorMapper(this.credentials);
+      this.authenticator = this._authenticatorMapper(this.credentials) as ((challenge: object, callback: any) => any);
     }
   }
 
@@ -59,25 +59,24 @@ export class KeyVaultCredentials implements ServiceClientCredentials {
   }
 
   createSigningFilter(): (resource: WebResource, next: Function, callback: ServiceCallback<any>) => any {
-    const self = this;
-    return function (resource, next, callback) {
+    return (resource, next, callback) => {
       const nextHandler = function (err, response, body) {
         // If this is not a 401 result, just resume.
         if (!response || response.statusCode !== 401 || !response.headers) {
           return callback(err, response, body);
         }
         // Otherwise we must handle the 401.
-        return self.handleUnauthorized(resource, next, err, response, body, callback);
+        return this.handleUnauthorized(resource, next, err, response, body, callback);
       };
       // Check if we have a cached challenge for this resource.
-      const cachedChallenge = self.getCachedChallenge(resource);
+      const cachedChallenge = this.getCachedChallenge(resource);
       if (!cachedChallenge) {
         // Resume without any challenge. The service may return a 401-unauthorized that will be handled afterwards.
         return next(resource, nextHandler);
       }
       // Calls the authenticator to retrieve an authorization value.
       // Since the authenticator doesn't return a stream, we need to use the interimStream.
-      self.authenticator(cachedChallenge, function (err, authorizationValue) {
+      this.authenticator(cachedChallenge, function (err, authorizationValue) {
         if (err) {
           return callback(err);
         }
