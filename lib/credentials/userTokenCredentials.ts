@@ -8,8 +8,8 @@ import { TokenResponse } from "adal-node";
 
 export class UserTokenCredentials extends TokenCredentialsBase {
 
-  private readonly username: string;
-  private readonly password: string;
+  readonly username: string;
+  readonly password: string;
 
   /**
    * Creates a new UserTokenCredentials object.

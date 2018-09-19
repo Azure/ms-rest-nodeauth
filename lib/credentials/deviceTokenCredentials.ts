@@ -8,7 +8,7 @@ import { TokenResponse } from "adal-node";
 
 export class DeviceTokenCredentials extends TokenCredentialsBase {
 
-  private readonly userName: string;
+  readonly username: string;
 
   /**
    * Creates a new DeviceTokenCredentials object that gets a new access token using userCodeInfo (contains user_code, device_code)
@@ -31,13 +31,13 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
   public constructor(
     clientId?: string,
     domain?: string,
-    userName?: string,
+    username?: string,
     tokenAudience?: TokenAudience,
     environment?: AzureEnvironment,
     tokenCache?: any) {
 
-    if (!userName) {
-      userName = "user@example.com";
+    if (!username) {
+      username = "user@example.com";
     }
 
     if (!domain) {
@@ -50,11 +50,11 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
 
     super(clientId, domain, tokenAudience, environment as any, tokenCache);
 
-    this.userName = userName;
+    this.username = username;
   }
 
   public getToken(): Promise<TokenResponse> {
     // For device auth, this is just getTokenFromCache.
-    return this.getTokenFromCache(this.userName);
+    return this.getTokenFromCache(this.username);
   }
 }

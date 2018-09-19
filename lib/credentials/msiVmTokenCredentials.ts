@@ -44,7 +44,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
     let opRes: HttpOperationResponse;
     let result: MSITokenResponse;
 
-    opRes = await this.httpClient.sendRequest(reqOptions);
+    opRes = await this._httpClient.sendRequest(reqOptions);
     result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
     if (!result.tokenType) {
       throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);

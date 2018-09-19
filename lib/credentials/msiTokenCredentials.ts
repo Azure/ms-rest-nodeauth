@@ -40,7 +40,7 @@ export interface MSITokenResponse extends TokenResponse {
  */
 export abstract class MSITokenCredentials implements TokenClientCredentials {
   resource: string;
-  protected httpClient: HttpClient;
+  protected _httpClient: HttpClient;
 
   /**
    * Creates an instance of MSITokenCredentials.
@@ -60,7 +60,7 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
     }
 
     this.resource = options.resource;
-    this.httpClient = options.httpClient || new DefaultHttpClient();
+    this._httpClient = options.httpClient || new DefaultHttpClient();
   }
 
   /**

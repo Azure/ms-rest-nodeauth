@@ -5,18 +5,17 @@ import { Constants as MSRestConstants, WebResource } from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
-import { TokenResponse } from "adal-node";
-const adal = require("adal-node");
+import { TokenResponse, AuthenticationContext, MemoryCache } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
-  protected readonly authContext: any;
+  public readonly authContext: AuthenticationContext;
 
   public constructor(
     public readonly clientId: string,
     public domain: string,
     public readonly tokenAudience?: TokenAudience,
     public readonly environment = AzureEnvironment.Azure,
-    public tokenCache: any = new adal.MemoryCache()) {
+    public tokenCache: any = new MemoryCache()) {
 
     if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
       throw new Error("clientId must be a non empty string.");
@@ -32,7 +31,7 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     }
 
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
-    this.authContext = new adal.AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
+    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
   }
 
   protected getActiveDirectoryResourceId(): string {

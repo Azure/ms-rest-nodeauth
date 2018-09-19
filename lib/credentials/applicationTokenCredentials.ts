@@ -8,7 +8,8 @@ import { TokenResponse } from "adal-node";
 
 export class ApplicationTokenCredentials extends TokenCredentialsBase {
 
-  private readonly secret: string;
+  readonly secret: string;
+
   /**
    * Creates a new ApplicationTokenCredentials object.
    * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
