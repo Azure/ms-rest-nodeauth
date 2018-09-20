@@ -4,7 +4,7 @@
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
-import { TokenResponse } from "adal-node";
+import { TokenResponse, ErrorResponse } from "adal-node";
 
 export class UserTokenCredentials extends TokenCredentialsBase {
 
@@ -78,10 +78,16 @@ export class UserTokenCredentials extends TokenCredentialsBase {
 
       return new Promise<TokenResponse>((resolve, reject) => {
         self.authContext.acquireTokenWithUsernamePassword(resource, self.username, self.password, self.clientId,
-          (error: Error, tokenResponse: TokenResponse) => {
+          (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
             if (error) {
               reject(error);
             }
+
+            if (tokenResponse.error || tokenResponse.errorDescription) {
+              reject(tokenResponse);
+            }
+
+            tokenResponse = tokenResponse as TokenResponse;
             if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId!)) {
               resolve((tokenResponse as TokenResponse));
             } else {

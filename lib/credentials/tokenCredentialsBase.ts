@@ -5,7 +5,7 @@ import { Constants as MSRestConstants, WebResource } from "ms-rest-js";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
-import { TokenResponse, AuthenticationContext, MemoryCache } from "adal-node";
+import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
   public readonly authContext: AuthenticationContext;
@@ -47,16 +47,21 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     return resource;
   }
 
-  protected getTokenFromCache(userName?: string): Promise<TokenResponse> {
+  protected getTokenFromCache(username?: string): Promise<TokenResponse> {
     const self = this;
     const resource = this.getActiveDirectoryResourceId();
 
     return new Promise<TokenResponse>((resolve, reject) => {
-      self.authContext.acquireToken(resource, userName, self.clientId, (error: Error, tokenResponse: TokenResponse) => {
+      self.authContext.acquireToken(resource, username!, self.clientId, (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
         if (error) {
           return reject(error);
         }
-        return resolve(tokenResponse);
+
+        if (tokenResponse.error || tokenResponse.errorDescription) {
+          return reject(tokenResponse);
+        }
+
+        resolve(tokenResponse as TokenResponse);
       });
     });
   }

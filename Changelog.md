@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3 - 2018/09/19
+
+- Updated documentation
+
 ## 0.5.2 - 2018/09/18
 
 - Added KeyVaultCredentials
