@@ -20,7 +20,7 @@ import { TokenCredentialsBase } from "./tokenCredentialsBase";
  * @param {credentials} credentials - Credentials needed for the client to connect to Azure.
  */
 export class KeyVaultCredentials implements ServiceClientCredentials {
-  authenticator: (challenge: object, callback: any) => any;
+  authenticator: (challenge: object, callback: ServiceCallback<any>) => any;
   challengeCache: any[];
   credentials: MSITokenCredentials;
 
@@ -60,20 +60,22 @@ export class KeyVaultCredentials implements ServiceClientCredentials {
 
   createSigningFilter(): (resource: WebResource, next: Function, callback: ServiceCallback<any>) => any {
     return (resource, next, callback) => {
-      const nextHandler = function (err, response, body) {
+      const nextHandler = (err, response, body) => {
         // If this is not a 401 result, just resume.
         if (!response || response.statusCode !== 401 || !response.headers) {
           return callback(err, response, body);
         }
         // Otherwise we must handle the 401.
-        return this.handleUnauthorized(resource, next, err, response, body, callback);
+        return this._handleUnauthorized(resource, next, err, response, body, callback);
       };
+
       // Check if we have a cached challenge for this resource.
       const cachedChallenge = this.getCachedChallenge(resource);
       if (!cachedChallenge) {
         // Resume without any challenge. The service may return a 401-unauthorized that will be handled afterwards.
         return next(resource, nextHandler);
       }
+
       // Calls the authenticator to retrieve an authorization value.
       // Since the authenticator doesn't return a stream, we need to use the interimStream.
       this.authenticator(cachedChallenge, function (err, authorizationValue) {
@@ -98,7 +100,7 @@ export class KeyVaultCredentials implements ServiceClientCredentials {
     this.challengeCache[authority] = challenge;
   }
 
-  handleUnauthorized(webResource: WebResource, next: Function, err: Error, response: any, body: any, callback: ServiceCallback<any>): any {
+  private _handleUnauthorized(webResource: WebResource, next: Function, err: Error, response: any, body: any, callback: ServiceCallback<any>): any {
     // If the www-authenticate header is not as expected, just resume.
     const wwwAuthenticate = response.headers["www-authenticate"];
     const challenge = wwwAuthenticate ? this._parseAuthorizationHeader(wwwAuthenticate) : undefined;

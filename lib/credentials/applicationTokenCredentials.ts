@@ -4,7 +4,7 @@
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { AzureEnvironment } from "ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
-import { TokenResponse } from "adal-node";
+import { TokenResponse, ErrorResponse } from "adal-node";
 
 export class ApplicationTokenCredentials extends TokenCredentialsBase {
 
@@ -54,10 +54,15 @@ export class ApplicationTokenCredentials extends TokenCredentialsBase {
         const resource = this.getActiveDirectoryResourceId();
         return new Promise((resolve, reject) => {
           this.authContext.acquireTokenWithClientCredentials(resource, this.clientId, this.secret,
-            (error: any, tokenResponse: TokenResponse) => {
+            (error: any, tokenResponse: TokenResponse | ErrorResponse) => {
               if (error) {
                 return reject(error);
               }
+
+              if (tokenResponse.error || tokenResponse.errorDescription) {
+                return reject(tokenResponse);
+              }
+
               return resolve(tokenResponse);
             });
         });
@@ -68,9 +73,9 @@ export class ApplicationTokenCredentials extends TokenCredentialsBase {
     const self = this;
 
     // a thin wrapper over the base implementation. try get token from cache, additionaly clean up cache if required.
-    return super.getTokenFromCache(undefined).then((tokenResponse) => {
+    return super.getTokenFromCache(undefined).then((tokenResponse: TokenResponse) => {
       return Promise.resolve(tokenResponse);
-    }).catch((error) => {
+    }).catch((error: any) => {
       // Remove the stale token from the tokencache. ADAL gives the same error message "Entry not found in cache."
       // for entry not being present in the cache and for accessToken being expired in the cache. We do not want the token cache
       // to contain the expired token, we clean it up here.

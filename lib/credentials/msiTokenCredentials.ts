@@ -119,9 +119,7 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
   /**
    * Prepares and sends a POST request to a service endpoint hosted on the Azure VM, which responds with the access token.
    * @param  {function} callback  The callback in the form (err, result)
-   * @return {function} callback
-   *                       {Error} [err]  The error if any
-   *                       {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
+   * @return {Promise<MSITokenResponse>} Promise with the token response.
    */
   abstract async getToken(): Promise<MSITokenResponse>;
 
@@ -131,8 +129,7 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
    * Signs a request with the Authentication header.
    *
    * @param {webResource} The WebResource to be signed.
-   * @param {function(error)}  callback  The callback function.
-   * @return {undefined}
+   * @return {Promise<WebResource>} Promise with signed WebResource.
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
