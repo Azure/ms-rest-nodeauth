@@ -61,7 +61,7 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
           return reject(tokenResponse);
         }
 
-        resolve(tokenResponse as TokenResponse);
+        return resolve(tokenResponse as TokenResponse);
       });
     });
   }

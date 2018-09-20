@@ -56,14 +56,14 @@ export class ApplicationTokenCredentials extends TokenCredentialsBase {
           this.authContext.acquireTokenWithClientCredentials(resource, this.clientId, this.secret,
             (error: any, tokenResponse: TokenResponse | ErrorResponse) => {
               if (error) {
-                reject(error);
+                return reject(error);
               }
 
               if (tokenResponse.error || tokenResponse.errorDescription) {
-                reject(tokenResponse);
+                return reject(tokenResponse);
               }
 
-              resolve(tokenResponse);
+              return resolve(tokenResponse);
             });
         });
       });
