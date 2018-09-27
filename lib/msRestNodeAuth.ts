@@ -3,7 +3,7 @@
 
 export { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
 export { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
-export { KeyVaultFactory } from "./credentials/keyVaultFactory";
+export { createAuthenticator } from "./credentials/keyVaultFactory";
 export { MSIAppServiceOptions, MSIAppServiceTokenCredentials } from "./credentials/msiAppServiceTokenCredentials";
 export { MSIOptions, MSITokenCredentials, MSITokenResponse } from "./credentials/msiTokenCredentials";
 export { MSIVmOptions, MSIVmTokenCredentials } from "./credentials/msiVmTokenCredentials";
