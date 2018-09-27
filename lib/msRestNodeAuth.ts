@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-export { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 export { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
 export { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
-export { UserTokenCredentials } from "./credentials/userTokenCredentials";
-export { MSIOptions, MSITokenCredentials, MSITokenResponse } from "./credentials/msiTokenCredentials";
+export { createAuthenticator } from "./credentials/keyVaultFactory";
 export { MSIAppServiceOptions, MSIAppServiceTokenCredentials } from "./credentials/msiAppServiceTokenCredentials";
+export { MSIOptions, MSITokenCredentials, MSITokenResponse } from "./credentials/msiTokenCredentials";
 export { MSIVmOptions, MSIVmTokenCredentials } from "./credentials/msiVmTokenCredentials";
+export { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
+export { UserTokenCredentials } from "./credentials/userTokenCredentials";
 export { AuthConstants, TokenAudience } from "./util/authConstants";
 export { LinkedSubscription, LinkedUser, UserType } from "./subscriptionManagement/subscriptionUtils";
 export {
