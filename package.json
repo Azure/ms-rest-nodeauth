@@ -30,7 +30,7 @@
   "dependencies": {
     "adal-node": "^0.1.22",
     "ms-rest-azure-env": "^0.1.1",
-    "ms-rest-js": "~0.19.379"
+    "ms-rest-js": "^0.22.426"
   },
   "license": "MIT",
   "devDependencies": {

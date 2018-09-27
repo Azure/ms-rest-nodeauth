@@ -8,10 +8,11 @@ import { MSITokenCredentials } from "./msiTokenCredentials";
 import { MSIVmTokenCredentials } from "./msiVmTokenCredentials";
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { UserTokenCredentials } from "./userTokenCredentials";
-import { AuthenticationContext, TokenResponse } from "adal-node";
+import { AuthenticationContext, TokenResponse, ErrorResponse } from "adal-node";
+import { Authenticator } from "ms-rest-js";
 
-export class KeyVaultCredentialsFactory {
-  public static createAuthenticator(credentials: MSITokenCredentials): ((challenge: object, callback: any) => any) {
+export class KeyVaultFactory {
+  public static createAuthenticator(credentials: MSITokenCredentials): Authenticator {
     const convertedCredentials = this._convert(credentials);
     const authenticator = this._createAuthenticatorMapper(convertedCredentials);
 
@@ -38,14 +39,19 @@ export class KeyVaultCredentialsFactory {
     }
   }
 
-  private static _createAuthenticatorMapper(credentials: MSITokenCredentials): ((challenge: object, callback: any) => any) {
-    return function (challenge: any, callback) {
+  private static _createAuthenticatorMapper(credentials: MSITokenCredentials): Authenticator {
+    return function (challenge: any, callback: (error?: Error, authorizationValue?: string) => void) {
       // Function to take token Response and format a authorization value
-      const _formAuthorizationValue = (err: Error, tokenResponse: TokenResponse) => {
+      const _formAuthorizationValue = (err: Error, tokenResponse: TokenResponse | ErrorResponse) => {
         if (err) {
-          return callback(err);
+          return callback(err, undefined);
         }
 
+        if (tokenResponse.error) {
+          return callback(tokenResponse.error, undefined);
+        }
+
+        tokenResponse = tokenResponse as TokenResponse;
         // Calculate the value to be set in the request's Authorization header and resume the call.
         const authorizationValue = tokenResponse.tokenType + " " + tokenResponse.accessToken;
         return callback(undefined, authorizationValue);
@@ -68,7 +74,7 @@ export class KeyVaultCredentialsFactory {
         return credentials.getToken();
       } else {
         callback(new Error("credentials must be one of: ApplicationTokenCredentials, UserTokenCredentials, " +
-          "DeviceTokenCredentials, MSITokenCredentials"));
+          "DeviceTokenCredentials, MSITokenCredentials"), undefined);
       }
     };
   }
