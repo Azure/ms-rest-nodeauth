@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 - 2018/09/27
+
+- Move KeyVaultCredentials into KeyVault SDK project
+- Add KeyVaultFactory which helps creating authentication method from various credential types.
+
 ## 0.5.3 - 2018/09/19
 
 - Updated documentation
