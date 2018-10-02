@@ -39,21 +39,21 @@ function _convert(credentials: MSITokenCredentials): MSITokenCredentials {
 }
 
 function _createAuthenticatorMapper(credentials: MSITokenCredentials): Authenticator {
-  return function (challenge: any, callback: (error?: Error, authorizationValue?: string) => void) {
+  return (challenge: any) => new Promise((resolve, reject) => {
     // Function to take token Response and format a authorization value
     const _formAuthorizationValue = (err: Error, tokenResponse: TokenResponse | ErrorResponse) => {
       if (err) {
-        return callback(err, undefined);
+        return reject(err);
       }
 
       if (tokenResponse.error) {
-        return callback(tokenResponse.error, undefined);
+        return reject(tokenResponse.error);
       }
 
       tokenResponse = tokenResponse as TokenResponse;
       // Calculate the value to be set in the request's Authorization header and resume the call.
       const authorizationValue = tokenResponse.tokenType + " " + tokenResponse.accessToken;
-      return callback(undefined, authorizationValue);
+      return resolve(authorizationValue);
     };
 
     // Create a new authentication context.
@@ -72,8 +72,8 @@ function _createAuthenticatorMapper(credentials: MSITokenCredentials): Authentic
     } else if (credentials instanceof MSITokenCredentials) {
       return credentials.getToken();
     } else {
-      callback(new Error("credentials must be one of: ApplicationTokenCredentials, UserTokenCredentials, " +
-        "DeviceTokenCredentials, MSITokenCredentials"), undefined);
+      return reject(new Error("credentials must be one of: ApplicationTokenCredentials, UserTokenCredentials, " +
+        "DeviceTokenCredentials, MSITokenCredentials"));
     }
-  };
+  });
 }
