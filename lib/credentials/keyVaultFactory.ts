@@ -53,7 +53,7 @@ function _createAuthenticatorMapper(credentials: MSITokenCredentials): Authentic
       tokenResponse = tokenResponse as TokenResponse;
       // Calculate the value to be set in the request's Authorization header and resume the call.
       const authorizationValue = tokenResponse.tokenType + " " + tokenResponse.accessToken;
-      resolve(authorizationValue);
+      return resolve(authorizationValue);
     };
 
     // Create a new authentication context.
