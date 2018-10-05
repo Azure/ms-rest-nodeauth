@@ -44,7 +44,7 @@
     "nyc": "^13.0.1",
     "ts-node": "^7.0.1",
     "tslint": "^5.2.0",
-    "typescript": "^2.5.2"
+    "typescript": "^3.1.1"
   },
   "homepage": "https://github.com/Azure/ms-rest-nodeauth",
   "repository": {
