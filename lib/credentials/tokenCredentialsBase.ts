@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { Constants as MSRestConstants, WebResource } from "ms-rest-js";
-import { AzureEnvironment } from "ms-rest-azure-env";
+import { Environment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse } from "adal-node";
@@ -14,7 +14,7 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     public readonly clientId: string,
     public domain: string,
     public readonly tokenAudience?: TokenAudience,
-    public readonly environment = AzureEnvironment.Azure,
+    public readonly environment = Environment.AzureCloud,
     public tokenCache: any = new MemoryCache()) {
 
     if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {

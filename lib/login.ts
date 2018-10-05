@@ -4,7 +4,7 @@
 import * as adal from "adal-node";
 import * as fs from "fs";
 import * as msRest from "ms-rest-js";
-import { AzureEnvironment } from "ms-rest-azure-env";
+import { Environment } from "ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
 import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
@@ -46,7 +46,7 @@ export interface AzureTokenCredentialsOptions {
   /**
    * @property {AzureEnvironment} [environment] - The Azure environment to authenticate with.
    */
-  environment?: AzureEnvironment;
+  environment?: Environment;
   /**
    * @property {any} [tokenCache] - The token cache. Default value is MemoryCache from adal.
    */
@@ -134,7 +134,7 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
- * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
  * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
@@ -150,7 +150,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     options.domain = AuthConstants.AAD_COMMON_TENANT;
   }
   if (!options.environment) {
-    options.environment = AzureEnvironment.Azure;
+    options.environment = Environment.AzureCloud;
   }
   let creds: UserTokenCredentials;
   let tenantList: string[] = [];
@@ -180,7 +180,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".
- * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
  * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
@@ -190,7 +190,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
     options = {};
   }
   if (!options.environment) {
-    options.environment = AzureEnvironment.Azure;
+    options.environment = Environment.AzureCloud;
   }
   let creds: ApplicationTokenCredentials;
   let subscriptionList: LinkedSubscription[] = [];
@@ -305,10 +305,10 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
   const envFound: any = {
     name: ""
   };
-  const envNames = Object.keys(AzureEnvironment);
+  const envNames = Object.keys(Environment);
   for (let i = 0; i < envNames.length; i++) {
     const env = envNames[i];
-    const environmentObj = (AzureEnvironment as any)[env];
+    const environmentObj = (Environment as any)[env];
     if (environmentObj &&
       environmentObj.managementEndpointUrl &&
       foundManagementEndpointUrl(credsObj.managementEndpointUrl, environmentObj.managementEndpointUrl)) {
@@ -317,7 +317,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     }
   }
   if (envFound.name) {
-    optionsForSpSecret.environment = (AzureEnvironment as any)[envFound.name];
+    optionsForSpSecret.environment = (Environment as any)[envFound.name];
   } else {
     // create a new environment with provided info.
     const envParams: any = {
@@ -341,7 +341,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     if (!envParams.portalUrl) {
       envParams.portalUrl = "https://portal.azure.com";
     }
-    optionsForSpSecret.environment = AzureEnvironment.add(envParams);
+    optionsForSpSecret.environment = Environment.add(envParams);
   }
   return withServicePrincipalSecretWithAuthResponse(credsObj.clientId, credsObj.clientSecret, credsObj.tenantId, optionsForSpSecret);
 }
@@ -362,7 +362,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  *
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
  *
- * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
+ * @param {Environment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  *
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
@@ -383,7 +383,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
     options = {};
   }
   if (!options.environment) {
-    options.environment = AzureEnvironment.Azure;
+    options.environment = Environment.AzureCloud;
   }
 
   if (!options.domain) {
@@ -546,7 +546,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
  * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
- * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
+ * @param {Environment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {object} [options.language] The language code specifying how the message should be localized to. Default value "en-us".
  * @param {object|function} [options.userCodeResponseLogger] A logger that logs the user code response message required for interactive login. When
@@ -599,7 +599,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".
- * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
  *
@@ -652,7 +652,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
- * @param {AzureEnvironment} [options.environment] The azure environment to authenticate with.
+ * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
  *
