@@ -34,7 +34,7 @@
     "node_modules"
   ],
   "include": [
-    "./lib/*.ts",
-    "./test/*.ts"
+    "./lib/**/*.ts",
+    "./test/**/*.ts"
   ]
 }
