@@ -26,7 +26,17 @@
     "environment"
   ],
   "main": "./dist/lib/msRestNodeAuth.js",
-  "types": "./typings/lib/msRestNodeAuth.d.ts",
+  "types": "./dist/lib/msRestNodeAuth.d.ts",
+  "files": [
+    "dist/lib/**/*.js",
+    "dist/lib/**/*.js.map",
+    "dist/lib/**/*.d.ts",
+    "dist/lib/**/*.d.ts.map",
+    "lib/**/*.ts",
+    "LICENSE",
+    "README.md",
+    "tsconfig.json"
+  ],
   "dependencies": {
     "adal-node": "^0.1.22",
     "ms-rest-azure-env": "^1.0.0",

@@ -14,7 +14,7 @@
     "noUnusedParameters": true,
     "outDir": "dist",
     "declaration": true,
-    "declarationDir": "typings",
+    "declarationMap": true,
     "allowJs": false,
     "strict": true,
     "strictNullChecks": true,
