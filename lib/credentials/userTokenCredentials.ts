@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
-import { AzureEnvironment } from "ms-rest-azure-env";
+import { Environment } from "ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenResponse, ErrorResponse } from "adal-node";
 
@@ -23,7 +23,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
    * @param {string} password The password for the Organization Id account.
    * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
    * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
-   * @param {AzureEnvironment} [environment] The azure environment to authenticate with.
+   * @param {Environment} [environment] The azure environment to authenticate with.
    * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
    */
   public constructor(
@@ -32,7 +32,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
     username: string,
     password: string,
     tokenAudience?: TokenAudience,
-    environment?: AzureEnvironment,
+    environment?: Environment,
     tokenCache?: any) {
 
     if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
