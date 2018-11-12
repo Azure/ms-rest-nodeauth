@@ -5,7 +5,7 @@ All the authentication methods support callback as well as promise. IF they are 
 
 ### username/password based login
 ```typescript
-import * as msRestNodeAuth from "ms-rest-nodeauth";
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const username = process.env["AZURE_USERNAME"];
 const password = process.env["AZURE_PASSWORD"];
@@ -19,7 +19,7 @@ msRestNodeAuth.loginWithUsernamePasswordWithAuthResponse(username, password).the
 
 ### service-principal/secret based login
 ```typescript
-import * as msRestNodeAuth from "ms-rest-nodeauth";
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const clientId = process.env["CLIENT_ID"];
 const secret = process.env["APPLICATION_SECRET"];
@@ -34,7 +34,7 @@ msRestNodeAuth.loginWithServicePrincipalSecretWithAuthResponse(clientId, secret,
 
 ### interactive/device-code flow login
 ```typescript
-import * as msRestNodeAuth from "ms-rest-nodeauth";
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 msRestNodeAuth.interactiveLoginWithAuthResponse().then((authres) => {
   console.dir(authres, { depth: null })
