@@ -43,14 +43,15 @@
                 "variable-declaration": "onespace"
             }
         ],
-        "no-internal-module": true,
-        "no-trailing-whitespace": true,
-        "no-inferrable-types": [true],
-        "no-null-keyword": true,
-        "prefer-const": true,
-        "no-switch-case-fall-through": true,
-        "triple-equals": true,
         "jsdoc-format": true,
-        "max-classes-per-file": [true, 1]
+        "max-classes-per-file": [true, 1],
+        "no-inferrable-types": [true],
+        "no-internal-module": true,
+        "no-null-keyword": true,
+        "no-return-await": true,
+        "no-switch-case-fall-through": true,
+        "no-trailing-whitespace": true,
+        "prefer-const": true,
+        "triple-equals": true
     }
 }
