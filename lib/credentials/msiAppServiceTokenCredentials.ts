@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
-import { HttpOperationResponse, RequestPrepareOptions, WebResource } from "ms-rest-js";
+import { HttpOperationResponse, RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
 
 /**
  * @interface MSIAppServiceOptions Defines the optional parameters for authentication with MSI for AppService.

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
-import { Environment } from "ms-rest-azure-env";
+import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenResponse, ErrorResponse } from "adal-node";
 

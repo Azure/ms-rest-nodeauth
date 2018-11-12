@@ -9,7 +9,7 @@ import { MSIVmTokenCredentials } from "./msiVmTokenCredentials";
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { UserTokenCredentials } from "./userTokenCredentials";
 import { AuthenticationContext, TokenResponse, ErrorResponse } from "adal-node";
-import { Authenticator } from "ms-rest-js";
+import { Authenticator } from "@azure/ms-rest-js";
 
 export function createAuthenticator(credentials: MSITokenCredentials): Authenticator {
   const convertedCredentials = _convert(credentials);

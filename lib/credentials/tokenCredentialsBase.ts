@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { Constants as MSRestConstants, WebResource } from "ms-rest-js";
-import { Environment } from "ms-rest-azure-env";
+import { Constants as MSRestConstants, WebResource } from "@azure/ms-rest-js";
+import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse } from "adal-node";

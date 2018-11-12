@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as msRest from "ms-rest-js";
+import * as msRest from "@azure/ms-rest-js";
 import { TokenCredentialsBase } from "../credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "../credentials/applicationTokenCredentials";
 import { AuthConstants } from "../util/authConstants";
