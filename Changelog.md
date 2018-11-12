@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0 - 2018/11/12
+
+- Rename package to "@azure/ms-rest-nodeauth"
+
 ## 0.6.0 - 2018/09/27
 
 - Move KeyVaultCredentials into KeyVault SDK project

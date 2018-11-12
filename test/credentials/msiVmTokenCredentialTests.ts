@@ -3,7 +3,7 @@
 
 import { MSIVmTokenCredentials } from "../../lib/credentials/msiVmTokenCredentials";
 import { expect, assert } from "chai";
-import { HttpClient, HttpOperationResponse, WebResource, HttpHeaders } from "ms-rest-js";
+import { HttpClient, HttpOperationResponse, WebResource, HttpHeaders } from "@azure/ms-rest-js";
 
 describe("MSI Vm Authentication", () => {
 

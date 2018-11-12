@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { Constants, WebResource, HttpClient, DefaultHttpClient } from "ms-rest-js";
+import { Constants, WebResource, HttpClient, DefaultHttpClient } from "@azure/ms-rest-js";
 import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
 import { AuthConstants } from "../util/authConstants";
 

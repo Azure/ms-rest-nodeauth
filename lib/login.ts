@@ -3,8 +3,8 @@
 
 import * as adal from "adal-node";
 import * as fs from "fs";
-import * as msRest from "ms-rest-js";
-import { Environment } from "ms-rest-azure-env";
+import * as msRest from "@azure/ms-rest-js";
+import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
 import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";

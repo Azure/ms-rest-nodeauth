@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { ServiceClientCredentials } from "ms-rest-js";
+import { ServiceClientCredentials } from "@azure/ms-rest-js";
 
 export interface TokenResponse {
   readonly tokenType: string;

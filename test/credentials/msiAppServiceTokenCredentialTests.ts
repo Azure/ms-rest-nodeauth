@@ -4,7 +4,7 @@
 import * as msRestAzure from "../../lib/login";
 import { MSIAppServiceTokenCredentials } from "../../lib/credentials/msiAppServiceTokenCredentials";
 import { expect, assert } from "chai";
-import { WebResource, HttpHeaders, HttpClient, HttpOperationResponse } from "ms-rest-js";
+import { WebResource, HttpHeaders, HttpClient, HttpOperationResponse } from "@azure/ms-rest-js";
 
 describe("MSI App Service Authentication", function () {
 
