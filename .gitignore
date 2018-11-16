@@ -61,3 +61,6 @@ dist/
 typings/
 *.js
 *.js.map
+
+ # package-lock.json
+package-lock.json
