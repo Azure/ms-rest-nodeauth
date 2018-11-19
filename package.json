@@ -5,7 +5,7 @@
     "email": "azsdkteam@microsoft.com",
     "url": "https://github.com/Azure/ms-rest-nodeauth"
   },
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Azure Authentication library in node.js with type definitions.",
   "tags": [
     "node",
@@ -25,8 +25,8 @@
     "authentication",
     "environment"
   ],
-  "main": "./dist/msRestNodeAuth.js",
-  "types": "./dist/msRestNodeAuth.d.ts",
+  "main": "./dist/lib/msRestNodeAuth.js",
+  "types": "./dist/lib/msRestNodeAuth.d.ts",
   "files": [
     "dist/lib/**/*.js",
     "dist/lib/**/*.js.map",
