@@ -25,8 +25,8 @@
     "authentication",
     "environment"
   ],
-  "main": "./dist/msRestNodeAuth.js",
-  "types": "./dist/msRestNodeAuth.d.ts",
+  "main": "./dist/lib/msRestNodeAuth.js",
+  "types": "./dist/lib/msRestNodeAuth.d.ts",
   "files": [
     "dist/lib/**/*.js",
     "dist/lib/**/*.js.map",
