@@ -44,6 +44,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@ts-common/azure-js-dev-tools": "^0.4.9",
     "@types/chai": "^4.1.6",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.0",
@@ -73,6 +74,7 @@
     "prepack": "npm install && npm run build",
     "test": "npm run build && run-p test:tslint test:unit",
     "test:tslint": "tslint -p . -c tslint.json",
-    "test:unit": "mocha"
+    "test:unit": "mocha",
+    "check:packagejsonversion": "ts-node ./.scripts/checkPackageJsonVersion.ts"
   }
 }
