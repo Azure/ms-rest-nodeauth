@@ -22,4 +22,6 @@ export {
   withServicePrincipalSecretWithAuthResponse as loginWithServicePrincipalSecretWithAuthResponse,
   withAuthFile as loginWithAuthFile,
   withAuthFileWithAuthResponse as loginWithAuthFileWithAuthResponse,
+  loginWithVmMSI,
+  loginWithAppServiceMSI,
 } from "./login";
