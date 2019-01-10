@@ -35,7 +35,7 @@ describe("MSI Vm Authentication", () => {
     return httpClient;
   }
 
-  it("should get token from the virtual machine with MSI service running at default port", async () => {
+  it("should get token from the virtual machine with MSI service running at default endpoint", async () => {
     const mockResponse = {
       access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
       refresh_token: "",
@@ -59,7 +59,7 @@ describe("MSI Vm Authentication", () => {
     expect(response!.tokenType).to.exist;
   });
 
-  it("should get token from the virtual machine with MSI service running at custom port", async () => {
+  it("should get token from the virtual machine with MSI service running at custom endpoint", async () => {
     const mockResponse = {
       access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
       refresh_token: "",
