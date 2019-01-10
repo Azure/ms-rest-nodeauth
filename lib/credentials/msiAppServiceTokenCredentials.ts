@@ -10,13 +10,13 @@ import { HttpOperationResponse, RequestPrepareOptions, WebResource } from "@azur
 export interface MSIAppServiceOptions extends MSIOptions {
   /**
    * @property {string} [msiEndpoint] - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
+   * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
    * For example: `export MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
    */
   msiEndpoint?: string;
   /**
    * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment varaible `MSI_SECRET`.
+   * Either provide this parameter or set the environment variable `MSI_SECRET`.
    * For example: `export MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    */
   msiSecret?: string;
@@ -32,13 +32,13 @@ export interface MSIAppServiceOptions extends MSIOptions {
 export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   /**
    * @property {string} msiEndpoint - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
+   * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
    * For example: `MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
    */
   msiEndpoint: string;
   /**
    * @property {string} msiSecret - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment varaible `MSI_SECRET`.
+   * Either provide this parameter or set the environment variable `MSI_SECRET`.
    * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    */
   msiSecret: string;
@@ -50,10 +50,10 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   /**
    * Creates an instance of MSIAppServiceTokenCredentials.
    * @param {string} [options.msiEndpoint] - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
+   * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
    * For example: `MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
    * @param {string} [options.msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment varaible `MSI_SECRET`.
+   * Either provide this parameter or set the environment variable `MSI_SECRET`.
    * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
@@ -113,15 +113,14 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
 
   protected prepareRequestOptions(): WebResource {
     const endpoint = this.msiEndpoint.endsWith("/") ? this.msiEndpoint : `${this.msiEndpoint}/`;
-    const getUrl = `${endpoint}?resource=${this.resource}&api-version=${this.msiApiVersion}`;
     const resource = encodeURIComponent(this.resource);
+    const getUrl = `${endpoint}?resource=${resource}&api-version=${this.msiApiVersion}`;
     const reqOptions: RequestPrepareOptions = {
       url: getUrl,
       headers: {
         "secret": this.msiSecret
       },
-      body: `resource=${resource}`,
-      method: "POST"
+      method: "GET"
     };
 
     const webResource = new WebResource();

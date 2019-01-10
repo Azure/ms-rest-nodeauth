@@ -799,10 +799,10 @@ function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServic
  * Authenticate using the App Service MSI.
  * @param {object} [options] - Optional parameters
  * @param {string} [options.msiEndpoint] - The local URL from which your app can request tokens.
- * Either provide this parameter or set the environment varaible `MSI_ENDPOINT`.
+ * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
  * For example: `MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
  * @param {string} [options.msiSecret] - The secret used in communication between your code and the local MSI agent.
- * Either provide this parameter or set the environment varaible `MSI_SECRET`.
+ * Either provide this parameter or set the environment variable `MSI_SECRET`.
  * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
  * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
  * For example, it can be:
