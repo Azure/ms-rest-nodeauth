@@ -2,34 +2,43 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
-import { RequestPrepareOptions, HttpOperationResponse, WebResource } from "@azure/ms-rest-js";
+import { RequestPrepareOptions, HttpOperationResponse, WebResource, URLBuilder } from "@azure/ms-rest-js";
 
 /**
  * @interface MSIVmOptions Defines the optional parameters for authentication with MSI for Virtual Machine.
  */
 export interface MSIVmOptions extends MSIOptions {
   /**
-   * @prop {number} [port] - port on which the MSI service is running on the host VM. Default port is 50342
+   * @property {string} [msiEndpoint] - Azure Instance Metadata Service identity endpoint.
+   *
+   * The default and recommended endpoint is "http://169.254.169.254/metadata/identity/oauth2/token"
+   * per https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
    */
-  port?: number;
+  msiEndpoint?: string;
 }
 
 /**
  * @class MSIVmTokenCredentials
  */
 export class MSIVmTokenCredentials extends MSITokenCredentials {
-  port: number;
+  msiEndpoint: string;
 
   constructor(options?: MSIVmOptions) {
     if (!options) options = {};
     super(options);
-    if (!options.port) {
-      options.port = 50342; // default port where token service runs.
-    } else if (typeof options.port !== "number") {
-      throw new Error("port must be a number.");
+
+    if (!options.msiEndpoint) {
+      options.msiEndpoint = "http://169.254.169.254/metadata/identity/oauth2/token";
+    } else if (typeof options.msiEndpoint !== "string") {
+      throw new Error("msiEndpoint must be a string.");
     }
 
-    this.port = options.port;
+    const urlBuilder = URLBuilder.parse(options.msiEndpoint);
+    if (!urlBuilder.getScheme()) {
+      options.msiEndpoint = `http://${options.msiEndpoint}`;
+    }
+
+    this.msiEndpoint = options.msiEndpoint;
   }
 
   /**
@@ -56,7 +65,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
   protected prepareRequestOptions(): WebResource {
     const resource = encodeURIComponent(this.resource);
     const reqOptions: RequestPrepareOptions = {
-      url: `http://localhost:${this.port}/oauth2/token`,
+      url: this.msiEndpoint,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Metadata": "true"

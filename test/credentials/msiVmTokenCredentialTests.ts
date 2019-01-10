@@ -7,13 +7,13 @@ import { HttpClient, HttpOperationResponse, WebResource, HttpHeaders } from "@az
 
 describe("MSI Vm Authentication", () => {
 
-  function setupNockResponse(port?: number, request?: any, response?: any, error?: any): HttpClient {
-    if (!port) {
-      port = 50342;
+  function setupNockResponse(msiEndpoint?: string, request?: any, response?: any, error?: any): HttpClient {
+    if (!msiEndpoint) {
+      msiEndpoint = "http://169.254.169.254/metadata/identity/oauth2/token";
     }
 
     const isMatch = (actualRequest: WebResource, expectedResource: any) => {
-      return actualRequest.url === `http://localhost:${port}/oauth2/token` && actualRequest.body === `"resource=${encodeURIComponent(expectedResource.resource)}"`;
+      return actualRequest.url === msiEndpoint && actualRequest.body === `"resource=${encodeURIComponent(expectedResource.resource)}"`;
     };
 
     const httpClient = {
@@ -74,10 +74,10 @@ describe("MSI Vm Authentication", () => {
       "resource": "https://management.azure.com/"
     };
 
-    const customPort = 50341;
-    const httpClient = setupNockResponse(customPort, requestBodyToMatch, mockResponse);
+    const customMsiEndpoint = "http://localhost:50342/oauth2/token";
+    const httpClient = setupNockResponse(customMsiEndpoint, requestBodyToMatch, mockResponse);
 
-    const msiCredsObj = new MSIVmTokenCredentials({ port: customPort, httpClient: httpClient });
+    const msiCredsObj = new MSIVmTokenCredentials({ msiEndpoint: customMsiEndpoint, httpClient: httpClient });
     const response = await msiCredsObj.getToken();
     expect(response).to.exist;
     expect(response!.accessToken).to.exist;
@@ -132,5 +132,11 @@ describe("MSI Vm Authentication", () => {
       expect((err as any).error).to.equal(errorMessage);
       expect((err as any).error_description).to.equal(errorDescription);
     }
+  });
+
+  it("should append schema to schema-less custom MSI endpoint", async () => {
+    const customMsiEndpoint = "localhost:5987/path";
+    const msiCredsObj = new MSIVmTokenCredentials({ msiEndpoint: customMsiEndpoint });
+    expect(msiCredsObj.msiEndpoint).to.equal(`http://${customMsiEndpoint}`);
   });
 });
