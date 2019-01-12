@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
-import { RequestPrepareOptions, HttpOperationResponse, WebResource, URLBuilder } from "@azure/ms-rest-js";
+import { RequestPrepareOptions, HttpOperationResponse, WebResource, URLBuilder, HttpMethods, HttpHeaders } from "@azure/ms-rest-js";
 
 /**
  * @interface MSIVmOptions Defines the optional parameters for authentication with MSI for Virtual Machine.
@@ -15,6 +15,17 @@ export interface MSIVmOptions extends MSIOptions {
    * per https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
    */
   msiEndpoint?: string;
+
+  /**
+   * The API version parameter specifies the Azure Instance Metadata Service version.
+   * Use api-version=2018-02-01 (default) or higher.
+   */
+  apiVersion?: string;
+
+  /**
+   * HTTP method used to make HTTP request to MSI service. GET by default.
+   */
+  httpMethod?: HttpMethods;
 }
 
 /**
@@ -22,6 +33,8 @@ export interface MSIVmOptions extends MSIOptions {
  */
 export class MSIVmTokenCredentials extends MSITokenCredentials {
   msiEndpoint: string;
+  apiVersion: string;
+  httpMethod: HttpMethods;
 
   constructor(options?: MSIVmOptions) {
     if (!options) options = {};
@@ -38,7 +51,19 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
       options.msiEndpoint = `http://${options.msiEndpoint}`;
     }
 
+    if (!options.apiVersion) {
+      options.apiVersion = "2018-02-01";
+    } else if (typeof options.apiVersion !== "string") {
+      throw new Error("apiVersion must be a string.");
+    }
+
+    if (!options.httpMethod) {
+      options.httpMethod = "GET";
+    }
+
+    this.apiVersion = options.apiVersion;
     this.msiEndpoint = options.msiEndpoint;
+    this.httpMethod = options.httpMethod;
   }
 
   /**
@@ -63,15 +88,17 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
   }
 
   protected prepareRequestOptions(): WebResource {
-    const resource = encodeURIComponent(this.resource);
     const reqOptions: RequestPrepareOptions = {
       url: this.msiEndpoint,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "Metadata": "true"
       },
-      body: `resource=${resource}`,
-      method: "POST"
+      method: this.httpMethod,
+      queryParameters: {
+        "api-version": this.apiVersion,
+        "resource": encodeURIComponent(this.resource)
+      }
     };
 
     const webResource = new WebResource();
