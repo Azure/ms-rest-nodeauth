@@ -88,7 +88,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   }
 
   /**
-   * Prepares and sends a POST request to a service endpoint hosted on the Azure VM, which responds with the access token.
+   * Prepares and sends a GET request to a service endpoint indicated by the app service, which responds with the access token.
    * @return {Promise<MSITokenResponse>} Promise with the tokenResponse (tokenType and accessToken are the two important properties).
    */
   async getToken(): Promise<MSITokenResponse> {
