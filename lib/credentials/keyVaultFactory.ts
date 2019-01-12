@@ -29,7 +29,7 @@ function _convert(credentials: MSITokenCredentials): MSITokenCredentials {
   } else if (credentials instanceof MSIVmTokenCredentials) {
     return new MSIVmTokenCredentials({
       resource: credentials.resource,
-      port: credentials.port
+      msiEndpoint: credentials.msiEndpoint
     });
   } else if (credentials instanceof MSITokenCredentials) {
     throw new Error("MSI-credentials not one of: MSIVmTokenCredentials, MSIAppServiceTokenCredentials");
