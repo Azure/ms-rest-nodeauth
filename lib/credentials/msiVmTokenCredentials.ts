@@ -97,7 +97,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
       method: this.httpMethod,
       queryParameters: {
         "api-version": this.apiVersion,
-        "resource": encodeURIComponent(this.resource)
+        "resource": this.resource
       }
     };
 

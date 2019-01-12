@@ -7,18 +7,18 @@ import { HttpClient, HttpOperationResponse, WebResource, HttpHeaders } from "@az
 
 describe("MSI Vm Authentication", () => {
 
-  function setupNockResponse(msiEndpoint?: string, request?: any, response?: any, error?: any): HttpClient {
+  function setupNockResponse(msiEndpoint?: string, expectedRequestHeaders?: any, response?: any, error?: any): HttpClient {
     if (!msiEndpoint) {
       msiEndpoint = "http://169.254.169.254/metadata/identity/oauth2/token";
     }
 
-    const isMatch = (actualRequest: WebResource, expectedResource: any) => {
-      return actualRequest.url === msiEndpoint && actualRequest.body === `"resource=${encodeURIComponent(expectedResource.resource)}"`;
+    const isMatch = (actualRequest: WebResource, expectedRequestHeaders: any) => {
+      return actualRequest.url === `${msiEndpoint}?api-version=${expectedRequestHeaders.apiVersion}&resource=${encodeURIComponent(expectedRequestHeaders.resource)}`;
     };
 
     const httpClient = {
       sendRequest: async (req: WebResource): Promise<HttpOperationResponse> => {
-        if (error === undefined && isMatch(req, request)) {
+        if (error === undefined && isMatch(req, expectedRequestHeaders)) {
           const httpResponse: HttpOperationResponse = {
             request: req,
             status: 200,
@@ -46,11 +46,12 @@ describe("MSI Vm Authentication", () => {
       token_type: "Bearer"
     };
 
-    const requestBodyToMatch = {
+    const expectedQuery = {
+      "apiVersion": "2018-02-01",
       "resource": "https://management.azure.com/"
     };
 
-    const httpClient = setupNockResponse(undefined, requestBodyToMatch, mockResponse);
+    const httpClient = setupNockResponse(undefined, expectedQuery, mockResponse);
 
     const msiCredsObj = new MSIVmTokenCredentials({ httpClient: httpClient });
     const response = await msiCredsObj.getToken();
@@ -70,12 +71,12 @@ describe("MSI Vm Authentication", () => {
       token_type: "Bearer"
     };
 
-    const requestBodyToMatch = {
+    const expectedQuery = {
+      "apiVersion": "2018-02-01",
       "resource": "https://management.azure.com/"
     };
-
     const customMsiEndpoint = "http://localhost:50342/oauth2/token";
-    const httpClient = setupNockResponse(customMsiEndpoint, requestBodyToMatch, mockResponse);
+    const httpClient = setupNockResponse(customMsiEndpoint, expectedQuery, mockResponse);
 
     const msiCredsObj = new MSIVmTokenCredentials({ msiEndpoint: customMsiEndpoint, httpClient: httpClient });
     const response = await msiCredsObj.getToken();
@@ -138,5 +139,27 @@ describe("MSI Vm Authentication", () => {
     const customMsiEndpoint = "localhost:5987/path";
     const msiCredsObj = new MSIVmTokenCredentials({ msiEndpoint: customMsiEndpoint });
     expect(msiCredsObj.msiEndpoint).to.equal(`http://${customMsiEndpoint}`);
+  });
+
+  it("should set default api-version", async () => {
+    const msiCredsObj = new MSIVmTokenCredentials();
+    expect(msiCredsObj.apiVersion).to.equal("2018-02-01");
+  });
+
+  it("should set custom api-version", async () => {
+    const expectedApiVersion = "2020-02-20";
+    const msiCredsObj = new MSIVmTokenCredentials({ apiVersion: expectedApiVersion });
+    expect(msiCredsObj.apiVersion).to.equal(expectedApiVersion);
+  });
+
+  it("should set default HTTP method", async () => {
+    const msiCredsObj = new MSIVmTokenCredentials();
+    expect(msiCredsObj.httpMethod).to.equal("GET");
+  });
+
+  it("should set custom HTTP method", async () => {
+    const expectedHttpMethod = "PATCH";
+    const msiCredsObj = new MSIVmTokenCredentials({ httpMethod: expectedHttpMethod });
+    expect(msiCredsObj.httpMethod).to.equal("PATCH");
   });
 });
