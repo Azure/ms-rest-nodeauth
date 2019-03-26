@@ -563,8 +563,8 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  *             @resolve {DeviceTokenCredentials} The DeviceTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function interactive(): Promise<TokenCredentialsBase>;
-export function interactive(options: InteractiveLoginOptions): Promise<TokenCredentialsBase>;
+export function interactive(): Promise<DeviceTokenCredentials>;
+export function interactive(options: InteractiveLoginOptions): Promise<DeviceTokenCredentials>;
 export function interactive(options: InteractiveLoginOptions, callback: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function interactive(callback: any): void;
 export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
@@ -613,8 +613,8 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string): Promise<TokenCredentialsBase>;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions): Promise<TokenCredentialsBase>;
+export function withServicePrincipalSecret(clientId: string, secret: string, domain: string): Promise<ApplicationTokenCredentials>;
+export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, callback: any): void;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
@@ -666,8 +666,8 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  *             @resolve {UserTokenCredentials} The UserTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withUsernamePassword(username: string, password: string): Promise<TokenCredentialsBase>;
-export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions): Promise<TokenCredentialsBase>;
+export function withUsernamePassword(username: string, password: string): Promise<UserTokenCredentials>;
+export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions): Promise<UserTokenCredentials>;
 export function withUsernamePassword(username: string, password: string, callback: any): void;
 export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions, callback: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withUsernamePassword(username: string, password: string, options?: LoginWithUsernamePasswordOptions, callback?: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
