@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { ApplicationTokenCredentials } from "./applicationTokenCredentials";
+import { ApplicationTokenCertificateCredentials } from "./applicationTokenCertificateCredentials";
 import { DeviceTokenCredentials } from "./deviceTokenCredentials";
 import { MSIAppServiceTokenCredentials } from "./msiAppServiceTokenCredentials";
 import { MSITokenCredentials } from "./msiTokenCredentials";
@@ -62,6 +63,9 @@ function _createAuthenticatorMapper(credentials: MSITokenCredentials): Authentic
       if (credentials instanceof ApplicationTokenCredentials) {
         return context.acquireTokenWithClientCredentials(
           challenge.resource, credentials.clientId, credentials.secret, _formAuthorizationValue);
+      } else if (credentials instanceof ApplicationTokenCertificateCredentials) {
+        return context.acquireTokenWithClientCertificate(
+          challenge.resource, credentials.clientId, credentials.certificate, credentials.thumbprint, _formAuthorizationValue);
       } else if (credentials instanceof UserTokenCredentials) {
         return context.acquireTokenWithUsernamePassword(
           challenge.resource, credentials.username, credentials.password, credentials.clientId, _formAuthorizationValue);

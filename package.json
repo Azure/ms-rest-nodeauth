@@ -5,21 +5,10 @@
     "email": "azsdkteam@microsoft.com",
     "url": "https://github.com/Azure/ms-rest-nodeauth"
   },
-  "version": "0.9.3",
+  "version": "1.0.0",
   "description": "Azure Authentication library in node.js with type definitions.",
-  "tags": [
-    "node",
-    "isomorphic",
-    "browser",
-    "azure",
-    "autorest",
-    "authentication",
-    "environment"
-  ],
   "keywords": [
     "node",
-    "isomorphic",
-    "browser",
     "azure",
     "autorest",
     "authentication",
@@ -38,9 +27,9 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "@azure/ms-rest-azure-env": "^1.1.0",
-    "@azure/ms-rest-js": "^1.8.1",
-    "adal-node": "^0.1.22"
+    "@azure/ms-rest-azure-env": "^1.1.2",
+    "@azure/ms-rest-js": "^1.8.2",
+    "adal-node": "^0.1.28"
   },
   "license": "MIT",
   "devDependencies": {
