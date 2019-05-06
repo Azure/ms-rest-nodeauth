@@ -6,7 +6,7 @@ import { createHash } from "crypto";
 import { ApplicationTokenCredentialsBase } from "./applicationTokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
-import { TokenResponse, ErrorResponse } from "adal-node";
+import { TokenResponse, ErrorResponse, TokenCache } from "adal-node";
 import { AzureTokenCredentialsOptions } from "../login";
 
 export class ApplicationTokenCertificateCredentials extends ApplicationTokenCredentialsBase {
@@ -34,15 +34,15 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
     thumbprint: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: any
+    tokenCache?: TokenCache
   ) {
-    if (!Boolean(certificate) || typeof certificate.valueOf() !== "string") {
+    if (!certificate || typeof certificate.valueOf() !== "string") {
       throw new Error("certificate must be a non empty string.");
     }
-    if (!Boolean(thumbprint) || typeof thumbprint.valueOf() !== "string") {
+    if (!thumbprint || typeof thumbprint.valueOf() !== "string") {
       throw new Error("thumbprint must be a non empty string.");
     }
-    super(clientId, domain, tokenAudience, environment as any, tokenCache);
+    super(clientId, domain, tokenAudience, environment, tokenCache);
 
     this.certificate = certificate;
     this.thumbprint = thumbprint;
@@ -60,8 +60,8 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
       if (error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)) {
         return Promise.reject(error);
       }
-      const resource = this.getActiveDirectoryResourceId();
       return new Promise((resolve, reject) => {
+        const resource = this.getActiveDirectoryResourceId();
         this.authContext.acquireTokenWithClientCertificate(
           resource,
           this.clientId,
@@ -102,19 +102,21 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
     options: AzureTokenCredentialsOptions
   ): ApplicationTokenCertificateCredentials {
     if (
-      !Boolean(certificateStringOrFilePath) ||
+      !certificateStringOrFilePath ||
       typeof certificateStringOrFilePath.valueOf() !== "string"
     ) {
       throw new Error(
         "'certificateStringOrFilePath' must be a non empty string."
       );
     }
-    let certificate: string = certificateStringOrFilePath;
     if (!certificateStringOrFilePath.startsWith("-----BEGIN")) {
-      certificate = readFileSync(certificateStringOrFilePath, "utf8");
+      certificateStringOrFilePath = readFileSync(
+        certificateStringOrFilePath,
+        "utf8"
+      );
     }
-    const CERT_PATT = /(-+BEGIN CERTIFICATE-+)(\n\r?|\r\n?)([A-Za-z0-9\+\/\n\r]+\=*)(\n\r?|\r\n?)(-+END CERTIFICATE-+)/;
-    const matchCert = certificate.match(CERT_PATT);
+    const certificatePattern = /(-+BEGIN CERTIFICATE-+)(\n\r?|\r\n?)([A-Za-z0-9\+\/\n\r]+\=*)(\n\r?|\r\n?)(-+END CERTIFICATE-+)/;
+    const matchCert = certificateStringOrFilePath.match(certificatePattern);
     const rawCertificate = matchCert ? matchCert[3] : "";
     if (!rawCertificate) {
       throw new Error(
@@ -127,7 +129,7 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
     return new ApplicationTokenCertificateCredentials(
       clientId,
       domain,
-      certificate,
+      certificateStringOrFilePath,
       thumbprint,
       options.tokenAudience,
       options.environment,

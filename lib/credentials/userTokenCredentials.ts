@@ -4,7 +4,7 @@
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
-import { TokenResponse, ErrorResponse } from "adal-node";
+import { TokenResponse, ErrorResponse, TokenCache } from "adal-node";
 
 export class UserTokenCredentials extends TokenCredentialsBase {
 
@@ -33,25 +33,25 @@ export class UserTokenCredentials extends TokenCredentialsBase {
     password: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: any) {
+    tokenCache?: TokenCache) {
 
-    if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
+    if (!clientId || typeof clientId.valueOf() !== "string") {
       throw new Error("clientId must be a non empty string.");
     }
 
-    if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+    if (!domain || typeof domain.valueOf() !== "string") {
       throw new Error("domain must be a non empty string.");
     }
 
-    if (!Boolean(username) || typeof username.valueOf() !== "string") {
+    if (!username || typeof username.valueOf() !== "string") {
       throw new Error("username must be a non empty string.");
     }
 
-    if (!Boolean(password) || typeof password.valueOf() !== "string") {
+    if (!password || typeof password.valueOf() !== "string") {
       throw new Error("password must be a non empty string.");
     }
 
-    super(clientId, domain, tokenAudience, environment as any, tokenCache);
+    super(clientId, domain, tokenAudience, environment, tokenCache);
 
     this.username = username;
     this.password = password;

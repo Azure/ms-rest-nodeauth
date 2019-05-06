@@ -5,7 +5,7 @@ import { Constants as MSRestConstants, WebResource } from "@azure/ms-rest-js";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
-import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse } from "adal-node";
+import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
   public readonly authContext: AuthenticationContext;
@@ -14,14 +14,14 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     public readonly clientId: string,
     public domain: string,
     public readonly tokenAudience?: TokenAudience,
-    public readonly environment = Environment.AzureCloud,
-    public tokenCache: any = new MemoryCache()) {
+    public readonly environment: Environment = Environment.AzureCloud,
+    public tokenCache: TokenCache = new MemoryCache()) {
 
-    if (!Boolean(clientId) || typeof clientId.valueOf() !== "string") {
+    if (!clientId || typeof clientId.valueOf() !== "string") {
       throw new Error("clientId must be a non empty string.");
     }
 
-    if (!Boolean(domain) || typeof domain.valueOf() !== "string") {
+    if (!domain || typeof domain.valueOf() !== "string") {
       throw new Error("domain must be a non empty string.");
     }
 
@@ -39,9 +39,9 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     if (this.tokenAudience) {
       resource = this.tokenAudience;
       if (this.tokenAudience.toLowerCase() === "graph") {
-        resource = this.environment.activeDirectoryGraphResourceId;
+        resource = this.environment.activeDirectoryGraphResourceId as string;
       } else if (this.tokenAudience.toLowerCase() === "batch") {
-        resource = this.environment.batchResourceId;
+        resource = this.environment.batchResourceId as string;
       }
     }
     return resource;

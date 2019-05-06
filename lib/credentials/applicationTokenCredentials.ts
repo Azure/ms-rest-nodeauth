@@ -4,7 +4,7 @@
 import { ApplicationTokenCredentialsBase } from "./applicationTokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
-import { TokenResponse, ErrorResponse } from "adal-node";
+import { TokenResponse, ErrorResponse, TokenCache } from "adal-node";
 
 export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase {
   readonly secret: string;
@@ -28,12 +28,12 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
     secret: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: any
+    tokenCache?: TokenCache
   ) {
-    if (!Boolean(secret) || typeof secret.valueOf() !== "string") {
+    if (!secret || typeof secret.valueOf() !== "string") {
       throw new Error("secret must be a non empty string.");
     }
-    super(clientId, domain, tokenAudience, environment as any, tokenCache);
+    super(clientId, domain, tokenAudience, environment, tokenCache);
 
     this.secret = secret;
   }

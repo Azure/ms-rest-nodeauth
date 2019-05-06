@@ -49,9 +49,9 @@ export interface AzureTokenCredentialsOptions {
    */
   environment?: Environment;
   /**
-   * @property {any} [tokenCache] - The token cache. Default value is MemoryCache from adal.
+   * @property {TokenCache} [tokenCache] - The token cache. Default value is MemoryCache from adal.
    */
-  tokenCache?: any;
+  tokenCache?: adal.TokenCache;
 }
 
 /**
@@ -461,13 +461,13 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   interactiveOptions.language = options.language;
   interactiveOptions.userCodeResponseLogger = options.userCodeResponseLogger;
   const authorityUrl: string = interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
-  const authContext: any = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
+  const authContext = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
   interactiveOptions.context = authContext;
   let userCodeResponse: any;
   let creds: DeviceTokenCredentials;
 
   function tryAcquireToken(interactiveOptions: InteractiveLoginOptions, resolve: any, reject: any) {
-    authContext.acquireUserCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, interactiveOptions.language, (err: any, userCodeRes: any) => {
+    authContext.acquireUserCode(interactiveOptions.tokenAudience!, interactiveOptions.clientId!, interactiveOptions.language!, (err: any, userCodeRes: adal.UserCodeInfo) => {
       if (err) {
         if (err.error === "authorization_pending") {
           setTimeout(() => {

@@ -4,6 +4,7 @@
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
+import { TokenCache, TokenResponse } from "adal-node";
 
 export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBase {
   /**
@@ -23,12 +24,12 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
     domain: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: any
+    tokenCache?: TokenCache
   ) {
-    super(clientId, domain, tokenAudience, environment as any, tokenCache);
+    super(clientId, domain, tokenAudience, environment, tokenCache);
   }
 
-  protected async getTokenFromCache(): Promise<any> {
+  protected async getTokenFromCache(): Promise<TokenResponse> {
     const self = this;
 
     // a thin wrapper over the base implementation. try get token from cache, additionaly clean up cache if required.
@@ -45,7 +46,7 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
       if (status.result) {
         return Promise.reject(error);
       }
-      const msg =
+      const message =
         status && status.details && status.details.message
           ? status.details.message
           : status.details;
@@ -54,7 +55,7 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
           AuthConstants.SDK_INTERNAL_ERROR +
             " : " +
             "critical failure while removing expired token for service principal from token cache. " +
-            msg
+            message
         )
       );
     }
