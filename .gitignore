@@ -62,5 +62,10 @@ typings/
 *.js
 *.js.map
 
- # package-lock.json
+# package-lock.json
 package-lock.json
+
+# additional metadata
+authfileWithCert.json
+authfileWithSecret.json
+spcert.pem
