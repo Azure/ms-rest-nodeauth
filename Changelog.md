@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.1 - 2019/05/06
+- Update README.md
+- Fix repository url in package.json
 
 ## 1.0.0 - 2019/05/06
 - Added support for ServicePrincipal login with certificates.
