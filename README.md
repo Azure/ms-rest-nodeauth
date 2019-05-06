@@ -92,10 +92,12 @@ If you want to create the sp for a different cloud/environment then please execu
 1. az cloud list
 2. az cloud set –n <name of the environment>
 3. az ad sp create-for-rbac --sdk-auth > auth.json // create sp with **secret**.
-          **OR** 
+  
+          OR
+          
    az ad sp create-for-rbac --create-cert --sdk-auth > auth.json // create sp with **certificate**.
 If the service principal is already created then login with service principal info:
-4. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
+4. az login --service-principal -u `<clientId>` -p `<clientSecret>` -t `<tenantId>`
 5. az account show --sdk-auth > auth.json
 
 ```typescript
