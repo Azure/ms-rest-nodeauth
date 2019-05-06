@@ -1,8 +1,38 @@
 # Changelog
 
+## 1.0.0 - 2019/05/06
+- Added support for ServicePrincipal login with certificates.
+- Updated dependencies to their latest versions.
+
+## 0.9.3 - 2019/04/04
+- Updated `@azure/ms-rest-js` to the latest version `^1.8.1`.
+
+## 0.9.2 - 2019/03/26
+- Updated the return types  for calls using interactive login, user name/ password and service principal to return the right types with promise flavor methods.
+
+## 0.9.1 - 2019/01/15
+- Fixed issues in AppService MSI login.
+- Improved documentation of `MSIAppServiceTokenCredentials.getToken()`
+## 0.9.0 - 2019/01/11
+- Added support for custom MSI endpoint.
+
+## 0.8.4 - 2019/01/09
+- Exported MSI login methods from the package.
+
+## 0.8.3 - 2018/12/18
+- Added a check for verifying the package.json version
+- Added azure pipelines for CI.
+
+## 0.8.2 - 2018/11/19
+- Fixed incorrect path in the "main" node of package.json.
+
+## 0.8.1 - 2018/11/19
+- Added owners and issue template.
+- Improved internal structure of the package.
+
 ## 0.8.0 - 2018/11/12
 
-- Rename package to "@azure/ms-rest-nodeauth"
+- Renamed package to "@azure/ms-rest-nodeauth"
 
 ## 0.6.0 - 2018/09/27
 

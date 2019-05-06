@@ -3,7 +3,7 @@
 
 import * as msRest from "@azure/ms-rest-js";
 import { TokenCredentialsBase } from "../credentials/tokenCredentialsBase";
-import { ApplicationTokenCredentials } from "../credentials/applicationTokenCredentials";
+import { ApplicationTokenCredentialsBase } from "../credentials/applicationTokenCredentialsBase";
 import { AuthConstants } from "../util/authConstants";
 
 /**
@@ -107,7 +107,7 @@ export async function getSubscriptionsFromTenants(credentials: TokenCredentialsB
   let userType = "user";
   let username: string;
   const originalDomain = credentials.domain;
-  if (credentials instanceof ApplicationTokenCredentials) {
+  if (credentials instanceof ApplicationTokenCredentialsBase) {
     userType = "servicePrincipal";
     username = credentials.clientId;
   } else {

@@ -4,7 +4,7 @@
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
-import { TokenResponse } from "adal-node";
+import { TokenResponse, TokenCache } from "adal-node";
 
 export class DeviceTokenCredentials extends TokenCredentialsBase {
 
@@ -34,7 +34,7 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
     username?: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: any) {
+    tokenCache?: TokenCache) {
 
     if (!username) {
       username = "user@example.com";
@@ -48,7 +48,7 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
       clientId = AuthConstants.DEFAULT_ADAL_CLIENT_ID;
     }
 
-    super(clientId, domain, tokenAudience, environment as any, tokenCache);
+    super(clientId, domain, tokenAudience, environment, tokenCache);
 
     this.username = username;
   }

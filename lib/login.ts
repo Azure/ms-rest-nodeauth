@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as adal from "adal-node";
-import * as fs from "fs";
 import * as msRest from "@azure/ms-rest-js";
+import { readFileSync } from "fs";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
+import { ApplicationTokenCertificateCredentials } from "./credentials/applicationTokenCertificateCredentials";
 import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
 import { AuthConstants, TokenAudience } from "./util/authConstants";
@@ -48,9 +49,9 @@ export interface AzureTokenCredentialsOptions {
    */
   environment?: Environment;
   /**
-   * @property {any} [tokenCache] - The token cache. Default value is MemoryCache from adal.
+   * @property {TokenCache} [tokenCache] - The token cache. Default value is MemoryCache from adal.
    */
-  tokenCache?: any;
+  tokenCache?: adal.TokenCache;
 }
 
 /**
@@ -179,7 +180,8 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
  * @param {string} secret The application secret for the service principal.
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
@@ -207,6 +209,46 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
   return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
 }
 
+/**
+ * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ *
+ * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} certificateStringOrFilePath A PEM encoded certificate and private key OR an absolute filepath to the .pem file containing that information. For example:
+ * - CertificateString: "-----BEGIN PRIVATE KEY-----\n<xxxxx>\n-----END PRIVATE KEY-----\n-----BEGIN CERTIFICATE-----\n<yyyyy>\n-----END CERTIFICATE-----\n"
+ * - CertificateFilePath: **Absolute** file path of the .pem file.
+ * @param {string} domain The domain or tenant id containing this application.
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * @param {Environment} [options.environment] The azure environment to authenticate with.
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ *
+ * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ */
+export async function withServicePrincipalCertificateWithAuthResponse(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse> {
+  if (!options) {
+    options = {};
+  }
+  if (!options.environment) {
+    options.environment = Environment.AzureCloud;
+  }
+  let creds: ApplicationTokenCertificateCredentials;
+  let subscriptionList: LinkedSubscription[] = [];
+  try {
+    creds = ApplicationTokenCertificateCredentials.create(clientId, certificateStringOrFilePath, domain, options);
+    await creds.getToken();
+    // We only need to get the subscriptionList if the tokenAudience is for a management client.
+    if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
+      subscriptionList = await getSubscriptionsFromTenants(creds, [domain]);
+    }
+  } catch (err) {
+    return Promise.reject(err);
+  }
+  return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
+}
+
 function validateAuthFileContent(credsObj: any, filePath: string) {
   if (!credsObj) {
     throw new Error("Please provide a credsObj to validate.");
@@ -217,8 +259,8 @@ function validateAuthFileContent(credsObj: any, filePath: string) {
   if (!credsObj.clientId) {
     throw new Error(`"clientId" is missing from the auth file: ${filePath}.`);
   }
-  if (!credsObj.clientSecret) {
-    throw new Error(`"clientSecret" is missing from the auth file: ${filePath}.`);
+  if (!credsObj.clientSecret && !credsObj.clientCertificate) {
+    throw new Error(`Either "clientSecret" or "clientCertificate" must be present in the auth file: ${filePath}.`);
   }
   if (!credsObj.subscriptionId) {
     throw new Error(`"subscriptionId" is missing from the auth file: ${filePath}.`);
@@ -259,11 +301,12 @@ function foundManagementEndpointUrl(authFileUrl: string, envUrl: string): boolea
  * If you want to create the sp for a different cloud/environment then please execute:
  * 1. az cloud list
  * 2. az cloud set –n <name of the environment>
- * 3. az ad sp create-for-rbac --sdk-auth > auth.json
- *
+ * 3. az ad sp create-for-rbac --sdk-auth > auth.json // create sp with secret
+ *  **OR**
+ * 3. az ad sp create-for-rbac --create-cert --sdk-auth > auth.json // create sp with certificate
  * If the service principal is already created then login with service principal info:
- * 3. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
- * 4. az account show --sdk-auth > auth.json
+ * 4. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
+ * 5. az account show --sdk-auth > auth.json
  *
  * Authenticates using the service principal information provided in the auth file. This method will set
  * the subscriptionId from the auth file to the user provided environment variable in the options
@@ -287,9 +330,9 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     return Promise.reject(new Error(msg));
   }
   let content: string, credsObj: any = {};
-  const optionsForSpSecret: any = {};
+  const optionsForSp: any = {};
   try {
-    content = fs.readFileSync(filePath, { encoding: "utf8" });
+    content = readFileSync(filePath, { encoding: "utf8" });
     credsObj = JSON.parse(content);
     validateAuthFileContent(credsObj, filePath);
   } catch (err) {
@@ -317,7 +360,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     }
   }
   if (envFound.name) {
-    optionsForSpSecret.environment = (Environment as any)[envFound.name];
+    optionsForSp.environment = (Environment as any)[envFound.name];
   } else {
     // create a new environment with provided info.
     const envParams: any = {
@@ -327,7 +370,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     const keys = Object.keys(credsObj);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      if (key.match(/^(clientId|clientSecret|subscriptionId|tenantId)$/ig) === null) {
+      if (key.match(/^(clientId|clientSecret|clientCertificate|subscriptionId|tenantId)$/ig) === null) {
         if (key === "activeDirectoryEndpointUrl" && !key.endsWith("/")) {
           envParams[key] = credsObj[key] + "/";
         } else {
@@ -341,9 +384,13 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     if (!envParams.portalUrl) {
       envParams.portalUrl = "https://portal.azure.com";
     }
-    optionsForSpSecret.environment = Environment.add(envParams);
+    optionsForSp.environment = Environment.add(envParams);
   }
-  return withServicePrincipalSecretWithAuthResponse(credsObj.clientId, credsObj.clientSecret, credsObj.tenantId, optionsForSpSecret);
+  if (credsObj.clientSecret) {
+    return withServicePrincipalSecretWithAuthResponse(credsObj.clientId, credsObj.clientSecret, credsObj.tenantId, optionsForSp);
+  }
+
+  return withServicePrincipalCertificateWithAuthResponse(credsObj.clientId, credsObj.clientCertificate, credsObj.tenantId, optionsForSp);
 }
 
 
@@ -414,13 +461,13 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   interactiveOptions.language = options.language;
   interactiveOptions.userCodeResponseLogger = options.userCodeResponseLogger;
   const authorityUrl: string = interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
-  const authContext: any = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
+  const authContext = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
   interactiveOptions.context = authContext;
   let userCodeResponse: any;
   let creds: DeviceTokenCredentials;
 
   function tryAcquireToken(interactiveOptions: InteractiveLoginOptions, resolve: any, reject: any) {
-    authContext.acquireUserCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, interactiveOptions.language, (err: any, userCodeRes: any) => {
+    authContext.acquireUserCode(interactiveOptions.tokenAudience!, interactiveOptions.clientId!, interactiveOptions.language!, (err: any, userCodeRes: adal.UserCodeInfo) => {
       if (err) {
         if (err.error === "authorization_pending") {
           setTimeout(() => {
@@ -482,11 +529,12 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
  * If you want to create the sp for a different cloud/environment then please execute:
  * 1. az cloud list
  * 2. az cloud set –n <name of the environment>
- * 3. az ad sp create-for-rbac --sdk-auth > auth.json
- *
+ * 3. az ad sp create-for-rbac --sdk-auth > auth.json // create sp with secret
+ *  **OR**
+ * 3. az ad sp create-for-rbac --create-cert --sdk-auth > auth.json // create sp with certificate
  * If the service principal is already created then login with service principal info:
- * 3. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
- * 4. az account show --sdk-auth > auth.json
+ * 4. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
+ * 5. az account show --sdk-auth > auth.json
  *
  * Authenticates using the service principal information provided in the auth file. This method will set
  * the subscriptionId from the auth file to the user provided environment variable in the options
@@ -598,7 +646,8 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  * @param {string} secret The application secret for the service principal.
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
- * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
@@ -631,6 +680,59 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
     });
   } else {
     msRest.promiseToCallback(withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options))((err: Error, authRes: AuthResponse) => {
+      if (err) {
+        return cb(err);
+      }
+      return cb(undefined, authRes.credentials, authRes.subscriptions);
+    });
+  }
+}
+
+/**
+ * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ *
+ * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
+ * for an example.
+ * @param {string} certificateStringOrFilePath A PEM encoded certificate and private key OR an absolute filepath to the .pem file containing that information. For example:
+ * - CertificateString: "-----BEGIN PRIVATE KEY-----\n<xxxxx>\n-----END PRIVATE KEY-----\n-----BEGIN CERTIFICATE-----\n<yyyyy>\n-----END CERTIFICATE-----\n"
+ * - CertificateFilePath: **Absolute** file path of the .pem file.
+ * @param {string} domain The domain or tenant id containing this application.
+ * @param {object} [options] Object representing optional parameters.
+ * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * @param {Environment} [options.environment] The azure environment to authenticate with.
+ * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
+ * @param {function} [optionalCallback] The optional callback.
+ *
+ * @returns {function | Promise} If a callback was passed as the last parameter then it returns the callback else returns a Promise.
+ *
+ *    {function} optionalCallback(err, credentials)
+ *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
+ *                 {ApplicationTokenCertificateCredentials} [credentials]  - The ApplicationTokenCertificateCredentials object.
+ *                 {Array}                [subscriptions]       - List of associated subscriptions across all the applicable tenants.
+ *    {Promise} A promise is returned.
+ *             @resolve {ApplicationTokenCertificateCredentials} The ApplicationTokenCertificateCredentials object.
+ *             @reject {Error} - The error object.
+ */
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string): Promise<ApplicationTokenCertificateCredentials>;
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, callback: any): void;
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+  if (!callback && typeof options === "function") {
+    callback = options;
+    options = undefined;
+  }
+  const cb = callback as Function;
+  if (!callback) {
+    return withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options).then((authRes) => {
+      return Promise.resolve(authRes.credentials);
+    }).catch((err) => {
+      return Promise.reject(err);
+    });
+  } else {
+    msRest.promiseToCallback(withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options))((err: Error, authRes: AuthResponse) => {
       if (err) {
         return cb(err);
       }

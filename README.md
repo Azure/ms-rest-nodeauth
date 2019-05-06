@@ -19,7 +19,7 @@ msRestNodeAuth.loginWithUsernamePasswordWithAuthResponse(username, password).the
 });
 ```
 
-### service-principal/secret based login
+### service-principal and secret based login
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
@@ -28,6 +28,45 @@ const secret = process.env["APPLICATION_SECRET"];
 const tenantId = process.env["DOMAIN"];
 
 msRestNodeAuth.loginWithServicePrincipalSecretWithAuthResponse(clientId, secret, tenantId).then((authres) => {
+  console.dir(authres, { depth: null })
+}).catch((err) => {
+  console.log(err);
+});
+```
+
+#### service-principal and certificate based login by providing an ABSOLUTE file path to the .pem file
+```typescript
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
+
+const clientId = process.env["CLIENT_ID"];
+const tenantId = process.env["DOMAIN"];
+
+msRestNodeAuth.loginWithServicePrincipalCertificateWithAuthResponse(clientId, "/Users/user1/foo.pem", tenantId).then((authres) => {
+  console.dir(authres, { depth: null })
+}).catch((err) => {
+  console.log(err);
+});
+```
+
+#### service-principal and certificate based login by providing the certificate and private key (contents of the .pem file)
+```typescript
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
+
+const clientId = process.env["CLIENT_ID"];
+const tenantId = process.env["DOMAIN"];
+const certificate = 
+`
+-----BEGIN PRIVATE KEY-----
+xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx
+-----END PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+yyyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyyy
+-----END CERTIFICATE-----
+`;
+
+msRestNodeAuth.loginWithServicePrincipalCertificateWithAuthResponse(clientId, certificate, tenantId).then((authres) => {
   console.dir(authres, { depth: null })
 }).catch((err) => {
   console.log(err);
@@ -46,6 +85,19 @@ msRestNodeAuth.interactiveLoginWithAuthResponse().then((authres) => {
 ```
 
 ### service-principal authentication from auth file on disk
+Before using this method please install az cli from https://github.com/Azure/azure-cli/releases.
+Then execute `az ad sp create-for-rbac --sdk-auth > ${yourFilename.json}`.
+
+If you want to create the sp for a different cloud/environment then please execute:
+1. az cloud list
+2. az cloud set –n <name of the environment>
+3. az ad sp create-for-rbac --sdk-auth > auth.json // create sp with **secret**.
+          **OR** 
+   az ad sp create-for-rbac --create-cert --sdk-auth > auth.json // create sp with **certificate**.
+If the service principal is already created then login with service principal info:
+4. az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
+5. az account show --sdk-auth > auth.json
+
 ```typescript
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 

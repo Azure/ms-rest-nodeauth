@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 export { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
+export { ApplicationTokenCertificateCredentials } from "./credentials/applicationTokenCertificateCredentials";
 export { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 export { createAuthenticator } from "./credentials/keyVaultFactory";
 export { MSIAppServiceOptions, MSIAppServiceTokenCredentials } from "./credentials/msiAppServiceTokenCredentials";
@@ -24,4 +25,6 @@ export {
   withAuthFileWithAuthResponse as loginWithAuthFileWithAuthResponse,
   loginWithVmMSI,
   loginWithAppServiceMSI,
+  withServicePrincipalCertificate as loginWithServicePrincipalCertificate,
+  withServicePrincipalCertificateWithAuthResponse as loginWithServicePrincipalCertificateWithAuthResponse
 } from "./login";
