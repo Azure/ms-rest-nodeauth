@@ -13,6 +13,11 @@ export { UserTokenCredentials } from "./credentials/userTokenCredentials";
 export { AuthConstants, TokenAudience } from "./util/authConstants";
 export { LinkedSubscription, LinkedUser, UserType } from "./subscriptionManagement/subscriptionUtils";
 export {
+  AzureCliCredentials,
+  CliAccessToken,
+  ListAllSubscriptionOptions
+} from "./credentials/azureCliCredentials";
+export {
   AuthResponse, LoginWithAuthFileOptions, InteractiveLoginOptions,
   AzureTokenCredentialsOptions, LoginWithUsernamePasswordOptions,
   interactive as interactiveLogin,

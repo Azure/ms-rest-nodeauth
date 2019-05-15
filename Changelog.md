@@ -1,4 +1,10 @@
 # Changelog
+## 1.1.0 - 2019/05/16
+- Added support to get credentials from `Azure CLI`, provided the user is already logged in via CLI.
+These credentials can be used by the SDK to make requests to Azure. Fixes,
+- [azure-sdk-for-js/issues/2810](https://github.com/Azure/azure-sdk-for-js/issues/2810)
+- [azure-sdk-for-node/issues/2284](https://github.com/Azure/azure-sdk-for-node/issues/2284).
+
 ## 1.0.1 - 2019/05/06
 - Update README.md
 - Fix repository url in package.json
