@@ -2,8 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { Constants as MSRestConstants, WebResource } from "@azure/ms-rest-js";
-import { TokenClientCredentials } from "./tokenClientCredentials";
-import { TokenResponse } from "adal-node";
+import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
 import { LinkedSubscription } from "../subscriptionManagement/subscriptionUtils";
 import { execAz } from "../login";
 
@@ -64,7 +63,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * The number of seconds within which it is good to renew the token.
    *  A constant set to 270 seconds (4.5 minutes).
    */
-  readonly tokenRenewalMarginInSeconds: number = 270;
+  private readonly _tokenRenewalMarginInSeconds: number = 270;
 
   constructor(subscriptinInfo: LinkedSubscription, tokenInfo: CliAccessToken) {
     this.subscriptionInfo = subscriptinInfo;
@@ -72,20 +71,12 @@ export class AzureCliCredentials implements TokenClientCredentials {
   }
 
   /**
-   * Tries to get the token from cache initially. If that is unsuccessful then it tries
-   * to get the token from ADAL.
+   * Tries to get the new token from Azure CLI, if the token has expired or the subscription has
+   * changed else uses the cached accessToken.
    * @return The tokenResponse (tokenType and accessToken are the two important properties).
    */
   public async getToken(): Promise<TokenResponse> {
-    const now = Math.floor(Date.now() / 1000);
-    // we refresh the token if the user changed the subscription against which they want to work
-    // or if the token is in the renewal window (close to getting expired).
-    if (
-      !this.tokenInfo.expiresOn ||
-      this.subscriptionInfo.id !== this.tokenInfo.subscription ||
-      Math.floor(this.tokenInfo.expiresOn.getTime() / 1000) - now <
-      this.tokenRenewalMarginInSeconds
-    ) {
+    if (this._hasTokenExpired() || this._hasSubscriptionChanged()) {
       try {
         // refresh the access token
         this.tokenInfo = await AzureCliCredentials.getAccessToken(
@@ -98,9 +89,12 @@ export class AzureCliCredentials implements TokenClientCredentials {
         );
       }
     }
-    const result: any = {};
-    result.accessToken = this.tokenInfo.accessToken;
-    result.tokenType = this.tokenInfo.tokenType;
+    const result: TokenResponse = {
+      accessToken: this.tokenInfo.accessToken,
+      tokenType: this.tokenInfo.tokenType,
+      expiresOn: this.tokenInfo.expiresOn,
+      tenantId: this.tokenInfo.tenant
+    };
     return result;
   }
 
@@ -115,6 +109,21 @@ export class AzureCliCredentials implements TokenClientCredentials {
       `${tokenResponse.tokenType} ${tokenResponse.accessToken}`
     );
     return Promise.resolve(webResource);
+  }
+
+  private _hasTokenExpired(): boolean {
+    let result = true;
+    const now = Math.floor(Date.now() / 1000);
+    if (this.tokenInfo.expiresOn &&
+      this.tokenInfo.expiresOn instanceof Date &&
+      Math.floor(this.tokenInfo.expiresOn.getTime() / 1000) - now > this._tokenRenewalMarginInSeconds) {
+      result = false;
+    }
+    return result;
+  }
+
+  private _hasSubscriptionChanged(): boolean {
+    return this.subscriptionInfo.id !== this.tokenInfo.subscription;
   }
 
   /**
@@ -173,8 +182,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * Returns a list of all the subscriptions from Azure CLI.
    * @param options Optional parameters that can be provided while listing all the subcriptions.
    */
-  static async listAllSubscriptions(options?: ListAllSubscriptionOptions): Promise<LinkedSubscription[]> {
-    if (!options) options = {};
+  static async listAllSubscriptions(options: ListAllSubscriptionOptions = {}): Promise<LinkedSubscription[]> {
     let subscriptionList: any[] = [];
     try {
       let cmd = "account list";

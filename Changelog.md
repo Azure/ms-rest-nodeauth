@@ -1,4 +1,7 @@
 # Changelog
+## 1.1.1 - 2019/05/16
+- Minor updates
+
 ## 1.1.0 - 2019/05/16
 - Added support to get credentials from `Azure CLI`, provided the user is already logged in via CLI.
 These credentials can be used by the SDK to make requests to Azure. Fixes,
