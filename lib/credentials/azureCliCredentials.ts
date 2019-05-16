@@ -8,7 +8,6 @@ import { LinkedSubscription } from "../subscriptionManagement/subscriptionUtils"
 import { execAz } from "../login";
 
 /**
- * @interface CliAccessToken
  * Describes the access token retrieved from Azure CLI.
  */
 export interface CliAccessToken {
@@ -35,7 +34,6 @@ export interface CliAccessToken {
 }
 
 /**
- * @interface ListAllSubscriptionOptions
  * Describes the options that can be provided while listing all the subscriptions/accounts via
  * Azure CLI.
  */
@@ -51,7 +49,6 @@ export interface ListAllSubscriptionOptions {
 }
 
 /**
- * @class AzureCliCredentials
  * Describes the credentials by retrieving token via Azure CLI.
  */
 export class AzureCliCredentials implements TokenClientCredentials {
@@ -77,8 +74,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
   /**
    * Tries to get the token from cache initially. If that is unsuccessful then it tries
    * to get the token from ADAL.
-   * @returns {Promise<TokenResponse>} The tokenResponse (tokenType and accessToken are the two
-   * important properties).
+   * @return The tokenResponse (tokenType and accessToken are the two important properties).
    */
   public async getToken(): Promise<TokenResponse> {
     const now = Math.floor(Date.now() / 1000);
@@ -110,9 +106,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
 
   /**
    * Signs a request with the Authentication header.
-   *
    * @param The request to be signed.
-   * @return Promise<WebResource>
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
