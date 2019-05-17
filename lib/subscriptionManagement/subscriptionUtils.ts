@@ -41,7 +41,7 @@ export interface LinkedSubscription {
   readonly user: LinkedUser;
   /**
    * @property {string} environmentName - The environment name in which the subscription exists.
-   * Possible values: "Azure", "AzureChina", "AzureUSGovernment", "AzureGermanCloud" or
+   * Possible values: "AzureCloud", "AzureChinaCloud", "AzureUSGovernment", "AzureGermanCloud" or
    * some other custom/internal environment name like "Dogfood".
    */
   readonly environmentName: string;

@@ -3,6 +3,7 @@
 
 import * as adal from "adal-node";
 import * as msRest from "@azure/ms-rest-js";
+import { exec } from "child_process";
 import { readFileSync } from "fs";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
@@ -941,4 +942,30 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
       return cb(undefined, tokenRes);
     });
   }
+}
+
+/**
+ * Executes the azure cli command and returns the result. It will be `undefined` if the command did
+ * not return anything or a `JSON object` if the command did return something.
+ * @param cmd The az cli command to execute.
+ */
+export async function execAz(cmd: string): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    exec(`az ${cmd}`, { encoding: "utf8" }, (error, stdout) => {
+      if (error) {
+        return reject(error);
+      }
+      if (stdout) {
+        try {
+          return resolve(JSON.parse(stdout));
+        } catch (err) {
+          const msg = `An error occured while parsing the output "${stdout}", of ` +
+            `the cmd "${cmd}": ${err.stack}.`;
+          return reject(new Error(msg));
+        }
+      }
+      return resolve();
+    });
+  });
+
 }
