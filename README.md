@@ -1,7 +1,7 @@
 # ms-rest-nodeauth [![Build Status](https://dev.azure.com/azure-public/adx/_apis/build/status/public.Azure.ms-rest-nodeauth)](https://dev.azure.com/azure-public/adx/_build/latest?definitionId=9)
 
-This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing good typescrit experience.
-All the authentication methods support callback as well as promise. IF they are called within an async method in your application then you can use the async/await pattern as well.
+This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing a good TypeScript experience.
+All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
 
 ### Example
 
