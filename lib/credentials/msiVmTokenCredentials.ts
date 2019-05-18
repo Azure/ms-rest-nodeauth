@@ -26,6 +26,21 @@ export interface MSIVmOptions extends MSIOptions {
    * HTTP method used to make HTTP request to MSI service. GET by default.
    */
   httpMethod?: HttpMethods;
+  /**
+   * The objectId of the managed identity you would like the token for. Required, if your
+   * VM has multiple user-assigned managed identities.
+   */
+  objectId?: string;
+  /**
+   * The clientId of the managed identity you would like the token for. Required, if your
+   * VM has multiple user-assigned managed identities.
+   */
+  clientId?: string;
+  /**
+   * The `Azure Resource ID` of the managed identity you would like the token for. Required,
+   * if your VM has multiple user-assigned managed identities.
+   */
+  identityId?: string;
 }
 
 /**
@@ -35,6 +50,9 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
   msiEndpoint: string;
   apiVersion: string;
   httpMethod: HttpMethods;
+  objectId?: string;
+  clientId?: string;
+  identityId?: string;
 
   constructor(options?: MSIVmOptions) {
     if (!options) options = {};
@@ -64,6 +82,9 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
     this.apiVersion = options.apiVersion;
     this.msiEndpoint = options.msiEndpoint;
     this.httpMethod = options.httpMethod;
+    this.objectId = options.objectId;
+    this.clientId = options.clientId;
+    this.identityId = options.identityId;
   }
 
   /**
@@ -97,7 +118,10 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
       method: this.httpMethod,
       queryParameters: {
         "api-version": this.apiVersion,
-        "resource": this.resource
+        "resource": this.resource,
+        "object_id": this.objectId,
+        "client_id": this.clientId,
+        "mi_res_id": this.identityId
       }
     };
 

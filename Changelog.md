@@ -1,4 +1,7 @@
 # Changelog
+## 1.1.2 - 2019/05/20
+- Add support for client_id, object_id and ms_res_id query parameters for VmMSI. Fixes [#58](https://github.com/Azure/ms-rest-nodeauth/issues/58).
+
 ## 1.1.1 - 2019/05/16
 - Minor updates
 
