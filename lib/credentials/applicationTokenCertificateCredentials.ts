@@ -22,7 +22,7 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
    * @param {string} domain The domain or tenant id containing this application.
    * @param {string} certificate A PEM encoded certificate private key.
    * @param {string} thumbprint A hex encoded thumbprint of the certificate.
-   * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+   * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
    * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
    * @param {Environment} [environment] The azure environment to authenticate with.
    * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.

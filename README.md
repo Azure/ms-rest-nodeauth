@@ -149,6 +149,7 @@ msRestNodeAuth.loginWithAppServiceMSI(options).then((msiTokenRes) => {
 **Pre-requisite**
 - **Install azure-cli**. For more information see [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 - **Login via `az login`**
+- Detailed sample over [here](./samples/getCredentialsFromAzureCli.ts).
 
 ```typescript
 import { AzureCliCredentials } from "@azure/ms-rest-nodeauth";

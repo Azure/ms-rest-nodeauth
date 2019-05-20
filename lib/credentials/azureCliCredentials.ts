@@ -47,6 +47,24 @@ export interface ListAllSubscriptionOptions {
   refresh?: boolean;
 }
 
+export interface AccessTokenOptions {
+  /**
+   * The subscription id or name for which the access token is required.
+   */
+  subscriptionIdOrName?: string;
+  /**
+   * Azure resource endpoints.
+   * - Defaults to Azure Resource Manager from environment: AzureCloud. "https://management.azure.com"
+   * - For Azure KeyVault: "https://vault.azure.net"
+   * - For Azure Batch: "https://batch.core.windows.net"
+   * - For Azure Active Directory Graph: "https://graph.windows.net"
+   *
+   * To get the resource for other clouds:
+   * - `az cloud list`
+   */
+  resource?: string;
+}
+
 /**
  * Describes the credentials by retrieving token via Azure CLI.
  */
@@ -59,15 +77,34 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * Provides information about the access token for the corresponding subscription for Azure CLI.
    */
   tokenInfo: CliAccessToken;
+
+  /**
+   * Azure resource endpoints.
+   * - Defaults to Azure Resource Manager from environment: AzureCloud. "https://management.azure.com"
+   * - For Azure KeyVault: "https://vault.azure.net"
+   * - For Azure Batch: "https://batch.core.windows.net"
+   * - For Azure Active Directory Graph: "https://graph.windows.net"
+   *
+   * To get the resource for other clouds:
+   * - `az cloud list`
+   */
+  // tslint:disable-next-line: no-inferrable-types
+  resource: string = "https://management.azure.com";
+
   /**
    * The number of seconds within which it is good to renew the token.
    *  A constant set to 270 seconds (4.5 minutes).
    */
   private readonly _tokenRenewalMarginInSeconds: number = 270;
 
-  constructor(subscriptinInfo: LinkedSubscription, tokenInfo: CliAccessToken) {
-    this.subscriptionInfo = subscriptinInfo;
+  constructor(
+    subscriptionInfo: LinkedSubscription,
+    tokenInfo: CliAccessToken,
+    // tslint:disable-next-line: no-inferrable-types
+    resource: string = "https://management.azure.com") {
+    this.subscriptionInfo = subscriptionInfo;
     this.tokenInfo = tokenInfo;
+    this.resource = resource;
   }
 
   /**
@@ -76,11 +113,14 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * @return The tokenResponse (tokenType and accessToken are the two important properties).
    */
   public async getToken(): Promise<TokenResponse> {
-    if (this._hasTokenExpired() || this._hasSubscriptionChanged()) {
+    if (this._hasTokenExpired() || this._hasSubscriptionChanged() || this._hasResourceChanged()) {
       try {
         // refresh the access token
         this.tokenInfo = await AzureCliCredentials.getAccessToken(
-          this.subscriptionInfo.id
+          {
+            subscriptionIdOrName: this.subscriptionInfo.id,
+            resource: this.resource
+          }
         );
       } catch (err) {
         throw new Error(
@@ -104,9 +144,10 @@ export class AzureCliCredentials implements TokenClientCredentials {
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
+    const result = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
     webResource.headers.set(
       MSRestConstants.HeaderConstants.AUTHORIZATION,
-      `${tokenResponse.tokenType} ${tokenResponse.accessToken}`
+      result
     );
     return Promise.resolve(webResource);
   }
@@ -126,15 +167,58 @@ export class AzureCliCredentials implements TokenClientCredentials {
     return this.subscriptionInfo.id !== this.tokenInfo.subscription;
   }
 
+  private _parseToken(): any {
+    try {
+      const base64Url = this.tokenInfo.accessToken.split(".")[1];
+      const base64 = decodeURIComponent(
+        Buffer.from(base64Url, "base64").toString("binary").split("").map((c) => {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(""));
+
+      return JSON.parse(base64);
+    } catch (err) {
+      const msg = `An error occurred while parsing the access token: ${err.stack}`;
+      throw new Error(msg);
+    }
+  }
+
+  private _isAzureResourceManagerEndpoint(newResource: string, currentResource: string): boolean {
+    if (newResource.endsWith("/")) newResource = newResource.slice(0, -1);
+    if (currentResource.endsWith("/")) currentResource = currentResource.slice(0, -1);
+    return (newResource === "https://management.core.windows.net" &&
+      currentResource === "https://management.azure.com") ||
+      (newResource === "https://management.azure.com" &&
+        currentResource === "https://management.core.windows.net");
+  }
+
+  private _hasResourceChanged(): boolean {
+    const parsedToken = this._parseToken();
+    // normalize the resource string, since it is possible to
+    // provide a resource without a trailing slash
+    const currentResource = parsedToken.aud && parsedToken.aud.endsWith("/")
+      ? parsedToken.aud.slice(0, -1)
+      : parsedToken.aud;
+    const newResource = this.resource.endsWith("/")
+      ? this.resource.slice(0, -1)
+      : this.resource;
+    const result = this._isAzureResourceManagerEndpoint(newResource, currentResource)
+      ? false
+      : currentResource !== newResource;
+    return result;
+  }
+
   /**
    * Gets the access token for the default or specified subscription.
-   * @param subscriptionIdOrName The subscription id or name for which the access token is required.
+   * @param options Optional parameters that can be provided to get the access token.
    */
-  static async getAccessToken(subscriptionIdOrName?: string): Promise<CliAccessToken> {
+  static async getAccessToken(options: AccessTokenOptions = {}): Promise<CliAccessToken> {
     try {
       let cmd = "account get-access-token";
-      if (subscriptionIdOrName) {
-        cmd += ` -s "${subscriptionIdOrName}"`;
+      if (options.subscriptionIdOrName) {
+        cmd += ` -s "${options.subscriptionIdOrName}"`;
+      }
+      if (options.resource) {
+        cmd += ` --resource ${options.resource}`;
       }
       const result: any = await execAz(cmd);
       result.expiresOn = new Date(result.expiresOn);
@@ -148,11 +232,20 @@ export class AzureCliCredentials implements TokenClientCredentials {
   }
 
   /**
-   * Gets the default subscription from Azure CLI.
+   * Gets the subscription from Azure CLI.
+   * @param subscriptionIdOrName - The name or id of the subscription for which the information is
+   * required.
    */
-  static async getDefaultSubscription(): Promise<LinkedSubscription> {
+  static async getSubscription(subscriptionIdOrName?: string): Promise<LinkedSubscription> {
+    if (subscriptionIdOrName && (typeof subscriptionIdOrName !== "string" || !subscriptionIdOrName.length)) {
+      throw new Error("'subscriptionIdOrName' must be a non-empty string.");
+    }
     try {
-      const result: LinkedSubscription = await execAz("account show");
+      let cmd = "account show";
+      if (subscriptionIdOrName) {
+        cmd += ` -s "${subscriptionIdOrName}"`;
+      }
+      const result: LinkedSubscription = await execAz(cmd);
       return result;
     } catch (err) {
       const message =
@@ -216,14 +309,13 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * - **install azure-cli** . For more information see
    * {@link https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest Install Azure CLI}
    * - **login via `az login`**
-   * - If you want to work against a specific subscription then please set that subscription as
-   * the default subscription by executing `az account set -s <subscriptionNameOrId>`
+   * @param options - Optional parameters that can be provided while creating AzureCliCredentials.
    */
-  static async create(): Promise<AzureCliCredentials> {
+  static async create(options: AccessTokenOptions = {}): Promise<AzureCliCredentials> {
     const [subscriptinInfo, accessToken] = await Promise.all([
-      AzureCliCredentials.getDefaultSubscription(),
-      AzureCliCredentials.getAccessToken()
+      AzureCliCredentials.getSubscription(options.subscriptionIdOrName),
+      AzureCliCredentials.getAccessToken(options)
     ]);
-    return new AzureCliCredentials(subscriptinInfo, accessToken);
+    return new AzureCliCredentials(subscriptinInfo, accessToken, options.resource);
   }
 }
