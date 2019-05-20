@@ -162,4 +162,33 @@ describe("MSI Vm Authentication", () => {
     const msiCredsObj = new MSIVmTokenCredentials({ httpMethod: expectedHttpMethod });
     expect(msiCredsObj.httpMethod).to.equal("PATCH");
   });
+
+  it("should set clientId as query parameter when provided", async () => {
+    const expectedClientId = "201";
+    const msiCredsObj = new MSIVmTokenCredentials({ clientId: "201" });
+    expect(msiCredsObj.clientId).to.equal(expectedClientId);
+  });
+
+  it("should set objectId as query parameter when provided", async () => {
+    const expectedObjectId = "201_101";
+    const msiCredsObj = new MSIVmTokenCredentials({ objectId: "201_101" });
+    expect(msiCredsObj.objectId).to.equal(expectedObjectId);
+  });
+
+  it("should set identityId as query parameter when provided", async () => {
+    const expectedIdentityId = "786";
+    const msiCredsObj = new MSIVmTokenCredentials({ identityId: "786" });
+    expect(msiCredsObj.identityId).to.equal(expectedIdentityId);
+  });
+
+  it("should set identityId, clientid and objectId as query parameter when provided", async () => {
+    const msiCredsObj = new MSIVmTokenCredentials({
+      identityId: "786",
+      clientId: "201",
+      objectId: "201_101"
+    });
+    expect(msiCredsObj.identityId).to.equal("786");
+    expect(msiCredsObj.objectId).to.equal("201_101");
+    expect(msiCredsObj.clientId).to.equal("201");
+  });
 });

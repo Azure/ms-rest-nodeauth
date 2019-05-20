@@ -14,7 +14,7 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
    * @constructor
    * @param {string} clientId The active directory application client id.
    * @param {string} domain The domain or tenant id containing this application.
-   * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.com/'.
+   * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
    * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
    * @param {Environment} [environment] The azure environment to authenticate with.
    * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
@@ -53,9 +53,9 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
       return Promise.reject(
         new Error(
           AuthConstants.SDK_INTERNAL_ERROR +
-            " : " +
-            "critical failure while removing expired token for service principal from token cache. " +
-            message
+          " : " +
+          "critical failure while removing expired token for service principal from token cache. " +
+          message
         )
       );
     }
