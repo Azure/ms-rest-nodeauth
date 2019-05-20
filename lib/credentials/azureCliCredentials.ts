@@ -6,6 +6,14 @@ import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials"
 import { LinkedSubscription } from "../subscriptionManagement/subscriptionUtils";
 import { execAz } from "../login";
 
+interface ParsedToken {
+  /**
+   * The token audience or the resource.
+   */
+  aud: string;
+  [prop: string]: any;
+}
+
 /**
  * Describes the access token retrieved from Azure CLI.
  */
@@ -144,10 +152,9 @@ export class AzureCliCredentials implements TokenClientCredentials {
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
-    const result = `${tokenResponse.tokenType} ${tokenResponse.accessToken}`;
     webResource.headers.set(
       MSRestConstants.HeaderConstants.AUTHORIZATION,
-      result
+      `${tokenResponse.tokenType} ${tokenResponse.accessToken}`
     );
     return Promise.resolve(webResource);
   }
@@ -167,10 +174,10 @@ export class AzureCliCredentials implements TokenClientCredentials {
     return this.subscriptionInfo.id !== this.tokenInfo.subscription;
   }
 
-  private _parseToken(): any {
+  private _parseToken(): ParsedToken {
     try {
-      const base64Url = this.tokenInfo.accessToken.split(".")[1];
-      const base64 = decodeURIComponent(
+      const base64Url: string = this.tokenInfo.accessToken.split(".")[1];
+      const base64: string = decodeURIComponent(
         Buffer.from(base64Url, "base64").toString("binary").split("").map((c) => {
           return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(""));
@@ -192,7 +199,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
   }
 
   private _hasResourceChanged(): boolean {
-    const parsedToken = this._parseToken();
+    const parsedToken: ParsedToken = this._parseToken();
     // normalize the resource string, since it is possible to
     // provide a resource without a trailing slash
     const currentResource = parsedToken.aud && parsedToken.aud.endsWith("/")
