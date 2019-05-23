@@ -1,4 +1,7 @@
 # Changelog
+## 2.0.1 - 2019/05/22
+ - Get subscriptions while authenticating only if the token audience is for Azure Resource Manager.
+
 ## 2.0.0 - 2019/05/20
 - Added support for client_id, object_id and ms_res_id query parameters for VmMSI. Fixes [#58](https://github.com/Azure/ms-rest-nodeauth/issues/58).
 - **Breaking change:** 

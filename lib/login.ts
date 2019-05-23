@@ -17,6 +17,23 @@ import { MSIVmTokenCredentials, MSIVmOptions } from "./credentials/msiVmTokenCre
 import { MSIAppServiceTokenCredentials, MSIAppServiceOptions } from "./credentials/msiAppServiceTokenCredentials";
 import { MSITokenResponse } from "./credentials/msiTokenCredentials";
 
+/**
+ * @constant {Array<string>} managementPlaneTokenAudiences - Urls for management plane token
+ * audience across different azure environments.
+ */
+const managementPlaneTokenAudiences = [
+  "https://management.core.windows.net/",
+  "https://management.core.chinacloudapi.cn/",
+  "https://management.core.usgovcloudapi.net/",
+  "https://management.core.cloudapi.de/",
+  "https://management.azure.com/",
+  "https://management.core.windows.net",
+  "https://management.core.chinacloudapi.cn",
+  "https://management.core.usgovcloudapi.net",
+  "https://management.core.cloudapi.de",
+  "https://management.azure.com"
+];
+
 function turnOnLogging() {
   const log = adal.Logging;
   log.setLoggingOptions(
@@ -162,10 +179,8 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     await creds.getToken();
     // The token cache gets propulated for all the tenants as a part of building the tenantList.
     tenantList = await buildTenantList(creds);
-    // We only need to get the subscriptionList if the tokenAudience is for a management client.
-    if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
-      subscriptionList = await getSubscriptionsFromTenants(creds, tenantList);
-    }
+    subscriptionList = await _getSubscriptions(creds, tenantList, options.tokenAudience);
+
   } catch (err) {
     return Promise.reject(err);
   }
@@ -200,10 +215,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
   try {
     creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
     await creds.getToken();
-    // We only need to get the subscriptionList if the tokenAudience is for a management client.
-    if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
-      subscriptionList = await getSubscriptionsFromTenants(creds, [domain]);
-    }
+    subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
   } catch (err) {
     return Promise.reject(err);
   }
@@ -240,10 +252,7 @@ export async function withServicePrincipalCertificateWithAuthResponse(clientId: 
   try {
     creds = ApplicationTokenCertificateCredentials.create(clientId, certificateStringOrFilePath, domain, options);
     await creds.getToken();
-    // We only need to get the subscriptionList if the tokenAudience is for a management client.
-    if (options.tokenAudience && options.tokenAudience === options.environment.activeDirectoryResourceId) {
-      subscriptionList = await getSubscriptionsFromTenants(creds, [domain]);
-    }
+    subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
   } catch (err) {
     return Promise.reject(err);
   }
@@ -492,13 +501,6 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
     return tryAcquireToken(interactiveOptions, resolve, reject);
   });
 
-  function getSubscriptions(creds: DeviceTokenCredentials, tenants: string[]): Promise<LinkedSubscription[]> {
-    if (interactiveOptions.tokenAudience && interactiveOptions.tokenAudience === interactiveOptions.environment.activeDirectoryResourceId) {
-      return getSubscriptionsFromTenants(creds, tenants);
-    }
-    return Promise.resolve(([] as any[]));
-  }
-
   return getUserCode.then(() => {
     return new Promise<DeviceTokenCredentials>((resolve, reject) => {
       return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
@@ -519,7 +521,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   }).then((creds) => {
     return buildTenantList(creds);
   }).then((tenants) => {
-    return getSubscriptions(creds, tenants);
+    return _getSubscriptions(creds, tenants, interactiveOptions.tokenAudience);
   }).then((subscriptions) => {
     return Promise.resolve({ credentials: creds, subscriptions: subscriptions });
   });
@@ -793,6 +795,20 @@ export function withUsernamePassword(username: string, password: string, options
       return cb(undefined, authRes.credentials, authRes.subscriptions);
     });
   }
+}
+
+/**
+ * We only need to get the subscription list if the tokenAudience is for a management client.
+ */
+function _getSubscriptions(
+  creds: TokenCredentialsBase,
+  tenants: string[],
+  tokenAudience?: string): Promise<LinkedSubscription[]> {
+  if (tokenAudience &&
+    !managementPlaneTokenAudiences.some((item) => { return item === tokenAudience!.toLowerCase(); })) {
+    return Promise.resolve(([]));
+  }
+  return getSubscriptionsFromTenants(creds, tenants);
 }
 
 /**
