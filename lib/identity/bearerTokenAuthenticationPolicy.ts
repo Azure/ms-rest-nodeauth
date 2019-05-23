@@ -26,13 +26,13 @@ export class BearerTokenAuthenticationPolicy extends BaseRequestPolicy {
    * @param nextPolicy The next RequestPolicy in the request pipeline.
    * @param options Options for this RequestPolicy.
    * @param credential The TokenCredential implementation that can supply the bearer token.
-   * @param scope The scope for which the bearer token applies.
+   * @param scopes The scopes for which the bearer token applies.
    */
   constructor(
     nextPolicy: RequestPolicy,
     options: RequestPolicyOptions,
     private credential: TokenCredential,
-    private scope: string
+    private scopes: string[]
   ) {
     super(nextPolicy, options);
   }
@@ -46,7 +46,7 @@ export class BearerTokenAuthenticationPolicy extends BaseRequestPolicy {
   ): Promise<HttpOperationResponse> {
     if (!webResource.headers) webResource.headers = new HttpHeaders();
     const token = await this.credential.getToken(
-      [this.scope],
+      this.scopes,
       webResource.abortSignal
     );
     webResource.headers.set(
