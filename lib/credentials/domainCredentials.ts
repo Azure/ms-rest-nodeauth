@@ -4,7 +4,7 @@
 import { ApiKeyCredentials } from "@azure/ms-rest-js";
 
 /**
- * Creates a new CognitiveServicesCredentials object.
+ * Class that enables access to Azure EventGrid domains.
  */
 export class DomainCredentials extends ApiKeyCredentials {
   /**
