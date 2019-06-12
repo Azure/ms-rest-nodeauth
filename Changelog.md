@@ -1,4 +1,8 @@
 # Changelog
+
+## 2.0.2 - 2019/06/12
+ - Added DomainCredentials class for providing credentials to publish to an Azure EventGrid domain.
+
 ## 2.0.1 - 2019/05/22
  - Get subscriptions while authenticating only if the token audience is for Azure Resource Manager.
 
