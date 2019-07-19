@@ -6,6 +6,7 @@ import { ServiceClientCredentials } from "@azure/ms-rest-js";
 export interface TokenResponse {
   readonly tokenType: string;
   readonly accessToken: string;
+  readonly expiresOn: Date;
   readonly [x: string]: any;
 }
 

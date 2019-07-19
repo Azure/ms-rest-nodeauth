@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { prepareToken } from "./coreAuthHelpers";
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
+import { AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenResponse, ErrorResponse, TokenCache } from "adal-node";
@@ -69,14 +71,16 @@ export class UserTokenCredentials extends TokenCredentialsBase {
    * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    * @memberof UserTokenCredentials
    */
-  public async getToken(): Promise<TokenResponse> {
+  public async getToken(): Promise<TokenResponse>;
+  public async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     try {
-      return await this.getTokenFromCache(this.username);
+      return prepareToken(await this.getTokenFromCache(this.username), scopes);
     } catch (error) {
       const self = this;
       const resource = this.getActiveDirectoryResourceId();
 
-      return new Promise<TokenResponse>((resolve, reject) => {
+      return new Promise<TokenResponse | AccessToken>((resolve, reject) => {
         self.authContext.acquireTokenWithUsernamePassword(resource, self.username, self.password, self.clientId,
           (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
             if (error) {
@@ -89,7 +93,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
 
             tokenResponse = tokenResponse as TokenResponse;
             if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId!)) {
-              return resolve((tokenResponse as TokenResponse));
+              return resolve(prepareToken(tokenResponse as TokenResponse, scopes));
             } else {
               return reject(`The userId "${tokenResponse.userId}" in access token doesn"t match the username "${self.username}" provided during authentication.`);
             }

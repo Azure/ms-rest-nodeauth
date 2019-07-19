@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { Constants, WebResource, HttpClient, DefaultHttpClient } from "@azure/ms-rest-js";
+import { TokenCredential, AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
 import { AuthConstants } from "../util/authConstants";
 
@@ -41,7 +42,7 @@ export interface MSITokenResponse extends TokenResponse {
  * @class MSITokenCredentials - Provides information about managed service identity token credentials.
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
-export abstract class MSITokenCredentials implements TokenClientCredentials {
+export abstract class MSITokenCredentials implements TokenClientCredentials, TokenCredential {
   /**
    * Azure resource endpoints.
    * - Defaults to Azure Resource Manager from environment: AzureCloud. "https://management.azure.com/"
@@ -133,6 +134,8 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
    * @return {Promise<MSITokenResponse>} Promise with the token response.
    */
   abstract async getToken(): Promise<MSITokenResponse>;
+  abstract async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  abstract async getToken(scopes?: string | string[]): Promise<MSITokenResponse | AccessToken>;
 
   protected abstract prepareRequestOptions(): WebResource;
 

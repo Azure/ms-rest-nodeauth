@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { prepareToken } from "./coreAuthHelpers";
+import { TokenCredential, AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { Constants as MSRestConstants, WebResource } from "@azure/ms-rest-js";
 import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials";
 import { LinkedSubscription } from "../subscriptionManagement/subscriptionUtils";
@@ -76,7 +78,7 @@ export interface AccessTokenOptions {
 /**
  * Describes the credentials by retrieving token via Azure CLI.
  */
-export class AzureCliCredentials implements TokenClientCredentials {
+export class AzureCliCredentials implements TokenClientCredentials, TokenCredential {
   /**
    * Provides information about the default/current subscription for Azure CLI.
    */
@@ -120,7 +122,9 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * changed else uses the cached accessToken.
    * @return The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  public async getToken(): Promise<TokenResponse> {
+  public getToken(): Promise<TokenResponse>;
+  public getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     if (this._hasTokenExpired() || this._hasSubscriptionChanged() || this._hasResourceChanged()) {
       try {
         // refresh the access token
@@ -143,7 +147,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
       expiresOn: this.tokenInfo.expiresOn,
       tenantId: this.tokenInfo.tenant
     };
-    return result;
+    return prepareToken(result, scopes);
   }
 
   /**

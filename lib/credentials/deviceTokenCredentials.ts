@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { prepareToken } from "./coreAuthHelpers";
 import { TokenCredentialsBase } from "./tokenCredentialsBase";
+import { TokenCredential, AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
 import { TokenResponse, TokenCache } from "adal-node";
 
-export class DeviceTokenCredentials extends TokenCredentialsBase {
+export class DeviceTokenCredentials extends TokenCredentialsBase implements TokenCredential {
 
   readonly username: string;
 
@@ -53,8 +55,10 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
     this.username = username;
   }
 
-  public getToken(): Promise<TokenResponse> {
+  public getToken(): Promise<TokenResponse>;
+  public getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     // For device auth, this is just getTokenFromCache.
-    return this.getTokenFromCache(this.username);
+    return prepareToken(await this.getTokenFromCache(this.username), scopes);
   }
 }

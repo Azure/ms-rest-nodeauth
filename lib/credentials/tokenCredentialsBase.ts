@@ -2,12 +2,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { Constants as MSRestConstants, WebResource } from "@azure/ms-rest-js";
+import { TokenCredential, AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
-export abstract class TokenCredentialsBase implements TokenClientCredentials {
+export abstract class TokenCredentialsBase implements TokenClientCredentials, TokenCredential {
   public readonly authContext: AuthenticationContext;
 
   public constructor(
@@ -72,7 +73,9 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
    * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
    * @memberof TokenCredentialsBase
    */
-  public async abstract getToken(): Promise<TokenResponse>;
+  public abstract async getToken(): Promise<TokenResponse>;
+  public abstract async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public abstract async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken>;
 
   /**
    * Signs a request with the Authentication header.

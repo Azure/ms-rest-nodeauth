@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { prepareToken } from "./coreAuthHelpers";
+import { AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
 import { HttpOperationResponse, RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
 
@@ -91,7 +93,9 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    * Prepares and sends a GET request to a service endpoint indicated by the app service, which responds with the access token.
    * @return {Promise<MSITokenResponse>} Promise with the tokenResponse (tokenType and accessToken are the two important properties).
    */
-  async getToken(): Promise<MSITokenResponse> {
+  async getToken(): Promise<MSITokenResponse>;
+  async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  async getToken(scopes?: string | string[]): Promise<MSITokenResponse | AccessToken> {
     const reqOptions = this.prepareRequestOptions();
     let opRes: HttpOperationResponse;
     let result: MSITokenResponse;
@@ -108,7 +112,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
       throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
     }
 
-    return result;
+    return prepareToken(result, scopes);
   }
 
   protected prepareRequestOptions(): WebResource {

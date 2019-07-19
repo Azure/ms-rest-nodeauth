@@ -5,6 +5,7 @@ import * as adal from "adal-node";
 import * as msRest from "@azure/ms-rest-js";
 import { exec } from "child_process";
 import { readFileSync } from "fs";
+import { TokenCredential } from "@azure/core-auth";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 import { ApplicationTokenCredentials } from "./credentials/applicationTokenCredentials";
@@ -108,9 +109,9 @@ export interface InteractiveLoginOptions extends LoginWithUsernamePasswordOption
  */
 export interface AuthResponse {
   /**
-   *  @property {TokenCredentialsBase} credentials - The credentials object.
+   *  @property {TokenCredentialsBase | TokenCredential} credentials - The credentials object.
    */
-  credentials: TokenCredentialsBase;
+  credentials: TokenCredentialsBase | TokenCredential;
   /**
    * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions.
    */

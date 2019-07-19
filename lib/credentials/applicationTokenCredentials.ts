@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { prepareToken } from "./coreAuthHelpers";
+import { AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { ApplicationTokenCredentialsBase } from "./applicationTokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
@@ -42,10 +44,12 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
    * Tries to get the token from cache initially. If that is unsuccessfull then it tries to get the token from ADAL.
    * @returns {Promise<TokenResponse>} A promise that resolves to TokenResponse and rejects with an Error.
    */
-  public async getToken(): Promise<TokenResponse> {
+  public async getToken(): Promise<TokenResponse>;
+  public async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     try {
       const tokenResponse = await this.getTokenFromCache();
-      return tokenResponse;
+      return prepareToken(tokenResponse, scopes);
     } catch (error) {
       if (
         error.message &&
@@ -66,7 +70,7 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
             if (tokenResponse.error || tokenResponse.errorDescription) {
               return reject(tokenResponse);
             }
-            return resolve(tokenResponse as TokenResponse);
+            return resolve(prepareToken(tokenResponse as TokenResponse, scopes));
           }
         );
       });

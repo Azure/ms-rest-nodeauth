@@ -3,6 +3,8 @@
 
 import { readFileSync } from "fs";
 import { createHash } from "crypto";
+import { prepareToken } from "./coreAuthHelpers";
+import { AccessToken, GetTokenOptions } from "@azure/core-auth";
 import { ApplicationTokenCredentialsBase } from "./applicationTokenCredentialsBase";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { AuthConstants, TokenAudience } from "../util/authConstants";
@@ -52,10 +54,12 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
    * Tries to get the token from cache initially. If that is unsuccessfull then it tries to get the token from ADAL.
    * @returns {Promise<TokenResponse>} A promise that resolves to TokenResponse and rejects with an Error.
    */
-  public async getToken(): Promise<TokenResponse> {
+  public async getToken(): Promise<TokenResponse>;
+  public async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     try {
       const tokenResponse = await this.getTokenFromCache();
-      return tokenResponse;
+      return prepareToken(tokenResponse, scopes);
     } catch (error) {
       if (error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)) {
         return Promise.reject(error);
@@ -74,7 +78,7 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
             if (tokenResponse.error || tokenResponse.errorDescription) {
               return reject(tokenResponse);
             }
-            return resolve(tokenResponse as TokenResponse);
+            return resolve(prepareToken(tokenResponse as TokenResponse, scopes));
           }
         );
       });
