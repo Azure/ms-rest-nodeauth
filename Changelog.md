@@ -1,4 +1,9 @@
 # Changelog
+
+## 3.0.0 - 2019/07/23
+
+- Token credential types are now compatible with the `TokenCredential` interface from [`@azure/core-auth`](https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/core/core-auth), enabling them to be used with newer SDK libraries in `azure-sdk-for-js`.
+
 ## 2.0.3 - 2019/07/23
 - Updated min version of dependency `@azure/ms-rest-js` to `^2.0.3`.
 - Updated min version of dependenct `@azure/ms-rest-azure-env` to `^2.0.0`.
@@ -13,7 +18,7 @@
 
 ## 2.0.0 - 2019/05/20
 - Added support for client_id, object_id and ms_res_id query parameters for VmMSI. Fixes [#58](https://github.com/Azure/ms-rest-nodeauth/issues/58).
-- **Breaking change:** 
+- **Breaking change:**
   - Added support to get token for a different resource like Azure Keyvault, Azure Batch, Azure Graph apart from the default Azure Resource Manager resource via `AzureCliCredentials`.
   - `AzureCliCredentials.create()` now takes an optional parameter where the user can specify the subscriptionId and the resource for which the token is required.
   - `AzureCliCredentials.getDefaultSubscription()` has been changed to `AzureCliCredentials.getSubscription(subscriptionIdOrName?: string)`.
