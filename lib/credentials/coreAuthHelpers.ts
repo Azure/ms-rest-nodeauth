@@ -1,6 +1,6 @@
 import { AccessToken } from "@azure/core-auth";
 
-export interface TokenResponseLike {
+interface TokenResponseLike {
   accessToken: string;
   expiresOn: Date | string;
 }
