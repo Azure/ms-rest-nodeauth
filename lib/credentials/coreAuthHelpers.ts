@@ -14,7 +14,8 @@ interface TokenResponseLike {
 export function prepareToken<T extends TokenResponseLike>(
   token: T,
   scopes: string | string[] | undefined): T | AccessToken {
-  if (scopes) {
+  // Scopes will contain _some_ value if a parameter was passed to getToken
+  if (scopes !== undefined) {
     return {
       token: token.accessToken,
       expiresOnTimestamp:
