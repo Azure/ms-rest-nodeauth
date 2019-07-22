@@ -85,6 +85,31 @@ describe("MSI Vm Authentication", () => {
     expect(response!.tokenType).to.exist;
   });
 
+  it("should return an AccessToken when invoked as a TokenCredential", async () => {
+    const mockResponse = {
+      access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
+      refresh_token: "",
+      expires_in: "3599",
+      expires_on: "1502930996",
+      not_before: "1502927096",
+      resource: "https://management.azure.com/",
+      token_type: "Bearer"
+    };
+
+    const expectedQuery = {
+      "apiVersion": "2018-02-01",
+      "resource": "https://management.azure.com/"
+    };
+
+    const httpClient = setupNockResponse(undefined, expectedQuery, mockResponse);
+
+    const msiCredsObj = new MSIVmTokenCredentials({ httpClient: httpClient });
+    const response = await msiCredsObj.getToken("scope");
+    expect(response).to.exist;
+    expect(response!.token).to.exist;
+    expect(response!.expiresOnTimestamp).to.exist;
+  });
+
   it("should throw on requests with bad resource", async () => {
     const errorMessage = "unknown";
     const errorDescription = "Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log";

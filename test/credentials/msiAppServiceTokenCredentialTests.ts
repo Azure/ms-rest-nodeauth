@@ -71,6 +71,29 @@ describe("MSI App Service Authentication", function () {
       expect(response!.tokenType).to.exist;
     });
 
+    it("should return an AccessToken when invoked as a TokenCredential", async () => {
+      const mockResponse = {
+        access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
+        expires_in: "3599",
+        expires_on: "1502930996",
+        resource: "https://management.azure.com/",
+        token_type: "Bearer"
+      };
+
+      const httpClient = getMockHttpClient(mockResponse);
+      const msiCredsObj = new MSIAppServiceTokenCredentials({
+        msiEndpoint: "http://127.0.0.1:41741/MSI/token/",
+        msiSecret: "69418689F1E342DD946CB82994CDA3CB",
+        httpClient: httpClient
+      });
+
+      const response = await msiCredsObj.getToken("scope");
+      expect(response).to.exist;
+      expect(response!.token).to.exist;
+      expect(response!.expiresOnTimestamp).to.exist;
+    });
+
+
     it('should throw if the response contains "ExceptionMessage"', async function () {
       const errorResponse = {
         "error": "unknown",
