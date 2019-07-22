@@ -3,6 +3,7 @@
 
 import { assert } from "chai";
 import { prepareToken } from "../../lib/credentials/coreAuthHelpers";
+import { AccessToken } from "@azure/core-auth";
 
 describe("prepareToken", function() {
   it("returns an AccessToken when scope is set", function() {
@@ -29,6 +30,14 @@ describe("prepareToken", function() {
       token: "token",
       expiresOnTimestamp: Date.parse(expiresOn)
     });
+  });
+
+  it("returns an AccessToken with expiresOnTimestamp when expiresOn is empty", function() {
+    const result = prepareToken({
+      accessToken: "token",
+    }, "scope") as AccessToken;
+
+    assert.isNumber(result.expiresOnTimestamp);
   });
 
   it("returns an unmodified TokenResponse when scope is not set", function() {
