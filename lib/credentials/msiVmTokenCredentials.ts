@@ -108,7 +108,8 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
       throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
     }
 
-    return prepareToken(result, scopes);
+    const token = prepareToken(result, scopes);
+    return token;
   }
 
   protected prepareRequestOptions(): WebResource {

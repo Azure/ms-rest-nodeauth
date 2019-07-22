@@ -49,7 +49,8 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
   public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     try {
       const tokenResponse = await this.getTokenFromCache();
-      return prepareToken(tokenResponse, scopes);
+      const token = prepareToken(tokenResponse, scopes);
+      return token;
     } catch (error) {
       if (
         error.message &&
@@ -70,7 +71,8 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
             if (tokenResponse.error || tokenResponse.errorDescription) {
               return reject(tokenResponse);
             }
-            return resolve(prepareToken(tokenResponse as TokenResponse, scopes));
+            const token = prepareToken(tokenResponse as TokenResponse, scopes);
+            return resolve(token);
           }
         );
       });

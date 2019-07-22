@@ -59,7 +59,8 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
   public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     try {
       const tokenResponse = await this.getTokenFromCache();
-      return prepareToken(tokenResponse, scopes);
+      const token = prepareToken(tokenResponse, scopes);
+      return token;
     } catch (error) {
       if (error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)) {
         return Promise.reject(error);
@@ -78,7 +79,8 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
             if (tokenResponse.error || tokenResponse.errorDescription) {
               return reject(tokenResponse);
             }
-            return resolve(prepareToken(tokenResponse as TokenResponse, scopes));
+            const token = prepareToken(tokenResponse as TokenResponse, scopes);
+            return resolve(token);
           }
         );
       });

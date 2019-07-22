@@ -147,7 +147,9 @@ export class AzureCliCredentials implements TokenClientCredentials, TokenCredent
       expiresOn: this.tokenInfo.expiresOn,
       tenantId: this.tokenInfo.tenant
     };
-    return prepareToken(result, scopes);
+
+    const token = prepareToken(result, scopes);
+    return token;
   }
 
   /**

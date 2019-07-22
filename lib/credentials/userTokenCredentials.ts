@@ -75,7 +75,8 @@ export class UserTokenCredentials extends TokenCredentialsBase {
   public async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
   public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     try {
-      return prepareToken(await this.getTokenFromCache(this.username), scopes);
+      const token = prepareToken(await this.getTokenFromCache(this.username), scopes);
+      return token;
     } catch (error) {
       const self = this;
       const resource = this.getActiveDirectoryResourceId();
@@ -93,7 +94,8 @@ export class UserTokenCredentials extends TokenCredentialsBase {
 
             tokenResponse = tokenResponse as TokenResponse;
             if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId!)) {
-              return resolve(prepareToken(tokenResponse as TokenResponse, scopes));
+              const token = prepareToken(tokenResponse as TokenResponse, scopes);
+              return resolve(token);
             } else {
               return reject(`The userId "${tokenResponse.userId}" in access token doesn"t match the username "${self.username}" provided during authentication.`);
             }
