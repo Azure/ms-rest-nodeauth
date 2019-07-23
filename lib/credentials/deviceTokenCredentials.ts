@@ -55,8 +55,8 @@ export class DeviceTokenCredentials extends TokenCredentialsBase implements Toke
     this.username = username;
   }
 
-  public getToken(): Promise<TokenResponse>;
-  public getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(): Promise<TokenResponse>;
+  public async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
   public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     // For device auth, this is just getTokenFromCache.
     const token = prepareToken(await this.getTokenFromCache(this.username), scopes);

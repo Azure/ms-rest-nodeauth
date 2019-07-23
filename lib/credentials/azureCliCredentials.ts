@@ -122,8 +122,8 @@ export class AzureCliCredentials implements TokenClientCredentials, TokenCredent
    * changed else uses the cached accessToken.
    * @return The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  public getToken(): Promise<TokenResponse>;
-  public getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
+  public async getToken(): Promise<TokenResponse>;
+  public async getToken(scopes: string | string[], options?: GetTokenOptions): Promise<AccessToken>;
   public async getToken(scopes?: string | string[]): Promise<TokenResponse | AccessToken> {
     if (this._hasTokenExpired() || this._hasSubscriptionChanged() || this._hasResourceChanged()) {
       try {
