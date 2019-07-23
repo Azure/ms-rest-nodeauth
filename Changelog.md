@@ -1,4 +1,10 @@
 # Changelog
+## 2.0.3 - 2019/07/23
+- Updated min version of dependency `@azure/ms-rest-js` to `^2.0.3`.
+- Updated min version of dependenct `@azure/ms-rest-azure-env` to `^2.0.0`.
+- Improved documentation of `MSIOptions.resource`
+- Improved samples in README.md
+
 ## 2.0.2 - 2019/06/13
  - Ensure we always get JSON responses back from Azure CLI.
 

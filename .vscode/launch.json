@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Sample Debug",
+      "program": "${workspaceFolder}/samples/msiVmTokenCredentialsLogin.ts",
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ]
+    },
+    {
         "type": "node",
         "request": "launch",
         "name": "Mocha All",

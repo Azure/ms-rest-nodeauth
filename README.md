@@ -101,7 +101,7 @@ If the service principal is already created then login with service principal in
 5. az account show --sdk-auth > auth.json
 
 ```typescript
-import * as msRestNodeAuth from "../lib/msRestNodeAuth";
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.LoginWithAuthFileOptions = {
   filePath: "<file path to auth file>",
@@ -116,7 +116,7 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 
 ### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
 ```typescript
-import * as msRestNodeAuth from "../lib/msRestNodeAuth";
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIVmOptions = {
   port: 50342;
@@ -131,7 +131,7 @@ msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
 
 ### MSI (Managed Service Identity) based login from an AppService or Azure Function created in Azure.
 ```typescript
-import * as msRestNodeAuth from "../lib/msRestNodeAuth";
+import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIAppServiceOptions = {
   msiEndpoint: "http://127.0.0.1:41741/MSI/token/";

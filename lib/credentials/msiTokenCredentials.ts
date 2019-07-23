@@ -11,9 +11,12 @@ import { AuthConstants } from "../util/authConstants";
 export interface MSIOptions {
   /**
    * @prop {string} [resource] -  The resource uri or token audience for which the token is needed.
-   * For e.g. it can be:
-   * - resourcemanagement endpoint "https://management.azure.com/" (default)
-   * - management endpoint "https://management.core.windows.net/"
+   * For example:
+   * - Defaults to Azure Resource Manager from environment: AzureCloud. "https://management.azure.com/" (default)
+   * - For ServiceManagement (ASM): "https://management.core.windows.net/"
+   * - For Azure KeyVault: "https://vault.azure.net"
+   * - For Azure Batch: "https://batch.core.windows.net"
+   * - For Azure Active Directory Graph: "https://graph.windows.net"
    */
   resource?: string;
 
@@ -39,6 +42,14 @@ export interface MSITokenResponse extends TokenResponse {
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
 export abstract class MSITokenCredentials implements TokenClientCredentials {
+  /**
+   * Azure resource endpoints.
+   * - Defaults to Azure Resource Manager from environment: AzureCloud. "https://management.azure.com/"
+   * - For ServiceManagement (ASM): "https://management.core.windows.net/"
+   * - For Azure KeyVault: "https://vault.azure.net"
+   * - For Azure Batch: "https://batch.core.windows.net"
+   * - For Azure Active Directory Graph: "https://graph.windows.net"
+   */
   resource: string;
   protected _httpClient: HttpClient;
 
