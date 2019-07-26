@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 - 2019/07/23
+## 3.0.0 - 2019/07/26
 
 - Token credential types are now compatible with the `TokenCredential` interface from [`@azure/core-auth`](https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/core/core-auth), enabling them to be used with newer SDK libraries in `azure-sdk-for-js`.
 
