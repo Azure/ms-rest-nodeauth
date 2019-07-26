@@ -35,6 +35,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@azure/abort-controller": "1.0.0-preview.1",
     "@ts-common/azure-js-dev-tools": "^22.2.0",
     "@types/chai": "^4.1.7",
     "@types/dotenv": "^6.1.1",
