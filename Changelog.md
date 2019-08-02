@@ -1,6 +1,6 @@
 # Changelog
 ## 2.0.4 - 2019/08/02
-- Rolling back the min version of dependency `@azure/ms-rest-js` from `^2.0.3` to `^1.8.13` thereby fixing [#69](https://github.com/Azure/ms-rest-nodeauth/issues/69).
+- Rolled back the min version of dependency `@azure/ms-rest-js` from `^2.0.3` to `^1.8.13` thereby fixing [#69](https://github.com/Azure/ms-rest-nodeauth/issues/69).
 
 ## 2.0.3 - 2019/07/23
 - Updated min version of dependency `@azure/ms-rest-js` to `^2.0.3`.
