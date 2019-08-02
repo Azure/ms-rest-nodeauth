@@ -28,9 +28,9 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "@azure/core-auth": "1.0.0-preview.1",
+    "@azure/core-auth": "1.0.0-preview.2",
     "@azure/ms-rest-azure-env": "^2.0.0",
-    "@azure/ms-rest-js": "^2.0.3",
+    "@azure/ms-rest-js": "^2.0.4",
     "adal-node": "^0.1.28"
   },
   "license": "MIT",
