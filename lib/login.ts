@@ -422,9 +422,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   if (!options) {
     options = {};
   }
-  if (!options) {
-    options = {};
-  }
+
   if (!options.environment) {
     options.environment = Environment.AzureCloud;
   }
