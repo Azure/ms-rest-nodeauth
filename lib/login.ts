@@ -785,7 +785,7 @@ function _getSubscriptions(
   tokenAudience?: string): Promise<LinkedSubscription[]> {
   if (tokenAudience &&
     !managementPlaneTokenAudiences.some((item) => { return item === tokenAudience!.toLowerCase(); })) {
-    return Promise.resolve(([]));
+    return Promise.resolve([]);
   }
   return getSubscriptionsFromTenants(creds, tenants);
 }
