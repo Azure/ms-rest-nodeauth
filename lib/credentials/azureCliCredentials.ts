@@ -156,7 +156,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
       MSRestConstants.HeaderConstants.AUTHORIZATION,
       `${tokenResponse.tokenType} ${tokenResponse.accessToken}`
     );
-    return Promise.resolve(webResource);
+    return webResource;
   }
 
   private _hasTokenExpired(): boolean {

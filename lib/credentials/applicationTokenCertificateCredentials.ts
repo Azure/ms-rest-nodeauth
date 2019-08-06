@@ -54,12 +54,12 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
    */
   public async getToken(): Promise<TokenResponse> {
     try {
-      const tokenResponse = await this.getTokenFromCache();
-      return tokenResponse;
+      return await this.getTokenFromCache();
     } catch (error) {
       if (error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)) {
-        return Promise.reject(error);
+        throw error;
       }
+
       return new Promise((resolve, reject) => {
         const resource = this.getActiveDirectoryResourceId();
         this.authContext.acquireTokenWithClientCertificate(

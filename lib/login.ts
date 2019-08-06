@@ -171,20 +171,15 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
   if (!options.environment) {
     options.environment = Environment.AzureCloud;
   }
-  let creds: UserTokenCredentials;
-  let tenantList: string[] = [];
-  let subscriptionList: LinkedSubscription[] = [];
-  try {
-    creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment);
-    await creds.getToken();
-    // The token cache gets propulated for all the tenants as a part of building the tenantList.
-    tenantList = await buildTenantList(creds);
-    subscriptionList = await _getSubscriptions(creds, tenantList, options.tokenAudience);
 
-  } catch (err) {
-    return Promise.reject(err);
-  }
-  return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
+  const creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment);
+  await creds.getToken();
+
+  // The token cache gets propulated for all the tenants as a part of building the tenantList.
+  const tenantList = await buildTenantList(creds);
+  const subscriptionList: LinkedSubscription[] = await _getSubscriptions(creds, tenantList, options.tokenAudience);
+
+  return { credentials: creds, subscriptions: subscriptionList };
 }
 
 /**
@@ -210,16 +205,13 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
   if (!options.environment) {
     options.environment = Environment.AzureCloud;
   }
-  let creds: ApplicationTokenCredentials;
-  let subscriptionList: LinkedSubscription[] = [];
-  try {
-    creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
-    await creds.getToken();
-    subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
-  } catch (err) {
-    return Promise.reject(err);
-  }
-  return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
+
+  const creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
+  await creds.getToken();
+
+  const subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
+
+  return { credentials: creds, subscriptions: subscriptionList };
 }
 
 /**
@@ -247,16 +239,13 @@ export async function withServicePrincipalCertificateWithAuthResponse(clientId: 
   if (!options.environment) {
     options.environment = Environment.AzureCloud;
   }
-  let creds: ApplicationTokenCertificateCredentials;
-  let subscriptionList: LinkedSubscription[] = [];
-  try {
-    creds = ApplicationTokenCertificateCredentials.create(clientId, certificateStringOrFilePath, domain, options);
-    await creds.getToken();
-    subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
-  } catch (err) {
-    return Promise.reject(err);
-  }
-  return Promise.resolve({ credentials: creds, subscriptions: subscriptionList });
+
+  const creds = ApplicationTokenCertificateCredentials.create(clientId, certificateStringOrFilePath, domain, options);
+  await creds.getToken();
+
+  const subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
+
+  return { credentials: creds, subscriptions: subscriptionList };
 }
 
 function validateAuthFileContent(credsObj: any, filePath: string) {
@@ -337,17 +326,14 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
   const subscriptionEnvVariableName = options.subscriptionEnvVariableName || "AZURE_SUBSCRIPTION_ID";
   if (!filePath) {
     const msg = `Either provide an absolute file path to the auth file or set/export the environment variable - ${AuthConstants.AZURE_AUTH_LOCATION}.`;
-    return Promise.reject(new Error(msg));
+    throw new Error(msg);
   }
   let content: string, credsObj: any = {};
   const optionsForSp: any = {};
-  try {
-    content = readFileSync(filePath, { encoding: "utf8" });
-    credsObj = JSON.parse(content);
-    validateAuthFileContent(credsObj, filePath);
-  } catch (err) {
-    return Promise.reject(err);
-  }
+
+  content = readFileSync(filePath, { encoding: "utf8" });
+  credsObj = JSON.parse(content);
+  validateAuthFileContent(credsObj, filePath);
 
   if (!credsObj.managementEndpointUrl) {
     credsObj.managementEndpointUrl = credsObj.resourceManagerEndpointUrl;
@@ -436,9 +422,7 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   if (!options) {
     options = {};
   }
-  if (!options) {
-    options = {};
-  }
+
   if (!options.environment) {
     options.environment = Environment.AzureCloud;
   }
@@ -473,8 +457,6 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   const authorityUrl: string = interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
   const authContext = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
   interactiveOptions.context = authContext;
-  let userCodeResponse: any;
-  let creds: DeviceTokenCredentials;
 
   function tryAcquireToken(interactiveOptions: InteractiveLoginOptions, resolve: any, reject: any) {
     authContext.acquireUserCode(interactiveOptions.tokenAudience!, interactiveOptions.clientId!, interactiveOptions.language!, (err: any, userCodeRes: adal.UserCodeInfo) => {
@@ -484,47 +466,52 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
             tryAcquireToken(interactiveOptions, resolve, reject);
           }, 1000);
         } else {
-          return reject(err);
+          reject(err);
         }
+
+        return;
       }
-      userCodeResponse = userCodeRes;
+
       if (interactiveOptions.userCodeResponseLogger) {
-        interactiveOptions.userCodeResponseLogger(userCodeResponse.message);
+        interactiveOptions.userCodeResponseLogger(userCodeRes.message);
       } else {
-        console.log(userCodeResponse.message);
+        console.log(userCodeRes.message);
       }
-      return resolve(userCodeResponse);
+
+      return resolve(userCodeRes);
     });
   }
 
-  const getUserCode = new Promise<any>((resolve, reject) => {
+  const getUserCode = new Promise<adal.UserCodeInfo>((resolve, reject) => {
     return tryAcquireToken(interactiveOptions, resolve, reject);
   });
 
-  return getUserCode.then(() => {
-    return new Promise<DeviceTokenCredentials>((resolve, reject) => {
-      return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error: Error, tokenResponse: any) => {
-        if (error) {
-          return reject(error);
-        }
-        interactiveOptions.userName = tokenResponse.userId;
-        interactiveOptions.authorizationScheme = tokenResponse.tokenType;
-        try {
-          creds = new DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName,
-            interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);
-        } catch (err) {
-          return reject(err);
-        }
-        return resolve(creds);
-      });
+  const userCodeResponse = await getUserCode;
+  const creds = await new Promise<DeviceTokenCredentials>((resolve, reject) => {
+    return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
+      if (error) {
+        return reject(error);
+      }
+
+      const response = tokenResponse as adal.TokenResponse;
+      interactiveOptions.userName = response.userId;
+      interactiveOptions.authorizationScheme = response.tokenType;
+
+      let creds;
+      try {
+        creds = new DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName,
+          interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);
+      } catch (err) {
+        return reject(err);
+      }
+      return resolve(creds);
     });
-  }).then((creds) => {
-    return buildTenantList(creds);
-  }).then((tenants) => {
-    return _getSubscriptions(creds, tenants, interactiveOptions.tokenAudience);
-  }).then((subscriptions) => {
-    return Promise.resolve({ credentials: creds, subscriptions: subscriptions });
   });
+
+  const tenants = await buildTenantList(creds);
+  const subscriptions = await _getSubscriptions(creds, tenants, interactiveOptions.tokenAudience);
+
+  return { credentials: creds, subscriptions: subscriptions };
 }
 
 /**
@@ -572,9 +559,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
   const cb = callback as Function;
   if (!callback) {
     return withAuthFileWithAuthResponse(options).then((authRes) => {
-      return Promise.resolve(authRes.credentials);
-    }).catch((err) => {
-      return Promise.reject(err);
+      return authRes.credentials;
     });
   } else {
     msRest.promiseToCallback(withAuthFileWithAuthResponse(options))((err: Error, authRes: AuthResponse) => {
@@ -626,9 +611,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
   const cb = callback as Function;
   if (!callback) {
     return withInteractiveWithAuthResponse(options).then((authRes) => {
-      return Promise.resolve(authRes.credentials);
-    }).catch((err) => {
-      return Promise.reject(err);
+      return authRes.credentials;
     });
   } else {
     msRest.promiseToCallback(withInteractiveWithAuthResponse(options))((err: Error, authRes: AuthResponse) => {
@@ -677,9 +660,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
   const cb = callback as Function;
   if (!callback) {
     return withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options).then((authRes) => {
-      return Promise.resolve(authRes.credentials);
-    }).catch((err) => {
-      return Promise.reject(err);
+      return authRes.credentials;
     });
   } else {
     msRest.promiseToCallback(withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options))((err: Error, authRes: AuthResponse) => {
@@ -730,9 +711,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
   const cb = callback as Function;
   if (!callback) {
     return withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options).then((authRes) => {
-      return Promise.resolve(authRes.credentials);
-    }).catch((err) => {
-      return Promise.reject(err);
+      return authRes.credentials;
     });
   } else {
     msRest.promiseToCallback(withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options))((err: Error, authRes: AuthResponse) => {
@@ -783,9 +762,7 @@ export function withUsernamePassword(username: string, password: string, options
   const cb = callback as Function;
   if (!callback) {
     return withUsernamePasswordWithAuthResponse(username, password, options).then((authRes) => {
-      return Promise.resolve(authRes.credentials);
-    }).catch((err) => {
-      return Promise.reject(err);
+      return authRes.credentials;
     });
   } else {
     msRest.promiseToCallback(withUsernamePasswordWithAuthResponse(username, password, options))((err: Error, authRes: AuthResponse) => {
@@ -806,7 +783,7 @@ function _getSubscriptions(
   tokenAudience?: string): Promise<LinkedSubscription[]> {
   if (tokenAudience &&
     !managementPlaneTokenAudiences.some((item) => { return item === tokenAudience!.toLowerCase(); })) {
-    return Promise.resolve(([]));
+    return Promise.resolve([]);
   }
   return getSubscriptionsFromTenants(creds, tenants);
 }
@@ -821,20 +798,14 @@ function _getSubscriptions(
  * @param {string} [options.aadEndpoint] - The add endpoint for authentication. default - "https://login.microsoftonline.com"
  * @param {any} callback - the callback function.
  */
-function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> {
+async function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> {
   if (!options) {
     options = {};
   }
 
-  return new Promise((resolve, reject) => {
-    const creds = new MSIVmTokenCredentials(options);
-    creds.getToken().then((_tokenResponse) => {
-      // We ignore the token response, it's put in the cache.
-      return resolve(creds);
-    }).catch(error => {
-      reject(error);
-    });
-  });
+  const creds = new MSIVmTokenCredentials(options);
+  await creds.getToken();
+  return creds;
 }
 
 /**
@@ -898,20 +869,14 @@ export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCrede
 /**
  * Private method
  */
-function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials> {
+async function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials> {
   if (!options) {
     options = {};
   }
 
-  return new Promise((resolve, reject) => {
-    const creds = new MSIAppServiceTokenCredentials(options);
-    creds.getToken().then((_tokenResponse) => {
-      // We ignore the token response, it's put in the cache.
-      return resolve(creds);
-    }).catch(error => {
-      reject(error);
-    });
-  });
+  const creds = new MSIAppServiceTokenCredentials(options);
+  await creds.getToken();
+  return creds;
 }
 
 /**

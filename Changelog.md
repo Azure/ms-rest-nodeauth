@@ -1,4 +1,8 @@
 # Changelog
+
+## 3.0.1 - 2019/08/06
+- Reduce number of `Promise` object allocations inside `async` functions.
+
 ## 3.0.0 - 2019/08/02
 - **Breaking change:**
   - Updated min version of dependency `@azure/ms-rest-js` from `^1.8.13` to `^2.0.4` there by fixing [#67](https://github.com/Azure/ms-rest-nodeauth/issues/67).

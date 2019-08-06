@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCredentials";
-import { HttpOperationResponse, RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
+import { RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
 
 /**
  * @interface MSIAppServiceOptions Defines the optional parameters for authentication with MSI for AppService.
@@ -93,15 +93,13 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    */
   async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();
-    let opRes: HttpOperationResponse;
-    let result: MSITokenResponse;
 
-    opRes = await this._httpClient.sendRequest(reqOptions);
+    const opRes = await this._httpClient.sendRequest(reqOptions);
     if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
       throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
     }
 
-    result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
+    const result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
     if (!result.tokenType) {
       throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
     } else if (!result.accessToken) {
