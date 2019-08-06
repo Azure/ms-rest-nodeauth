@@ -30,8 +30,6 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
   }
 
   protected async getTokenFromCache(): Promise<TokenResponse> {
-    const self = this;
-
     // a thin wrapper over the base implementation. try get token from cache, additionaly clean up cache if required.
     try {
       return await super.getTokenFromCache(undefined);
@@ -39,8 +37,8 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
       // Remove the stale token from the tokencache. ADAL gives the same error message "Entry not found in cache."
       // for entry not being present in the cache and for accessToken being expired in the cache. We do not want the token cache
       // to contain the expired token, we clean it up here.
-      const status = await self.removeInvalidItemsFromCache({
-        _clientId: self.clientId
+      const status = await this.removeInvalidItemsFromCache({
+        _clientId: this.clientId
       });
 
       if (status.result) {
