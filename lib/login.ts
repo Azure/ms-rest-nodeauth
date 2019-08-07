@@ -15,7 +15,6 @@ import { AuthConstants, TokenAudience } from "./util/authConstants";
 import { buildTenantList, getSubscriptionsFromTenants, LinkedSubscription } from "./subscriptionManagement/subscriptionUtils";
 import { MSIVmTokenCredentials, MSIVmOptions } from "./credentials/msiVmTokenCredentials";
 import { MSIAppServiceTokenCredentials, MSIAppServiceOptions } from "./credentials/msiAppServiceTokenCredentials";
-import { MSITokenResponse } from "./credentials/msiTokenCredentials";
 
 /**
  * @constant {Array<string>} managementPlaneTokenAudiences - Urls for management plane token
@@ -857,11 +856,11 @@ export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCrede
   if (!callback) {
     return _withMSI(options as MSIVmOptions);
   } else {
-    msRest.promiseToCallback(_withMSI(options as MSIVmOptions))((err: Error, tokenRes: MSITokenResponse) => {
+    msRest.promiseToCallback(_withMSI(options as MSIVmOptions))((err: Error, creds: MSIVmTokenCredentials) => {
       if (err) {
         return cb(err);
       }
-      return cb(undefined, tokenRes);
+      return cb(undefined, creds);
     });
   }
 }
@@ -916,11 +915,11 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
   if (!callback) {
     return _withAppServiceMSI(options as MSIAppServiceOptions);
   } else {
-    msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))((err: Error, tokenRes: MSITokenResponse) => {
+    msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))((err: Error, creds: MSIAppServiceTokenCredentials) => {
       if (err) {
         return cb(err);
       }
-      return cb(undefined, tokenRes);
+      return cb(undefined, creds);
     });
   }
 }
