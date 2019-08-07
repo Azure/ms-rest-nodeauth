@@ -548,19 +548,19 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
  */
 export function withAuthFile(): Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>;
 export function withAuthFile(options: LoginWithAuthFileOptions): Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>;
-export function withAuthFile(options: LoginWithAuthFileOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function withAuthFile(options: LoginWithAuthFileOptions, callback: { (err: Error | undefined, credentials?: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions?: Array<LinkedSubscription>): void }): void;
 export function withAuthFile(callback: any): void;
-export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials> {
+export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error | undefined, credentials?: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions?: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
-  const cb = callback as Function;
   if (!callback) {
     return withAuthFileWithAuthResponse(options).then((authRes) => {
       return authRes.credentials;
     });
   } else {
+    const cb = callback;
     msRest.promiseToCallback(withAuthFileWithAuthResponse(options))((err: Error, authRes: AuthResponse<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>) => {
       if (err) {
         return cb(err);
@@ -600,19 +600,19 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  */
 export function interactive(): Promise<DeviceTokenCredentials>;
 export function interactive(options: InteractiveLoginOptions): Promise<DeviceTokenCredentials>;
-export function interactive(options: InteractiveLoginOptions, callback: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function interactive(options: InteractiveLoginOptions, callback: { (err: Error | undefined, credentials?: DeviceTokenCredentials, subscriptions?: Array<LinkedSubscription>): void }): void;
 export function interactive(callback: any): void;
-export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<DeviceTokenCredentials> {
+export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error | undefined, credentials?: DeviceTokenCredentials, subscriptions?: Array<LinkedSubscription>): void }): void | Promise<DeviceTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
-  const cb = callback as Function;
   if (!callback) {
     return withInteractiveWithAuthResponse(options).then((authRes) => {
       return authRes.credentials;
     });
   } else {
+    const cb = callback;
     msRest.promiseToCallback(withInteractiveWithAuthResponse(options))((err: Error, authRes: AuthResponse<DeviceTokenCredentials>) => {
       if (err) {
         return cb(err);
@@ -649,19 +649,19 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  */
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string): Promise<ApplicationTokenCredentials>;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error | undefined, credentials?: ApplicationTokenCredentials, subscriptions?: Array<LinkedSubscription>): void }): void;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, callback: any): void;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCredentials> {
+export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error | undefined, credentials?: ApplicationTokenCredentials, subscriptions?: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
-  const cb = callback as Function;
   if (!callback) {
     return withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options).then((authRes) => {
       return authRes.credentials;
     });
   } else {
+    const cb = callback;
     msRest.promiseToCallback(withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options))((err: Error, authRes: AuthResponse<ApplicationTokenCredentials>) => {
       if (err) {
         return cb(err);
@@ -700,19 +700,19 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  */
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string): Promise<ApplicationTokenCertificateCredentials>;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCertificateCredentials>;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error | undefined, credentials?: ApplicationTokenCertificateCredentials, subscriptions?: Array<LinkedSubscription>): void }): void;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, callback: any): void;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCertificateCredentials> {
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error | undefined, credentials?: ApplicationTokenCertificateCredentials, subscriptions?: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCertificateCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
-  const cb = callback as Function;
   if (!callback) {
     return withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options).then((authRes) => {
       return authRes.credentials;
     });
   } else {
+    const cb = callback;
     msRest.promiseToCallback(withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options))((err: Error, authRes: AuthResponse<ApplicationTokenCertificateCredentials>) => {
       if (err) {
         return cb(err);
@@ -752,18 +752,18 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
 export function withUsernamePassword(username: string, password: string): Promise<UserTokenCredentials>;
 export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions): Promise<UserTokenCredentials>;
 export function withUsernamePassword(username: string, password: string, callback: any): void;
-export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions, callback: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
-export function withUsernamePassword(username: string, password: string, options?: LoginWithUsernamePasswordOptions, callback?: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<UserTokenCredentials> {
+export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions, callback: { (err: Error | undefined, credentials?: UserTokenCredentials, subscriptions?: Array<LinkedSubscription>): void }): void;
+export function withUsernamePassword(username: string, password: string, options?: LoginWithUsernamePasswordOptions, callback?: { (err: Error | undefined, credentials?: UserTokenCredentials, subscriptions?: Array<LinkedSubscription>): void }): void | Promise<UserTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
-  const cb = callback as Function;
   if (!callback) {
     return withUsernamePasswordWithAuthResponse(username, password, options).then((authRes) => {
       return authRes.credentials;
     });
   } else {
+    const cb = callback;
     msRest.promiseToCallback(withUsernamePasswordWithAuthResponse(username, password, options))((err: Error, authRes: AuthResponse<UserTokenCredentials>) => {
       if (err) {
         return cb(err);
@@ -852,10 +852,10 @@ export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCrede
     callback = options;
     options = {};
   }
-  const cb = callback as Function;
   if (!callback) {
     return _withMSI(options as MSIVmOptions);
   } else {
+    const cb = callback;
     msRest.promiseToCallback(_withMSI(options as MSIVmOptions))((err: Error, creds: MSIVmTokenCredentials) => {
       if (err) {
         return cb(err);
@@ -911,10 +911,10 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
     callback = options;
     options = {};
   }
-  const cb = callback as Function;
   if (!callback) {
     return _withAppServiceMSI(options as MSIAppServiceOptions);
   } else {
+    const cb = callback;
     msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))((err: Error, creds: MSIAppServiceTokenCredentials) => {
       if (err) {
         return cb(err);
