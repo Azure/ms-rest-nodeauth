@@ -550,7 +550,7 @@ export function withAuthFile(): Promise<ApplicationTokenCredentials | Applicatio
 export function withAuthFile(options: LoginWithAuthFileOptions): Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>;
 export function withAuthFile(options: LoginWithAuthFileOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withAuthFile(callback: any): void;
-export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -602,7 +602,7 @@ export function interactive(): Promise<DeviceTokenCredentials>;
 export function interactive(options: InteractiveLoginOptions): Promise<DeviceTokenCredentials>;
 export function interactive(options: InteractiveLoginOptions, callback: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function interactive(callback: any): void;
-export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<DeviceTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -651,7 +651,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, callback: any): void;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -702,7 +702,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, callback: any): void;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCertificateCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -753,7 +753,7 @@ export function withUsernamePassword(username: string, password: string): Promis
 export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions): Promise<UserTokenCredentials>;
 export function withUsernamePassword(username: string, password: string, callback: any): void;
 export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions, callback: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
-export function withUsernamePassword(username: string, password: string, options?: LoginWithUsernamePasswordOptions, callback?: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withUsernamePassword(username: string, password: string, options?: LoginWithUsernamePasswordOptions, callback?: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<UserTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
