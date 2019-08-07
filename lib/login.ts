@@ -547,11 +547,11 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
  *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withAuthFile(): Promise<TokenCredentialsBase>;
-export function withAuthFile(options: LoginWithAuthFileOptions): Promise<TokenCredentialsBase>;
-export function withAuthFile(options: LoginWithAuthFileOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function withAuthFile(): Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>;
+export function withAuthFile(options: LoginWithAuthFileOptions): Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>;
+export function withAuthFile(options: LoginWithAuthFileOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withAuthFile(callback: any): void;
-export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
