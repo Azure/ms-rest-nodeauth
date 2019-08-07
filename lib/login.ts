@@ -156,9 +156,9 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
- * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ * @returns {Promise<AuthResponse<UserTokenCredentials>>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withUsernamePasswordWithAuthResponse(username: string, password: string, options?: LoginWithUsernamePasswordOptions): Promise<AuthResponse> {
+export async function withUsernamePasswordWithAuthResponse(username: string, password: string, options?: LoginWithUsernamePasswordOptions): Promise<AuthResponse<UserTokenCredentials>> {
   if (!options) {
     options = {};
   }
@@ -196,9 +196,9 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
- * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ * @returns {Promise<AuthResponse<ApplicationTokenCredentials>>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withServicePrincipalSecretWithAuthResponse(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse> {
+export async function withServicePrincipalSecretWithAuthResponse(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse<ApplicationTokenCredentials>> {
   if (!options) {
     options = {};
   }
@@ -230,9 +230,9 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
- * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ * @returns {Promise<AuthResponse<ApplicationTokenCertificateCredentials>>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withServicePrincipalCertificateWithAuthResponse(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse> {
+export async function withServicePrincipalCertificateWithAuthResponse(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse<ApplicationTokenCertificateCredentials>> {
   if (!options) {
     options = {};
   }
@@ -318,9 +318,9 @@ function foundManagementEndpointUrl(authFileUrl: string, envUrl: string): boolea
  * name. Default is "AZURE_SUBSCRIPTION_ID".
  * @param {function} [optionalCallback] The optional callback.
  *
- * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ * @returns {Promise<AuthResponse<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOptions): Promise<AuthResponse> {
+export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOptions): Promise<AuthResponse<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>> {
   if (!options) options = { filePath: "" };
   const filePath = options.filePath || process.env[AuthConstants.AZURE_AUTH_LOCATION];
   const subscriptionEnvVariableName = options.subscriptionEnvVariableName || "AZURE_SUBSCRIPTION_ID";
@@ -416,9 +416,9 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  *
  * @param {function} [optionalCallback] The optional callback.
  *
- * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
+ * @returns {Promise<AuthResponse<DeviceTokenCredentials>>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withInteractiveWithAuthResponse(options?: InteractiveLoginOptions): Promise<AuthResponse> {
+export async function withInteractiveWithAuthResponse(options?: InteractiveLoginOptions): Promise<AuthResponse<DeviceTokenCredentials>> {
   if (!options) {
     options = {};
   }
@@ -562,7 +562,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withAuthFileWithAuthResponse(options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(withAuthFileWithAuthResponse(options))((err: Error, authRes: AuthResponse<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>) => {
       if (err) {
         return cb(err);
       }
@@ -614,7 +614,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withInteractiveWithAuthResponse(options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(withInteractiveWithAuthResponse(options))((err: Error, authRes: AuthResponse<DeviceTokenCredentials>) => {
       if (err) {
         return cb(err);
       }
@@ -663,7 +663,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options))((err: Error, authRes: AuthResponse<ApplicationTokenCredentials>) => {
       if (err) {
         return cb(err);
       }
@@ -714,7 +714,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options))((err: Error, authRes: AuthResponse<ApplicationTokenCertificateCredentials>) => {
       if (err) {
         return cb(err);
       }
@@ -765,7 +765,7 @@ export function withUsernamePassword(username: string, password: string, options
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withUsernamePasswordWithAuthResponse(username, password, options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(withUsernamePasswordWithAuthResponse(username, password, options))((err: Error, authRes: AuthResponse<UserTokenCredentials>) => {
       if (err) {
         return cb(err);
       }
