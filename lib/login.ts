@@ -106,11 +106,11 @@ export interface InteractiveLoginOptions extends LoginWithUsernamePasswordOption
 /**
  * @interface AuthResponse - Describes the authentication response.
  */
-export interface AuthResponse {
+export interface AuthResponse<T extends TokenCredentialsBase = TokenCredentialsBase> {
   /**
    *  @property {TokenCredentialsBase} credentials - The credentials object.
    */
-  credentials: TokenCredentialsBase;
+  credentials: T;
   /**
    * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions.
    */
