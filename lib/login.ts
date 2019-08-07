@@ -699,7 +699,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  *             @reject {Error} - The error object.
  */
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string): Promise<ApplicationTokenCertificateCredentials>;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
+export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCertificateCredentials>;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, callback: any): void;
 export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void | Promise<ApplicationTokenCertificateCredentials> {
