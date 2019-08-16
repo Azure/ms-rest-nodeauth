@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.2 - 2019/08/16
+- Fix bug prevent tenant IDs from being discovered on auth
+
 ## 3.0.1 - 2019/08/06
 - Reduce number of `Promise` object allocations inside `async` functions.
 
