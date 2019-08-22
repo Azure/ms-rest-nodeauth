@@ -78,13 +78,11 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
         }
 
         if (entries && entries.length > 0) {
-          return new Promise(resolve => {
-            return self.tokenCache.remove(entries, (err: Error) => {
-              if (err) {
-                return resolve({ result: false, details: err });
-              }
-              return resolve({ result: true });
-            });
+          return self.tokenCache.remove(entries, (err: Error) => {
+            if (err) {
+              return resolve({ result: false, details: err });
+            }
+            return resolve({ result: true });
           });
         } else {
           return resolve({ result: true });

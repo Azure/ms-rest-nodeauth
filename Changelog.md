@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.2 - 2019/08/22
+
+- Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
+
 ## 3.0.2 - 2019/08/16
 - Fix bug prevent tenant IDs from being discovered on auth
 
@@ -27,7 +31,7 @@
 
 ## 2.0.0 - 2019/05/20
 - Added support for client_id, object_id and ms_res_id query parameters for VmMSI. Fixes [#58](https://github.com/Azure/ms-rest-nodeauth/issues/58).
-- **Breaking change:** 
+- **Breaking change:**
   - Added support to get token for a different resource like Azure Keyvault, Azure Batch, Azure Graph apart from the default Azure Resource Manager resource via `AzureCliCredentials`.
   - `AzureCliCredentials.create()` now takes an optional parameter where the user can specify the subscriptionId and the resource for which the token is required.
   - `AzureCliCredentials.getDefaultSubscription()` has been changed to `AzureCliCredentials.getSubscription(subscriptionIdOrName?: string)`.
