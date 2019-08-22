@@ -30,33 +30,31 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
   }
 
   protected async getTokenFromCache(): Promise<TokenResponse> {
-    const self = this;
-
     // a thin wrapper over the base implementation. try get token from cache, additionaly clean up cache if required.
     try {
-      const tokenResponse = await super.getTokenFromCache(undefined);
-      return Promise.resolve(tokenResponse);
+      return await super.getTokenFromCache(undefined);
     } catch (error) {
       // Remove the stale token from the tokencache. ADAL gives the same error message "Entry not found in cache."
       // for entry not being present in the cache and for accessToken being expired in the cache. We do not want the token cache
       // to contain the expired token, we clean it up here.
-      const status = await self.removeInvalidItemsFromCache({
-        _clientId: self.clientId
+      const status = await this.removeInvalidItemsFromCache({
+        _clientId: this.clientId
       });
+
       if (status.result) {
-        return Promise.reject(error);
+        throw error;
       }
+
       const message =
         status && status.details && status.details.message
           ? status.details.message
           : status.details;
-      return Promise.reject(
-        new Error(
-          AuthConstants.SDK_INTERNAL_ERROR +
-          " : " +
-          "critical failure while removing expired token for service principal from token cache. " +
-          message
-        )
+
+      throw new Error(
+        AuthConstants.SDK_INTERNAL_ERROR +
+        " : " +
+        "critical failure while removing expired token for service principal from token cache. " +
+        message
       );
     }
   }
@@ -80,13 +78,11 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
         }
 
         if (entries && entries.length > 0) {
-          return new Promise(resolve => {
-            return self.tokenCache.remove(entries, (err: Error) => {
-              if (err) {
-                return resolve({ result: false, details: err });
-              }
-              return resolve({ result: true });
-            });
+          return self.tokenCache.remove(entries, (err: Error) => {
+            if (err) {
+              return resolve({ result: false, details: err });
+            }
+            return resolve({ result: true });
           });
         } else {
           return resolve({ result: true });

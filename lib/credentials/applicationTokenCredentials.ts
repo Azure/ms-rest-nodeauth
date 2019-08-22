@@ -44,14 +44,13 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
    */
   public async getToken(): Promise<TokenResponse> {
     try {
-      const tokenResponse = await this.getTokenFromCache();
-      return tokenResponse;
+      return await this.getTokenFromCache();
     } catch (error) {
       if (
         error.message &&
         error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)
       ) {
-        return Promise.reject(error);
+        throw error;
       }
       const resource = this.getActiveDirectoryResourceId();
       return new Promise((resolve, reject) => {

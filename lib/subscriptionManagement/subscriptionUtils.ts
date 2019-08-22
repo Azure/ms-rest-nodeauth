@@ -78,7 +78,7 @@ export interface LinkedSubscription {
  */
 export async function buildTenantList(credentials: TokenCredentialsBase, apiVersion = "2016-06-01"): Promise<string[]> {
   if (credentials.domain && credentials.domain !== AuthConstants.AAD_COMMON_TENANT) {
-    return Promise.resolve([credentials.domain]);
+    return [credentials.domain];
   }
 
   const client = new msRest.ServiceClient(credentials);
@@ -88,18 +88,13 @@ export async function buildTenantList(credentials: TokenCredentialsBase, apiVers
     url: reqUrl,
     method: "GET",
   };
-  let res: msRest.HttpOperationResponse;
-  try {
-    res = await client.sendRequest(req);
-  } catch (err) {
-    return Promise.reject(err);
-  }
+  const res = await client.sendRequest(req);
   const result: string[] = [];
   const tenants: any = res.parsedBody;
-  for (const tenant in tenants.value) {
-    result.push((<any>tenant).tenantId);
+  for (const tenant of tenants.value) {
+    result.push(tenant.tenantId);
   }
-  return Promise.resolve(result);
+  return result;
 }
 
 export async function getSubscriptionsFromTenants(credentials: TokenCredentialsBase, tenantList: string[], apiVersion = "2016-06-01"): Promise<LinkedSubscription[]> {
@@ -122,13 +117,8 @@ export async function getSubscriptionsFromTenants(credentials: TokenCredentialsB
       url: reqUrl,
       method: "GET",
     };
-    let res: msRest.HttpOperationResponse;
-    try {
-      res = await client.sendRequest(req);
-    } catch (err) {
-      return Promise.reject(err);
-    }
 
+    const res = await client.sendRequest(req);
     const subscriptionList: any[] = (<any>res.parsedBody).value;
     subscriptions = subscriptions.concat(subscriptionList.map((s: any) => {
       s.tenantId = tenant;
@@ -144,5 +134,5 @@ export async function getSubscriptionsFromTenants(credentials: TokenCredentialsB
   }
   // Reset the original domain.
   credentials.domain = originalDomain;
-  return Promise.resolve(subscriptions);
+  return subscriptions;
 }

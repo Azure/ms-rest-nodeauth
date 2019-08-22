@@ -1,6 +1,12 @@
 # Changelog
+
+## 2.0.5 - 2019/08/22
+- Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
+- Fix bug prevent tenant IDs from being discovered on auth
+- Reduce number of `Promise` object allocations inside `async` functions.
+
 ## 2.0.4 - 2019/08/02
-- Rolling back the min version of dependency `@azure/ms-rest-js` from `^2.0.3` to `^1.8.13` thereby fixing [#69](https://github.com/Azure/ms-rest-nodeauth/issues/69).
+- Rolled back the min version of dependency `@azure/ms-rest-js` from `^2.0.3` to `^1.8.13` thereby fixing [#69](https://github.com/Azure/ms-rest-nodeauth/issues/69).
 
 ## 2.0.3 - 2019/07/23
 - Updated min version of dependency `@azure/ms-rest-js` to `^2.0.3`.
@@ -16,7 +22,7 @@
 
 ## 2.0.0 - 2019/05/20
 - Added support for client_id, object_id and ms_res_id query parameters for VmMSI. Fixes [#58](https://github.com/Azure/ms-rest-nodeauth/issues/58).
-- **Breaking change:** 
+- **Breaking change:**
   - Added support to get token for a different resource like Azure Keyvault, Azure Batch, Azure Graph apart from the default Azure Resource Manager resource via `AzureCliCredentials`.
   - `AzureCliCredentials.create()` now takes an optional parameter where the user can specify the subscriptionId and the resource for which the token is required.
   - `AzureCliCredentials.getDefaultSubscription()` has been changed to `AzureCliCredentials.getSubscription(subscriptionIdOrName?: string)`.

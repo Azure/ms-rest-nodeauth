@@ -145,6 +145,6 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
     webResource.headers.set(Constants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
-    return Promise.resolve(webResource);
+    return webResource;
   }
 }

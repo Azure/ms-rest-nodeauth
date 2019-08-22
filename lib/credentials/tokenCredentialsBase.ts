@@ -84,6 +84,6 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
     webResource.headers.set(MSRestConstants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
-    return Promise.resolve(webResource);
+    return webResource;
   }
 }
