@@ -119,7 +119,7 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIVmOptions = {
-  port: 50342;
+  port: 50342,
 }
 
 msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
@@ -134,7 +134,7 @@ msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIAppServiceOptions = {
-  msiEndpoint: "http://127.0.0.1:41741/MSI/token/";
+  clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
 }
 
 msRestNodeAuth.loginWithAppServiceMSI(options).then((msiTokenRes) => {
