@@ -36,8 +36,6 @@ async function main(): Promise<void> {
       `Subscriptions of tenant ${tenants[0]}`,
       tenantAuthentication.subscriptions
     );
-
-    // If you have already authenticated and you wish
   } catch (err) {
     console.log(err);
   }
