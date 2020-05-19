@@ -509,7 +509,15 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   });
 
   const tenants = await buildTenantList(creds);
-  const subscriptions = await _getSubscriptions(creds, tenants, interactiveOptions.tokenAudience);
+  let subscriptions: LinkedSubscription[] = [];
+
+  for (const tenant of tenants) {
+    creds.setDomain(tenant);
+    subscriptions = [
+      ...subscriptions,
+      ...await _getSubscriptions(creds, tenants, interactiveOptions.tokenAudience)
+    ];
+  }
 
   return { credentials: creds, subscriptions: subscriptions };
 }
