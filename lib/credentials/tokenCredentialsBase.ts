@@ -8,7 +8,7 @@ import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
-  public readonly authContext: AuthenticationContext;
+  private _authContext?: AuthenticationContext;
 
   public constructor(
     public readonly clientId: string,
@@ -30,8 +30,17 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
         It must be the actual tenant (preferrably a string in a guid format)."}`);
     }
 
+    this.setDomain(domain);
+  }
+
+  get authContext(): AuthenticationContext {
+    return this._authContext!;
+  }
+
+  public setDomain(domain: string): void {
+    this.domain = domain;
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
-    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
+    this._authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
   }
 
   protected getActiveDirectoryResourceId(): string {

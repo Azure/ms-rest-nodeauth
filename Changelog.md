@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.4 - 2020/05/19
+
+- Made `buildTenantList` public, to allow users to retrieve all of their tenants after authenticating.
+- Added a new public method to `TokenCredentialsBase` called `setDomain` that can be used to force Adal to renew the token against a different tenant.
+- Added a sample expressing different ways to work around the [issue #89](https://github.com/Azure/ms-rest-nodeauth/issues/89).
+
 ## 3.0.2 - 2019/08/22
 
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.

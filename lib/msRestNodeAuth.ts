@@ -11,7 +11,7 @@ export { MSIVmOptions, MSIVmTokenCredentials } from "./credentials/msiVmTokenCre
 export { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
 export { UserTokenCredentials } from "./credentials/userTokenCredentials";
 export { AuthConstants, TokenAudience } from "./util/authConstants";
-export { LinkedSubscription, LinkedUser, UserType } from "./subscriptionManagement/subscriptionUtils";
+export { LinkedSubscription, LinkedUser, UserType, buildTenantList } from "./subscriptionManagement/subscriptionUtils";
 export {
   AzureCliCredentials,
   CliAccessToken,
