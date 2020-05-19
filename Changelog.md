@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.4 - 2020/05/19
+
+- Fixed a [bug](https://github.com/Azure/ms-rest-nodeauth/issues/89) where `interactiveLoginWithAuthResponse` would not return organizations for Azure accounts outside of organizations.
+
 ## 3.0.2 - 2019/08/22
 
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
