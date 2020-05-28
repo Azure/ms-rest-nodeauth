@@ -28,14 +28,8 @@ async function main(): Promise<void> {
     const subscriptions = await client.subscriptions.list();
     console.log(`Subscriptions of tenant ${tenants[0]}`, subscriptions);
 
-    // You can also authenticate for a known tenant directly:
-    const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse(
-      { domain: tenants[0] }
-    );
-    console.log(
-      `Subscriptions of tenant ${tenants[0]}`,
-      tenantAuthentication.subscriptions
-    );
+    // You can skip all of the above, if you already know the tenant id
+    // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
   } catch (err) {
     console.log(err);
   }
