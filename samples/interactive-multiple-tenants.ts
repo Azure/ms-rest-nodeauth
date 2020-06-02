@@ -7,8 +7,21 @@ dotenv.config();
 // then from the root of the cloned repo run, ts-node ./samples/interactive.ts
 async function main(): Promise<void> {
   try {
-    // Personal accounts will find no subscriptions on the initial authentication request.
+    // Personal accounts will return no subscriptions on the initial authentication request unless domain is specified.
     // This is because the credentials are generated without specifying a tenant.
+    //
+    // For more context:
+    // When we authenticate with the Azure Active Directory (AAD), it attempts to associate
+    // the authenticating user with a target "directory". This directory is specified by the given "domain".
+    // If no domain is specified, the "common" domain is assumed.
+    // In this common domain, while organizations might have shared resources, personal accounts will show nothing.
+    // In AAD v2, the "organizations" domain was added, to allow users to authenticate and view all of the available resources
+    // regardless of the type of account they might have.
+    // Since ms-rest-nodeauth only supports AAD v1, we have to change the domain after authenticating, as shown in this sample.
+    //
+    // Our new `@azure/identity` package provides support for AAD v2:
+    // https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/identity/identity
+
     const initialAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse();
     console.log(
       "Subscriptions retrieved by default",
