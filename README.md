@@ -1,7 +1,15 @@
 # ms-rest-nodeauth [![Build Status](https://dev.azure.com/azure-public/adx/_apis/build/status/public.Azure.ms-rest-nodeauth)](https://dev.azure.com/azure-public/adx/_build/latest?definitionId=9)
 
 This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing a good TypeScript experience.
+
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
+
+Things to consider:
+
+- Many of these authentication methods accept a `domain` to be specified, which accepts `tenants` to be passed in.
+- For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically.
+- Users need to call to the `setDomain` method of the returned credential with the tenant of their preference in order to access their resources.
+- Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
 
 ### Example
 
