@@ -62,6 +62,9 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
 
       return new Promise((resolve, reject) => {
         const resource = this.getActiveDirectoryResourceId();
+        if (!this.authContext) {
+          return reject(new Error("Missing authContext"));
+        }
         this.authContext.acquireTokenWithClientCertificate(
           resource,
           this.clientId,

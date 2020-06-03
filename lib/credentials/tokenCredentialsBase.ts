@@ -8,15 +8,15 @@ import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
-  private _authContext?: AuthenticationContext;
+  public authContext?: AuthenticationContext;
 
   public constructor(
     public readonly clientId: string,
     public domain: string,
     public readonly tokenAudience?: TokenAudience,
     public readonly environment: Environment = Environment.AzureCloud,
-    public tokenCache: TokenCache = new MemoryCache()) {
-
+    public tokenCache: TokenCache = new MemoryCache()
+  ) {
     if (!clientId || typeof clientId.valueOf() !== "string") {
       throw new Error("clientId must be a non empty string.");
     }
@@ -33,14 +33,10 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     this.setDomain(domain);
   }
 
-  get authContext(): AuthenticationContext {
-    return this._authContext!;
-  }
-
   public setDomain(domain: string): void {
     this.domain = domain;
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
-    this._authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
+    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
   }
 
   protected getActiveDirectoryResourceId(): string {
@@ -61,6 +57,9 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     const resource = this.getActiveDirectoryResourceId();
 
     return new Promise<TokenResponse>((resolve, reject) => {
+      if (!self.authContext) {
+        return reject(new Error("Missing authContext"));
+      }
       self.authContext.acquireToken(resource, username!, self.clientId, (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
         if (error) {
           return reject(error);

@@ -77,6 +77,9 @@ export class UserTokenCredentials extends TokenCredentialsBase {
       const resource = this.getActiveDirectoryResourceId();
 
       return new Promise<TokenResponse>((resolve, reject) => {
+        if (!self.authContext) {
+          return reject(new Error("Missing authContext"));
+        }
         self.authContext.acquireTokenWithUsernamePassword(resource, self.username, self.password, self.clientId,
           (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
             if (error) {
