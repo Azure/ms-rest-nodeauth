@@ -147,7 +147,7 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
- * 
+ *
  * @param {string} username The user name for the Organization Id account.
  * @param {string} password The password for the Organization Id account.
  * @param {object} [options] Object representing optional parameters.
@@ -188,7 +188,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
 
 /**
  * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
- * 
+ *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
@@ -224,7 +224,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
 
 /**
  * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
- * 
+ *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
@@ -405,9 +405,9 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
  * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
- * 
+ *
  * The `subscriptions` property in the AuthResponse will be an empty array for personal accounts.
- * 
+ *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
  *
  * @param {object} [options] Object representing optional parameters.
@@ -590,7 +590,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
  * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
- * 
+ *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
@@ -645,7 +645,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
 
 /**
  * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
- * 
+ *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
@@ -698,7 +698,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
 
 /**
  * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
- * 
+ *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
@@ -758,7 +758,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
- * 
+ *
  * @param {string} username The user name for the Organization Id account.
  * @param {string} password The password for the Organization Id account.
  * @param {object} [options] Object representing optional parameters.
