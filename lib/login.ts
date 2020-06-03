@@ -54,12 +54,12 @@ if (process.env["AZURE_ADAL_LOGGING_ENABLED"]) {
 }
 
 /**
- * @interface AzureTokenCredentialsOptions - Describes optional parameters for serviceprincipal/secret authentication.
+ * @interface AzureTokenCredentialsOptions - Describes optional parameters for servicePrincipal/secret authentication.
  */
 export interface AzureTokenCredentialsOptions {
   /**
    * @property {TokenAudience} [tokenAudience] - The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
-   * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+   * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
    */
   tokenAudience?: TokenAudience;
   /**
@@ -155,7 +155,7 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
- * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
@@ -179,7 +179,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
   const creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment);
   await creds.getToken();
 
-  // The token cache gets propulated for all the tenants as a part of building the tenantList.
+  // The token cache gets populated for all the tenants as a part of building the tenantList.
   const tenantList = await buildTenantList(creds);
   const subscriptionList: LinkedSubscription[] = await _getSubscriptions(creds, tenantList, options.tokenAudience);
 
@@ -187,7 +187,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
 }
 
 /**
- * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  * 
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
@@ -200,7 +200,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
- * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
@@ -223,7 +223,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
 }
 
 /**
- * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  * 
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
@@ -238,7 +238,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
- * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
@@ -417,7 +417,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  * for an example.
  *
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
- * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferably in a guid format).
  *
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
  *
@@ -600,7 +600,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
- * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferrably in a guid format).
+ * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
  * @param {Environment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
@@ -657,7 +657,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
- * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
@@ -712,7 +712,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  * @param {string} domain The domain or tenant id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
- * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
@@ -766,7 +766,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
- * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+ * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
  * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
@@ -972,7 +972,7 @@ export async function execAz(cmd: string): Promise<any> {
         try {
           return resolve(JSON.parse(stdout));
         } catch (err) {
-          const msg = `An error occured while parsing the output "${stdout}", of ` +
+          const msg = `An error occurred while parsing the output "${stdout}", of ` +
             `the cmd "${cmd}": ${err.stack}.`;
           return reject(new Error(msg));
         }
