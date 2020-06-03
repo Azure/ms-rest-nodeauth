@@ -1,6 +1,10 @@
 # Changelog
 
-## 3.0.4 - 2020/05/19
+## 3.0.5 - 2020/06/03
+
+- Fixed breaking changes introduced in 3.0.4.
+
+## 3.0.4 - 2020/05/19 (deprecated)
 
 - Made `buildTenantList` public, to allow users to retrieve all of their tenants after authenticating.
 - Added a new public method to `TokenCredentialsBase` called `setDomain` that can be used to force Adal to renew the token against a different tenant.
