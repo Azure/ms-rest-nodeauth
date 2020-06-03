@@ -112,7 +112,7 @@ export interface AuthResponse {
    */
   credentials: TokenCredentialsBase;
   /**
-   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. Subscriptions will be empty for credentials made from personal accounts. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. Subscriptions will be empty for credentials made from personal accounts. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
    */
   subscriptions?: LinkedSubscription[];
 }
@@ -146,7 +146,7 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {string} username The user name for the Organization Id account.
  * @param {string} password The password for the Organization Id account.
@@ -191,7 +191,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
@@ -227,7 +227,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
@@ -408,7 +408,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  *
  * The `subscriptions` property in the AuthResponse will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {object} [options] Object representing optional parameters.
  *
@@ -593,7 +593,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.clientId] The active directory application client id.
@@ -648,7 +648,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
@@ -701,7 +701,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
@@ -757,7 +757,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
  *
  * The third parameter sent to the callback function, containing `subscriptions`, will be an empty array for personal accounts.
  *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. Users need to call to the `setDomain` method of the returned credential with the tenant they want to use to access their resources. Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+ * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
  * @param {string} username The user name for the Organization Id account.
  * @param {string} password The password for the Organization Id account.

@@ -8,8 +8,8 @@ Things to consider:
 
 - Many of these authentication methods accept a `domain` to be specified, which accepts `tenants` to be passed in.
 - For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically.
-- Users need to call to the `setDomain` method of the returned credential with the tenant of their preference in order to access their resources.
-- Credentials can be sent to the `buildTenantList` method to obtain the list of available tenants for any account.
+- In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential.
+  Once the domain is set, you will be able to access resources from subscriptions in that tenant.
 
 ### Example
 
