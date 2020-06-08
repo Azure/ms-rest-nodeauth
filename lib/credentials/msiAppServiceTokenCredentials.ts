@@ -24,6 +24,11 @@ export interface MSIAppServiceOptions extends MSIOptions {
    * @property {string} [msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
    */
   msiApiVersion?: string;
+  /**
+   * @property {string} [clientId] - The clientId of the managed identity you would like the token for. Required, if
+   * your app service has user-assigned managed identities.
+   */
+  clientId?: string;
 }
 
 /**
@@ -46,6 +51,11 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    * @property {string} [msiApiVersion] The api-version of the local MSI agent. Default value is "2017-09-01".
    */
   msiApiVersion?: string;
+  /**
+   * @property {string} [clientId] - The clientId of the managed identity you would like the token for. Required, if
+   * your app service has user-assigned managed identities.
+   */
+  clientId?: string;
 
   /**
    * Creates an instance of MSIAppServiceTokenCredentials.
@@ -60,6 +70,8 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    * - resource management endpoint "https://management.azure.com/" (default)
    * - management endpoint "https://management.core.windows.net/"
    * @param {string} [options.msiApiVersion] - The api-version of the local MSI agent. Default value is "2017-09-01".
+   * @param {string} [options.clientId] - The clientId of the managed identity you would like the token for. Required, if
+   * your app service has user-assigned managed identities.
    */
   constructor(options?: MSIAppServiceOptions) {
     if (!options) options = {};
@@ -85,6 +97,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
     this.msiEndpoint = options.msiEndpoint;
     this.msiSecret = options.msiSecret;
     this.msiApiVersion = options.msiApiVersion;
+    this.clientId = options.clientId;
   }
 
   /**
@@ -111,14 +124,17 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
 
   protected prepareRequestOptions(): WebResource {
     const endpoint = this.msiEndpoint.endsWith("/") ? this.msiEndpoint : `${this.msiEndpoint}/`;
-    const resource = encodeURIComponent(this.resource);
-    const getUrl = `${endpoint}?resource=${resource}&api-version=${this.msiApiVersion}`;
     const reqOptions: RequestPrepareOptions = {
-      url: getUrl,
+      url: endpoint,
       headers: {
-        "secret": this.msiSecret
+        secret: this.msiSecret,
       },
-      method: "GET"
+      queryParameters: {
+        "resource": this.resource,
+        "api-version": this.msiApiVersion,
+        "clientid": this.clientId,
+      },
+      method: "GET",
     };
 
     const webResource = new WebResource();
