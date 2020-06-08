@@ -115,11 +115,35 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 ```
 
 ### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
+
+The code below works for both system managed and user managed identities. You can leave the `MSIVmOptions` empty if you want to use system managed identity. If you want to use the user managed identity, you must at least provide the `clientId`.
+
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIVmOptions = {
-  port: 50342;
+  // The default and recommended endpoint is "http://169.254.169.254/metadata/identity/oauth2/token"
+  // per https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+  // msiEndpoint?: string;
+
+  // The API version parameter specifies the Azure Instance Metadata Service version.
+  // Use api-version=2018-02-01 (default) or higher.
+  // apiVersion?: string;
+
+  // HTTP method used to make HTTP request to MSI service. GET by default.
+  // httpMethod?: HttpMethods;
+
+  // The objectId of the managed identity you would like the token for. Required, if your
+  // VM has multiple user-assigned managed identities.
+  // objectId?: string;
+
+  // The clientId of the managed identity you would like the token for. Required, if your
+  // VM has multiple user-assigned managed identities.
+  // clientId?: string;
+
+  // The `Azure Resource ID` of the managed identity you would like the token for. Required,
+  // if your VM has multiple user-assigned managed identities.
+  // identityId?: string;
 }
 
 msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
