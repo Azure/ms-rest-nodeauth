@@ -130,24 +130,6 @@ The code below works for both system managed and user managed identities. You ca
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIVmOptions = {
-  // Azure Instance Metadata Service identity endpoint.
-  // The default and recommended endpoint is "http://169.254.169.254/metadata/identity/oauth2/token"
-  // per https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
-  //
-  //     msiEndpoint: "http://169.254.169.254/metadata/identity/oauth2/token",
-  //
-
-  // The API version parameter specifies the Azure Instance Metadata Service version.
-  // Use api-version=2018-02-01 (default) or higher.
-  //
-  //     apiVersion: "2018-02-01",
-  //
-
-  // HTTP method used to make HTTP request to MSI service. GET by default.
-  //
-  //     httpMethod: "GET",
-  //
-
   // The objectId of the managed identity you would like the token for.
   // Required, if your VM has multiple user-assigned managed identities.
   //
@@ -185,18 +167,6 @@ const options: msRestNodeAuth.MSIAppServiceOptions = {
   // Our client will try to load the endpoint from any of these environment variables by default.
   //
   //     msiEndpoint: process.env["MSI_ENDPOINT"] || process.env["IDENTITY_ENDPOINT"] || "http://127.0.0.1:41741/MSI/token/",
-  //
-
-  // The secret used in communication between your code and the local MSI agent.
-  // Either provide this parameter or set the environment variable `MSI_SECRET`.
-  // For example: `export MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
-  //
-  //     msiSecret: "69418689F1E342DD946CB82994CDA3CB",
-  //
-
-  // The api-version of the local MSI agent. Default value is "2017-09-01".
-  //
-  //     msiApiVersion: "2017-09-01",
   //
 
   // The clientId of the managed identity you would like the token for.

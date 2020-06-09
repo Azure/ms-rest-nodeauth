@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.5 - (unreleased)
+
+- Added support for the `IDENTITY_ENDPOINT` and `IDENTITY_SECRET`.
+
 ## 3.0.2 - 2019/08/22
 
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
