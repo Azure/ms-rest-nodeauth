@@ -54,9 +54,6 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
       }
       const resource = this.getActiveDirectoryResourceId();
       return new Promise((resolve, reject) => {
-        if (!this.authContext) {
-          return reject(new Error("Missing authContext"));
-        }
         this.authContext.acquireTokenWithClientCredentials(
           resource,
           this.clientId,
