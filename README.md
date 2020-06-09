@@ -1,15 +1,7 @@
 # ms-rest-nodeauth [![Build Status](https://dev.azure.com/azure-public/adx/_apis/build/status/public.Azure.ms-rest-nodeauth)](https://dev.azure.com/azure-public/adx/_build/latest?definitionId=9)
 
 This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing a good TypeScript experience.
-
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
-
-Things to consider:
-
-- Many of these authentication methods accept a `domain` to be specified, which accepts `tenants` to be passed in.
-- For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically.
-- In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential.
-  Once the domain is set, you will be able to access resources from subscriptions in that tenant.
 
 ### Example
 
@@ -124,7 +116,7 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 
 ### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
 
-The code below works for both system managed and user managed identities. You can leave the `MSIVmOptions` empty if you want to use system managed identity. If you want to use the user managed identity, you must at least provide the `clientId`.
+The code below works for both system managed and user-assigned managed identities. You can leave the `MSIVmOptions` empty if you want to use system managed identity. If you want to use the user-assigned managed identity, you must at least provide the `clientId`. If your VM has multiple user-assigned managed identities, you must include `objectId` and `identityId`.
 
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
@@ -133,19 +125,19 @@ const options: msRestNodeAuth.MSIVmOptions = {
   // The objectId of the managed identity you would like the token for.
   // Required, if your VM has multiple user-assigned managed identities.
   //
-  //     objectId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  //     objectId: "your-managed-identity-object-id",
   //
 
   // The clientId of the managed identity you would like the token for.
   // Required, if your VM has multiple user-assigned managed identities.
   //
-  //     clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  //     clientId: "your-managed-identity-client-id",
   //
 
   // The `Azure Resource ID` of the managed identity you would like the token for.
   // Required, if your VM has multiple user-assigned managed identities.
   //
-  //     identityId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  //     identityId: "your-managed-identity-identity-id",
   //
 }
 
@@ -171,7 +163,7 @@ const options: msRestNodeAuth.MSIAppServiceOptions = {
 
   // The clientId of the managed identity you would like the token for.
   // Required, if your app service has user-assigned managed identities.
-  clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256"
+  clientId: "your-managed-identity-client-id"
 }
 
 msRestNodeAuth.loginWithAppServiceMSI(options).then((msiTokenRes) => {
