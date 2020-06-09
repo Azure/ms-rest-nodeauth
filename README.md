@@ -1,7 +1,15 @@
 # ms-rest-nodeauth [![Build Status](https://dev.azure.com/azure-public/adx/_apis/build/status/public.Azure.ms-rest-nodeauth)](https://dev.azure.com/azure-public/adx/_build/latest?definitionId=9)
 
 This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing a good TypeScript experience.
+
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
+
+Things to consider:
+
+- Many of these authentication methods accept a `domain` to be specified, which accepts `tenants` to be passed in.
+- For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically.
+- In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential.
+  Once the domain is set, you will be able to access resources from subscriptions in that tenant.
 
 ### Example
 
@@ -115,11 +123,48 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 ```
 
 ### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
+
+The code below works for both system managed and user managed identities. You can leave the `MSIVmOptions` empty if you want to use system managed identity. If you want to use the user managed identity, you must at least provide the `clientId`.
+
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIVmOptions = {
-  port: 50342,
+  // Azure Instance Metadata Service identity endpoint.
+  // The default and recommended endpoint is "http://169.254.169.254/metadata/identity/oauth2/token"
+  // per https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+  //
+  //     msiEndpoint: "http://169.254.169.254/metadata/identity/oauth2/token",
+  //
+
+  // The API version parameter specifies the Azure Instance Metadata Service version.
+  // Use api-version=2018-02-01 (default) or higher.
+  //
+  //     apiVersion: "2018-02-01",
+  //
+
+  // HTTP method used to make HTTP request to MSI service. GET by default.
+  //
+  //     httpMethod: "GET",
+  //
+
+  // The objectId of the managed identity you would like the token for.
+  // Required, if your VM has multiple user-assigned managed identities.
+  //
+  //     objectId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  //
+
+  // The clientId of the managed identity you would like the token for.
+  // Required, if your VM has multiple user-assigned managed identities.
+  //
+  //     clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  //
+
+  // The `Azure Resource ID` of the managed identity you would like the token for.
+  // Required, if your VM has multiple user-assigned managed identities.
+  //
+  //     identityId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  //
 }
 
 msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
@@ -134,7 +179,29 @@ msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIAppServiceOptions = {
-  clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  // The local URL from which your app can request tokens.
+  // For example: `export MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`.
+  // Many Azure services have the environment variables "MSI_ENDPOINT" or "IDENTITY_ENDPOINT" set.
+  // Our client will try to load the endpoint from any of these environment variables by default.
+  //
+  //     msiEndpoint: process.env["MSI_ENDPOINT"] || process.env["IDENTITY_ENDPOINT"] || "http://127.0.0.1:41741/MSI/token/",
+  //
+
+  // The secret used in communication between your code and the local MSI agent.
+  // Either provide this parameter or set the environment variable `MSI_SECRET`.
+  // For example: `export MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+  //
+  //     msiSecret: "69418689F1E342DD946CB82994CDA3CB",
+  //
+
+  // The api-version of the local MSI agent. Default value is "2017-09-01".
+  //
+  //     msiApiVersion: "2017-09-01",
+  //
+
+  // The clientId of the managed identity you would like the token for.
+  // Required, if your app service has user-assigned managed identities.
+  clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256"
 }
 
 msRestNodeAuth.loginWithAppServiceMSI(options).then((msiTokenRes) => {

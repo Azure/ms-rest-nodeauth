@@ -76,11 +76,11 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   constructor(options?: MSIAppServiceOptions) {
     if (!options) options = {};
     super(options);
-    options.msiEndpoint = options.msiEndpoint || process.env["MSI_ENDPOINT"];
+    options.msiEndpoint = options.msiEndpoint || process.env["MSI_ENDPOINT"] || process.env["IDENTITY_ENDPOINT"];
     options.msiSecret = options.msiSecret || process.env["MSI_SECRET"];
     if (!options.msiEndpoint || (options.msiEndpoint && typeof options.msiEndpoint.valueOf() !== "string")) {
       throw new Error('Either provide "msiEndpoint" as a property of the "options" object ' +
-        'or set the environment variable "MSI_ENDPOINT" and it must be of type "string".');
+        'or set the environment variable "MSI_ENDPOINT" or "IDENTITY_ENDPOINT" and it must be of type "string".');
     }
 
     if (!options.msiSecret || (options.msiSecret && typeof options.msiSecret.valueOf() !== "string")) {
