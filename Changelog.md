@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.5 - 2020/06/03
+## 3.0.5 - (unreleased)
 
 - Fixed breaking changes introduced in 3.0.4.
 - Fixed typos in error messages.
