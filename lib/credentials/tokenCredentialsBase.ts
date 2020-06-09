@@ -8,7 +8,7 @@ import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
-  public authContext?: AuthenticationContext;
+  public authContext: AuthenticationContext;
 
   public constructor(
     public readonly clientId: string,
@@ -26,11 +26,13 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     }
 
     if (this.tokenAudience === "graph" && this.domain.toLowerCase() === "common") {
-      throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
-        It must be the actual tenant (preferrably a string in a guid format)."}`);
+      throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"common\" tenant.\
+        It must be the actual tenant (preferably a string in a guid format)."}`);
     }
 
-    this.setDomain(domain);
+    this.domain = domain;
+    const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
+    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
   }
 
   public setDomain(domain: string): void {
@@ -57,9 +59,6 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     const resource = this.getActiveDirectoryResourceId();
 
     return new Promise<TokenResponse>((resolve, reject) => {
-      if (!self.authContext) {
-        return reject(new Error("Missing authContext"));
-      }
       self.authContext.acquireToken(resource, username!, self.clientId, (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
         if (error) {
           return reject(error);
