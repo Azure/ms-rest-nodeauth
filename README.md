@@ -4,12 +4,17 @@ This library provides different node.js based authentication mechanisms for serv
 
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
 
-Things to consider:
+Things to consider when using personal accounts:
 
-- Many of these authentication methods accept a `domain` to be specified, which accepts `tenants` to be passed in.
-- For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically.
-- In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential.
-  Once the domain is set, you will be able to access resources from subscriptions in that tenant.
+The authentication methods accept a `domain` in the options parameter where you can pass the id of your tenant. When using personal accounts, credentials created with no `domain` fail to generate the right token for authentication. Due to the same reason, the list of subscriptions for all the tenants in your account returned by some of these methods will be empty too.
+
+The workaround is to pass the tenant Id to `domain` property in the options when using these authentication methods. You can get the tenant id from Azure portal or Azure CLI.
+
+If you need to fetch the tenantId programatically, follow the below steps
+- Use any of the authentication methods without setting the domain to get a credential
+- Pass the credential the `buildTenantLists()` to get the list of all tenants in your account
+
+You can also update the `domain` in the same credential by using the `setDomain()` method on it.
 
 ### Example
 
