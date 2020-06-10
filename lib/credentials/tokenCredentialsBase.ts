@@ -30,7 +30,6 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
         It must be the actual tenant (preferably a string in a guid format)."}`);
     }
 
-    this.domain = domain;
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
     this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
   }

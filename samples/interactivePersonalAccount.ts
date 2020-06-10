@@ -6,7 +6,7 @@
 * by some of these methods will be empty too.
 *
 * You can get the tenant id from the Azure Portal or Azure CLI. 
-* This sample shows how to get the tenant id programatically and update an existing credential to use it.
+* This sample shows how to get the tenant id programmatically and update an existing credential to use it.
 */
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
@@ -31,25 +31,28 @@ async function main(): Promise<void> {
     //
     // Our new `@azure/identity` package provides support for AAD v2:
     // https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/identity/identity
-
-    const initialAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse();
+    const authentication = await msRestNodeAuth.interactiveLoginWithAuthResponse();
     console.log(
       "Subscriptions retrieved by default",
-      initialAuthentication.subscriptions
+      authentication.subscriptions
     );
+
+    // For personal accounts, the following code will fail
+    const client = new SubscriptionClient(authentication.credentials);
+    let subscriptions = await client.subscriptions.list();
+    console.log(`These subscriptions will be empty for personal accounts`, subscriptions);
 
     // To get the tenants for your account, you can use the buildTenantList method:
     const tenants = await msRestNodeAuth.buildTenantList(
-      initialAuthentication.credentials
+      authentication.credentials
     );
 
     // If you have already authenticated and you want to retrieve the subscriptions of a specific tenant,
     // you can set the credential's domain to the tenant you want to use,
     // then retrieve your tenant's subscriptions with the SubscriptionsClient from @azure/arm-subscriptions:
-    initialAuthentication.credentials.setDomain(tenants[0]);
-    const client = new SubscriptionClient(initialAuthentication.credentials);
-    const subscriptions = await client.subscriptions.list();
-    console.log(`Subscriptions of tenant ${tenants[0]}`, subscriptions);
+    authentication.credentials.setDomain(tenants[0]);
+    subscriptions = await client.subscriptions.list();
+    console.log(`Now we should see the full list of subscriptions for the tenant ${tenants[0]}`, subscriptions);
 
     // You can skip all of the above, if you already know the tenant id
     // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
