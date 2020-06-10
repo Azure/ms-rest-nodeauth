@@ -129,7 +129,7 @@ const options: msRestNodeAuth.MSIVmOptions = {
   //
 
   // The clientId of the managed identity you would like the token for.
-  // Required, if your VM has multiple user-assigned managed identities.
+  // Required, if your VM has any user-assigned managed identity.
   //
   //     clientId: "your-managed-identity-client-id",
   //
