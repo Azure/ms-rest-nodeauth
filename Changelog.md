@@ -2,6 +2,7 @@
 
 ## 3.0.5 - (unreleased)
 
+- Added support for passing a `clientId` property in the `MSIAppServiceOptions` parameter of the `MSIAppServiceTokenCredentials`, allowing user-assigned managed identities to be used.
 - Added support for the `IDENTITY_ENDPOINT` and `IDENTITY_SECRET` when using the `MSIAppServiceTokenCredentials` credentials.
 
 ## 3.0.2 - 2019/08/22
