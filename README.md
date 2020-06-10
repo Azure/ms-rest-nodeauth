@@ -153,13 +153,6 @@ msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIAppServiceOptions = {
-  // The local URL from which your app can request tokens.
-  // For example: `export MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`.
-  // Many Azure services have the environment variables "MSI_ENDPOINT" or "IDENTITY_ENDPOINT" set.
-  // Our client will try to load the endpoint from any of these environment variables by default.
-  //
-  //     msiEndpoint: process.env["MSI_ENDPOINT"] || process.env["IDENTITY_ENDPOINT"] || "http://127.0.0.1:41741/MSI/token/",
-  //
 
   // The clientId of the managed identity you would like the token for.
   // Required, if your app service has user-assigned managed identities.
