@@ -149,6 +149,9 @@ msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
 ```
 
 ### MSI (Managed Service Identity) based login from an AppService or Azure Function created in Azure.
+
+The code below works for both system managed and user-assigned managed identities. You can leave the `MSIAppServiceOptions` empty if you want to use system managed identity. If you want to use the user-assigned managed identity, you must at least provide the `clientId`.
+
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
