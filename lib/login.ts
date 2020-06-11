@@ -404,11 +404,8 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
 
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
- * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
- *
- * The `subscriptions` property in the AuthResponse will be an empty array for personal accounts.
- *
- * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
+ * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants. If no domain i.e tenantId is passed in the options when working with personal accounts, 
+the list of subscriptions will be empty.
  *
  * @param {object} [options] Object representing optional parameters.
  *
