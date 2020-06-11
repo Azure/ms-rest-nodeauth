@@ -112,7 +112,7 @@ export interface AuthResponse {
    */
   credentials: TokenCredentialsBase;
   /**
-   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. Subscriptions will be empty for credentials made from personal accounts. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
+   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. Caution: This list may be empty if the credential was created without a domain i.e tenantId when using personal accounts.
    */
   subscriptions?: LinkedSubscription[];
 }
