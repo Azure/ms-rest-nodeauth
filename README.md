@@ -116,7 +116,7 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 
 ### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
 
-The code below works for both system managed and user-assigned managed identities. You can leave the `options` empty if you want to use system managed identity. If you want to use the user-assigned managed identity, you must at least provide the `clientId`. If your VM has multiple user-assigned managed identities, you must include `objectId` and `identityId`.
+The code below works for both system managed and user-assigned managed identities. You can leave the `options` empty if you want to use system managed identity. If you want to use the user-assigned managed identity, you must at least provide the `clientId` in the options. If your VM has multiple user-assigned managed identities, you must include `objectId` and `identityId` in the options as well.
 
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
