@@ -1,12 +1,12 @@
 /**
 * The authentication methods in `@azure/ms-rest-nodeauth` accept a `domain` in the options 
-* parameter where you can pass the id of your tenant. When using personal accounts, 
+* parameter where you can pass the ID of your tenant. When using personal accounts, 
 * credentials created with no `domain` fail to generate the right token for authentication. 
-* Due to the same reason, the list of subscriptions for all the tenants in your account returned 
-* by some of these methods will be empty too.
+* For the same reason, the list of subscriptions expected in the return value of these methods
+* will be empty for personal accounts too.
 *
-* You can get the tenant id from the Azure Portal or Azure CLI. 
-* This sample shows how to get the tenant id programmatically and update an existing credential to use it.
+* You can get the tenant ID from the Azure Portal or Azure CLI. 
+* This sample shows how to get the tenant ID programmatically, and update an existing credential to use it.
 */
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
@@ -15,6 +15,7 @@ dotenv.config();
 
 // copy the content of "sample.env" to a file named ".env". It should be stored at the root of the repo.
 // then from the root of the cloned repo run, ts-node ./samples/interactive.ts
+
 async function main(): Promise<void> {
   try {
     // Personal accounts will return no subscriptions on the initial authentication request unless domain is specified.
@@ -24,10 +25,10 @@ async function main(): Promise<void> {
     // When we authenticate with the Azure Active Directory (AAD), it attempts to associate
     // the authenticating user with a target "directory". This directory is specified by the given "domain".
     // If no domain is specified, the "common" domain is assumed.
-    // In this common domain, while organizations might have shared resources, personal accounts will show nothing.
+    // In this `common` domain, while organizations might have shared resources, personal accounts will show nothing.
     // In AAD v2, the "organizations" domain was added, to allow users to authenticate and view all of the available resources
     // regardless of the type of account they might have.
-    // Since ms-rest-nodeauth only supports AAD v1, we have to change the domain after authenticating, as shown in this sample.
+    // Since `ms-rest-nodeauth` only supports AAD v1, we have to change the domain after authenticating, as shown in this sample file.
     //
     // Our new `@azure/identity` package provides support for AAD v2:
     // https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/identity/identity
@@ -37,7 +38,7 @@ async function main(): Promise<void> {
       authentication.subscriptions
     );
 
-    // For personal accounts, the following code will fail
+    // For personal accounts, the following code will return empty subscriptions:
     const client = new SubscriptionClient(authentication.credentials);
     let subscriptions = await client.subscriptions.list();
     console.log(`These subscriptions will be empty for personal accounts`, subscriptions);
@@ -54,7 +55,7 @@ async function main(): Promise<void> {
     subscriptions = await client.subscriptions.list();
     console.log(`Now we should see the full list of subscriptions for the tenant ${tenants[0]}`, subscriptions);
 
-    // You can skip all of the above, if you already know the tenant id
+    // You can skip all of the above, if you already know the tenant id, and do something like the following:
     // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
   } catch (err) {
     console.log(err);

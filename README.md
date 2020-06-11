@@ -6,15 +6,16 @@ All the authentication methods support callbacks as well as promises. If they ar
 
 Things to consider when using personal accounts:
 
-The authentication methods accept a `domain` in the options parameter where you can pass the id of your tenant. When using personal accounts, credentials created with no `domain` fail to generate the right token for authentication. Due to the same reason, the list of subscriptions for all the tenants in your account returned by some of these methods will be empty too.
+The authentication methods accept a `domain` property in the options parameter, in which you can pass the ID of your tenant. When using personal accounts, credentials created with no `domain` fail to generate the right token for authentication. For that same reason, the list of subscriptions expected in the return value of these methods will be empty for personal accounts too.
 
-The workaround is to pass the tenant Id to `domain` property in the options when using these authentication methods. You can get the tenant id from Azure portal or Azure CLI.
+The workaround is to pass the tenant ID to the `domain` property in the options when using these authentication methods. You can get the tenant ID from Azure portal or Azure CLI.
 
-If you need to fetch the tenantId programatically, follow the below steps
-- Use any of the authentication methods without setting the domain to get a credential
-- Pass the credential the `buildTenantLists()` to get the list of all tenants in your account
+If you need to fetch the `tenantId` programmatically, follow the steps below:
 
-You can also update the `domain` in the same credential by using the `setDomain()` method on it.
+- Use any of the authentication methods without setting the domain to get a credential.
+- Pass the credential the `buildTenantLists()` to get the list of all tenants in your account.
+
+You can also update the `domain` in the same credential by using the `setDomain()` method of the credential object.
 
 ### Example
 
