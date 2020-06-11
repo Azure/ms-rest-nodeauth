@@ -633,7 +633,7 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
 }
 
 /**
- * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
@@ -684,7 +684,7 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
 }
 
 /**
- * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrinicpalId/clientId across all the applicable tenants.
+ * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
  * For personal accounts, credentials created without passing a domain won't be able to access most of the account resources automatically. In this case you will need to call `buildTenantList` to gather the list of tenants so that the ID of one of them can be passed into the `setDomain` method of the returned credential. Once the domain is set, you will be able to access resources from subscriptions in that tenant.
  *
