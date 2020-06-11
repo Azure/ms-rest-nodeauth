@@ -432,7 +432,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  *
  * @param {function} [optionalCallback] The optional callback.
  *
- * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error. The `subscriptions` property in the AuthResponse will be an empty array for personal accounts.
+ * @returns {Promise<AuthResponse>} A Promise that resolves to AuthResponse that contains "credentials" and optional "subscriptions" array and rejects with an Error. The "subscriptions" array in the AuthResponse will be empty if no domain is passed in the options when using with personal accounts.
  */
 export async function withInteractiveWithAuthResponse(options?: InteractiveLoginOptions): Promise<AuthResponse> {
   if (!options) {
