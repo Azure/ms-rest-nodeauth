@@ -10,13 +10,13 @@ import { RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
 export interface MSIAppServiceOptions extends MSIOptions {
   /**
    * @property {string} [msiEndpoint] - The local URL from which your app can request tokens.
-   * If this option is not set, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
+   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    * For example: `export IDENTITY_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
    */
   msiEndpoint?: string;
   /**
    * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * If this option is not set, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
+   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    * For example: `export IDENTITY_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    */
   msiSecret?: string;
@@ -37,13 +37,13 @@ export interface MSIAppServiceOptions extends MSIOptions {
 export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   /**
    * @property {string} msiEndpoint - The local URL from which your app can request tokens.
-   * If this option is not set, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
+   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    * For example: `IDENTITY_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
    */
   msiEndpoint: string;
   /**
    * @property {string} msiSecret - The secret used in communication between your code and the local MSI agent.
-   * If this option is not set, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
+   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    * For example: `IDENTITY_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    */
   msiSecret: string;
@@ -60,10 +60,10 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   /**
    * Creates an instance of MSIAppServiceTokenCredentials.
    * @param {string} [options.msiEndpoint] - The local URL from which your app can request tokens.
-   * If this option is not set, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
+   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    * For example: `IDENTITY_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
    * @param {string} [options.msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * If this option is not set, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
+   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    * For example: `IDENTITY_SECRET="69418689F1E342DD946CB82994CDA3CB"`
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
