@@ -1,13 +1,13 @@
 /**
-* The authentication methods in `@azure/ms-rest-nodeauth` accept a `domain` in the options 
-* parameter where you can pass the ID of your tenant. When using personal accounts, 
-* credentials created with no `domain` fail to generate the right token for authentication. 
-* For the same reason, the list of subscriptions expected in the return value of these methods
-* will be empty for personal accounts too.
-*
-* You can get the tenant ID from the Azure Portal or Azure CLI. 
-* This sample shows how to get the tenant ID programmatically, and update an existing credential to use it.
-*/
+ * The authentication methods in `@azure/ms-rest-nodeauth` accept a `domain` in the options
+ * parameter where you can pass the ID of your tenant. When using personal accounts,
+ * credentials created with no `domain` fail to generate the right token for authentication.
+ * For the same reason, the list of subscriptions expected in the return value of these methods
+ * will be empty for personal accounts too.
+ *
+ * You can get the tenant ID from the Azure Portal or Azure CLI.
+ * This sample shows how to get the tenant ID programmatically, and update an existing credential to use it.
+ */
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
 import * as dotenv from "dotenv";

@@ -398,8 +398,8 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
 
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a
- * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants. If no domain i.e tenantId is passed in the options when working with personal accounts, 
-the list of subscriptions will be empty.
+ * DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
+ * If no domain i.e tenantId is passed in the options when working with personal accounts, the list of subscriptions will be empty.
  *
  * @param {object} [options] Object representing optional parameters.
  *
