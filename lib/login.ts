@@ -221,7 +221,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
 /**
  * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
  * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}

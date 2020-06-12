@@ -7,9 +7,6 @@ import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
-/**
- * Personal accounts will need to specify their tenant through `setDomain` after authenticating in order to gain access to their resources.
- */
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
   public authContext: AuthenticationContext;
 
