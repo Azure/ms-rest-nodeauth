@@ -112,7 +112,7 @@ export interface AuthResponse {
    */
   credentials: TokenCredentialsBase;
   /**
-   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. Caution: This list may be empty if the credential was created without a domain i.e tenantId when using personal accounts.
+   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. Caution: This list may be empty if the credential was created without setting the domain to the tenant id when using personal accounts.
    */
   subscriptions?: LinkedSubscription[];
 }
