@@ -17,49 +17,53 @@ dotenv.config();
 // then from the root of the cloned repo run, ts-node ./samples/interactive.ts
 
 async function main(): Promise<void> {
+  // For context of why this sample was made and how the service works,
+  // you can go to: https://github.com/Azure/ms-rest-nodeauth/issues/89#issuecomment-643471343
+
+  const authentication = await msRestNodeAuth.interactiveLoginWithAuthResponse();
+
+  // For personal accounts, the below will print an empty array as we did not set the domain.
+  console.log(
+    "Subscriptions retrieved by default",
+    authentication.subscriptions
+  );
+
+  const client = new SubscriptionClient(authentication.credentials);
+
+  // For personal accounts, this will return an empty array:
+  let subscriptions = await client.subscriptions.list();
+  console.log(`These subscriptions will be empty for personal accounts`, subscriptions);
+
+  let knownSubscription = subscriptions.length ? subscriptions[0].subscriptionId! : "<my-subscription>";
+
   try {
-    // Personal accounts will return no subscriptions on the initial authentication request unless domain is specified.
-    // This is because the credentials are generated without specifying a tenant.
-    //
-    // For more context:
-    // When we authenticate with the Azure Active Directory (AAD), it attempts to associate
-    // the authenticating user with a target "directory". This directory is specified by the given "domain".
-    // If no domain is specified, the "common" domain is assumed.
-    // In this `common` domain, while organizations might have shared resources, personal accounts will show nothing.
-    // In AAD v2, the "organizations" domain was added, to allow users to authenticate and view all of the available resources
-    // regardless of the type of account they might have.
-    // Since `ms-rest-nodeauth` only supports AAD v1, we have to change the domain after authenticating, as shown in this sample file.
-    //
-    // Our new `@azure/identity` package provides support for AAD v2:
-    // https://github.com/Azure/azure-sdk-for-js/tree/master/sdk/identity/identity
-    const authentication = await msRestNodeAuth.interactiveLoginWithAuthResponse();
-    console.log(
-      "Subscriptions retrieved by default",
-      authentication.subscriptions
-    );
-
-    // For personal accounts, the following code will return empty subscriptions:
-    const client = new SubscriptionClient(authentication.credentials);
-    let subscriptions = await client.subscriptions.list();
-    console.log(`These subscriptions will be empty for personal accounts`, subscriptions);
-
-    // To get the tenants for your account, you can use the buildTenantList method:
-    const tenants = await msRestNodeAuth.buildTenantList(
-      authentication.credentials
-    );
-
-    // If you have already authenticated and you want to retrieve the subscriptions of a specific tenant,
-    // you can set the credential's domain to the tenant you want to use,
-    // then retrieve your tenant's subscriptions with the SubscriptionsClient from @azure/arm-subscriptions:
-    authentication.credentials.setDomain(tenants[0]);
-    subscriptions = await client.subscriptions.list();
-    console.log(`Now we should see the full list of subscriptions for the tenant ${tenants[0]}`, subscriptions);
-
-    // You can skip all of the above, if you already know the tenant id, and do something like the following:
-    // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
-  } catch (err) {
-    console.log(err);
+    await client.subscriptions.get(knownSubscription);
+  } catch (e) {
+    console.log(`
+Expected error:
+For personal accounts, we won't be able to retrieve subscriptions unless we specify a domain in the credentials.
+${e}
+`);
   }
+
+  // To get the tenants for your account, you can use the buildTenantList method:
+  const tenants = await msRestNodeAuth.buildTenantList(
+    authentication.credentials
+  );
+
+  // If you have already authenticated and you want to retrieve the subscriptions of a specific tenant,
+  // you can set the credential's domain to the tenant you want to use,
+  // then retrieve your tenant's subscriptions with the SubscriptionsClient from @azure/arm-subscriptions:
+  authentication.credentials.setDomain(tenants[0]);
+  subscriptions = await client.subscriptions.list();
+  console.log(`Now we should see the full list of subscriptions for the tenant ${tenants[0]}`, subscriptions);
+
+  // You can skip all of the above, if you already know the tenant id, and do something like the following:
+  // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
+
+  knownSubscription = subscriptions.length ? subscriptions[0].subscriptionId! : "<my-subscription>";
+  const subscription = await client.subscriptions.get(knownSubscription);
+  console.log("After specifying the tenant, we're now able to retrieve our known subscription:", subscription);
 }
 
 main();

@@ -4,18 +4,18 @@ This library provides different node.js based authentication mechanisms for serv
 
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
 
-Things to consider when using personal accounts:
+**Things to consider when using personal accounts:**
 
-The authentication methods accept a `domain` property in the options parameter, in which you can pass the ID of your tenant. When using personal accounts, credentials created with no `domain` fail to generate the right token for authentication. For that same reason, the list of subscriptions expected in the return value of these methods will be empty for personal accounts too.
+When using personal accounts with all of the authentication methods that accept a `domain` property in the optional parameters, if the `domain` is not specified, the credentials will end up not being able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
 
-The workaround is to pass the tenant ID to the `domain` property in the options when using these authentication methods. You can get the tenant ID from Azure portal or Azure CLI.
+The workaround is to pass a known Tenant ID to the `domain` property in the optional parameters when using these authentication methods. You can get the Tenant ID from Azure portal or the Azure CLI.
 
-If you need to fetch the `tenantId` programmatically, follow the steps below:
+If you need to fetch the Tenant Id programmatically:
 
 - Use any of the authentication methods without setting the domain to get a credential.
-- Pass the credential the `buildTenantLists()` to get the list of all tenants in your account.
+- Call the `buildTenantLists(credential)` method by sending that same credential as the first parameter to get the list of all tenants in your account.
 
-You can also update the `domain` in the same credential by using the `setDomain()` method of the credential object.
+If you want to avoid having to create a new credential, once you have access to one of the account's tenants, you can set it as the `domain` of your credentials by using the method `setDomain(tenant)` from the existing credentials object.
 
 ### Example
 
