@@ -10,14 +10,12 @@ import { RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
 export interface MSIAppServiceOptions extends MSIOptions {
   /**
    * @property {string} [msiEndpoint] - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
-   * For example: `export MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    */
   msiEndpoint?: string;
   /**
    * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment variable `MSI_SECRET`.
-   * For example: `export MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    */
   msiSecret?: string;
   /**
@@ -37,14 +35,12 @@ export interface MSIAppServiceOptions extends MSIOptions {
 export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   /**
    * @property {string} msiEndpoint - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
-   * For example: `MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    */
   msiEndpoint: string;
   /**
    * @property {string} msiSecret - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment variable `MSI_SECRET`.
-   * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    */
   msiSecret: string;
   /**
@@ -60,11 +56,9 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   /**
    * Creates an instance of MSIAppServiceTokenCredentials.
    * @param {string} [options.msiEndpoint] - The local URL from which your app can request tokens.
-   * Either provide this parameter or set the environment variable `MSI_ENDPOINT`.
-   * For example: `MSI_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    * @param {string} [options.msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Either provide this parameter or set the environment variable `MSI_SECRET`.
-   * For example: `MSI_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
    * - resource management endpoint "https://management.azure.com/" (default)
@@ -76,16 +70,16 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   constructor(options?: MSIAppServiceOptions) {
     if (!options) options = {};
     super(options);
-    options.msiEndpoint = options.msiEndpoint || process.env["MSI_ENDPOINT"];
-    options.msiSecret = options.msiSecret || process.env["MSI_SECRET"];
+    options.msiEndpoint = options.msiEndpoint || process.env["IDENTITY_ENDPOINT"] || process.env["MSI_ENDPOINT"];
+    options.msiSecret = options.msiSecret || process.env["IDENTITY_SECRET"] || process.env["MSI_SECRET"];
     if (!options.msiEndpoint || (options.msiEndpoint && typeof options.msiEndpoint.valueOf() !== "string")) {
       throw new Error('Either provide "msiEndpoint" as a property of the "options" object ' +
-        'or set the environment variable "MSI_ENDPOINT" and it must be of type "string".');
+        'or set the environment variable "IDENTITY_ENDPOINT" or "MSI_ENDPOINT" and it must be of type "string".');
     }
 
     if (!options.msiSecret || (options.msiSecret && typeof options.msiSecret.valueOf() !== "string")) {
       throw new Error('Either provide "msiSecret" as a property of the "options" object ' +
-        'or set the environment variable "MSI_SECRET" and it must be of type "string".');
+        'or set the environment variable "IDENTITY_SECRET" or "MSI_SECRET" and it must be of type "string".');
     }
 
     if (!options.msiApiVersion) {

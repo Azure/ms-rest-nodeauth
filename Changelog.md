@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.5 - (unreleased)
+
+- Added support for passing a `clientId` property in the `options` parameter of the MSI based login method `loginWithAppServiceMSI()`. This is required to allow user-assigned managed identities to be used to authenticate through Azure App Services and Azure Functions.
+- Added support for the `IDENTITY_ENDPOINT` and `IDENTITY_SECRET` when using the `MSIAppServiceTokenCredentials` credentials.
+
 ## 3.0.2 - 2019/08/22
 
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
