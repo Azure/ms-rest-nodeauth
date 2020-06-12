@@ -1,25 +1,28 @@
 /**
- * The authentication methods in `@azure/ms-rest-nodeauth` accept a `domain` in the options
- * parameter where you can pass the ID of your tenant. When using personal accounts,
- * credentials created with no `domain` fail to generate the right token for authentication.
- * For the same reason, the list of subscriptions expected in the return value of these methods
- * will be empty for personal accounts too.
+ * When using personal accounts with all of the authentication methods that accept a `domain` property in the optional parameters, if the `domain` is not specified, the credentials will end up not being able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
  *
- * You can get the tenant ID from the Azure Portal or Azure CLI.
- * This sample shows how to get the tenant ID programmatically, and update an existing credential to use it.
+ * The workaround is to pass a known tenant Id to the `domain` property in the optional parameters when using these authentication methods. You can get the tenant Id from Azure portal or the Azure CLI.
+ *
+ * If you need to fetch the tenant Id programmatically:
+ *
+ * - Use any of the authentication methods without setting the domain to get a credential.
+ * - Call the `buildTenantLists(credential)` method by sending that same credential as the first parameter to get the list of all tenants in your account.
+ *
+ * If you want to avoid having to create a new credential, once you have access to one of the account's tenants, you can set it as the `domain` of your credentials by using the method `setDomain(tenant)` from the existing credentials object.
+ *
+ * This sample shows when the authentication fails for personal accounts, and how to overcome this issue.
+ *
+ * For context: https://github.com/Azure/ms-rest-nodeauth/issues/89#issuecomment-643471343
  */
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-// copy the content of "sample.env" to a file named ".env". It should be stored at the root of the repo.
+// Copy the content of "sample.env" to a file named ".env". It should be stored at the root of the repo.
 // then from the root of the cloned repo run, ts-node ./samples/interactive.ts
 
 async function main(): Promise<void> {
-  // For context of why this sample was made and how the service works,
-  // you can go to: https://github.com/Azure/ms-rest-nodeauth/issues/89#issuecomment-643471343
-
   const authentication = await msRestNodeAuth.interactiveLoginWithAuthResponse();
 
   // For personal accounts, the below will print an empty array as we did not set the domain.
@@ -34,10 +37,12 @@ async function main(): Promise<void> {
   let subscriptions = await client.subscriptions.list();
   console.log(`These subscriptions will be empty for personal accounts`, subscriptions);
 
-  let knownSubscription = subscriptions.length ? subscriptions[0].subscriptionId! : "<my-subscription>";
-
+  // Some requests will fail for personal accounts until we update the domain on the credential.
+  // Note: You must replace `<my-subscription>` with the Id of one of your subscriptions to get the error.
+  // If you use this code as it is, you will get `The subscription '<my-subscription>' could not be found.`,
+  // which is not an error relevant to the issue we're describing.
   try {
-    await client.subscriptions.get(knownSubscription);
+    await client.subscriptions.get("<my-subscription>");
   } catch (e) {
     console.log(`
 Expected error:
@@ -61,9 +66,10 @@ ${e}
   // You can skip all of the above, if you already know the tenant id, and do something like the following:
   // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
 
-  knownSubscription = subscriptions.length ? subscriptions[0].subscriptionId! : "<my-subscription>";
+  // Once the domain is properly set, further requests will work as expected:
+  const knownSubscription = subscriptions[0]!.subscriptionId!;
   const subscription = await client.subscriptions.get(knownSubscription);
-  console.log("After specifying the tenant, we're now able to retrieve our known subscription:", subscription);
+  console.log("After specifying the tenant, we're able to retrieve the full information of our subscriptions:", subscription);
 }
 
 main();
