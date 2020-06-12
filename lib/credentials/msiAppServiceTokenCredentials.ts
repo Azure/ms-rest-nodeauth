@@ -10,14 +10,12 @@ import { RequestPrepareOptions, WebResource } from "@azure/ms-rest-js";
 export interface MSIAppServiceOptions extends MSIOptions {
   /**
    * @property {string} [msiEndpoint] - The local URL from which your app can request tokens.
-   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
-   * For example: `export IDENTITY_ENDPOINT="http://127.0.0.1:41741/MSI/token/"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    */
   msiEndpoint?: string;
   /**
    * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * If this option is not set when creating the credential, then either of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
-   * For example: `export IDENTITY_SECRET="69418689F1E342DD946CB82994CDA3CB"`
+   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    */
   msiSecret?: string;
   /**
