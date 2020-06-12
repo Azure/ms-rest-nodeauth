@@ -83,7 +83,7 @@ export interface LoginWithUsernamePasswordOptions extends AzureTokenCredentialsO
    */
   clientId?: string;
   /**
-   * @property {string} [domain] - The domain or tenant id containing this application. Default value is "common".
+   * @property {string} [domain] - The domain or tenant Id containing this application. Default value is "common".
    */
   domain?: string;
 }
@@ -112,7 +112,7 @@ export interface AuthResponse {
    */
   credentials: TokenCredentialsBase;
   /**
-   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. It will be empty for personal accounts, unless the login method is called with a tenant id sent as the `domain` optional parameter.
+   * @property {Array<LinkedSubscription>} [subscriptions] List of associated subscriptions. It will be empty for personal accounts, unless the login method is called with a tenant Id sent as the `domain` optional parameter.
    */
   subscriptions?: LinkedSubscription[];
 }
@@ -144,7 +144,7 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  * Provides a UserTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
  * This method is applicable only for organizational ids that are not 2FA enabled otherwise please use interactive login.
  *
- * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
  * @param {string} username The user name for the Organization Id account.
  * @param {string} password The password for the Organization Id account.
@@ -154,7 +154,7 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  * for an example.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
+ * @param {string} [options.domain] The domain or tenant Id containing this application. Default value "common".
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  *
@@ -187,13 +187,13 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
 /**
  * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
- * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * @param {string} clientId The active directory application client Id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} secret The application secret for the service principal.
- * @param {string} domain The domain or tenant id containing this application.
+ * @param {string} domain The domain or tenant Id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
@@ -221,15 +221,15 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
 /**
  * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
- * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * @param {string} clientId The active directory application client Id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} certificateStringOrFilePath A PEM encoded certificate and private key OR an absolute filepath to the .pem file containing that information. For example:
  * - CertificateString: "-----BEGIN PRIVATE KEY-----\n<xxxxx>\n-----END PRIVATE KEY-----\n-----BEGIN CERTIFICATE-----\n<yyyyy>\n-----END CERTIFICATE-----\n"
  * - CertificateFilePath: **Absolute** file path of the .pem file.
- * @param {string} domain The domain or tenant id containing this application.
+ * @param {string} domain The domain or tenant Id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
@@ -399,7 +399,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
  * @param {object} [options] Object representing optional parameters.
  *
@@ -410,7 +410,7 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
  * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferably in a guid format).
  *
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
+ * @param {string} [options.domain] The domain or tenant Id containing this application. Default value is "common".
  *
  * @param {Environment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  *
@@ -581,7 +581,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.clientId] The active directory application client id.
@@ -589,7 +589,7 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  * for an example.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid value is "graph".If tokenAudience is provided
  * then domain should also be provided its value should not be the default "common" tenant. It must be a string (preferably in a guid format).
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value is "common".
+ * @param {string} [options.domain] The domain or tenant Id containing this application. Default value is "common".
  * @param {Environment} [options.environment] The azure environment to authenticate with. Default environment is "Public Azure".
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {object} [options.language] The language code specifying how the message should be localized to. Default value "en-us".
@@ -634,13 +634,13 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
 /**
  * Provides an ApplicationTokenCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
- * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * @param {string} clientId The active directory application client Id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} secret The application secret for the service principal.
- * @param {string} domain The domain or tenant id containing this application.
+ * @param {string} domain The domain or tenant Id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
@@ -685,15 +685,15 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
 /**
  * Provides an ApplicationTokenCertificateCredentials object and the list of subscriptions associated with that servicePrincipalId/clientId across all the applicable tenants.
  *
- * When using personal accounts, the `domain` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
- * @param {string} clientId The active directory application client id also known as the SPN (ServicePrincipal Name).
+ * @param {string} clientId The active directory application client Id also known as the SPN (ServicePrincipal Name).
  * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
  * for an example.
  * @param {string} certificateStringOrFilePath A PEM encoded certificate and private key OR an absolute filepath to the .pem file containing that information. For example:
  * - CertificateString: "-----BEGIN PRIVATE KEY-----\n<xxxxx>\n-----END PRIVATE KEY-----\n-----BEGIN CERTIFICATE-----\n<yyyyy>\n-----END CERTIFICATE-----\n"
  * - CertificateFilePath: **Absolute** file path of the .pem file.
- * @param {string} domain The domain or tenant id containing this application.
+ * @param {string} domain The domain or tenant Id containing this application.
  * @param {object} [options] Object representing optional parameters.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
@@ -740,7 +740,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
  *
  * This method is applicable only for organizational ids that are not 2FA enabled otherwise please use interactive login.
  *
- * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
+ * When using personal accounts, the `domain` property in the `options` parameter is required to be set to the Id of a tenant for that account. Otherwise, the resulting credential will not be able to access the account's resources.
  *
  * @param {string} username The user name for the Organization Id account.
  * @param {string} password The password for the Organization Id account.
@@ -750,7 +750,7 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
  * for an example.
  * @param {string} [options.tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
  * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
- * @param {string} [options.domain] The domain or tenant id containing this application. Default value "common".
+ * @param {string} [options.domain] The domain or tenant Id containing this application. Default value "common".
  * @param {Environment} [options.environment] The azure environment to authenticate with.
  * @param {object} [options.tokenCache] The token cache. Default value is the MemoryCache object from adal.
  * @param {function} [optionalCallback] The optional callback.
