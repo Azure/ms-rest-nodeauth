@@ -129,11 +129,30 @@ msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
 ```
 
 ### MSI (Managed Service Identity) based login from a virtual machine created in Azure.
+
+The code below works for both system managed and user-assigned managed identities. You can leave the `options` empty if you want to use system managed identity. If you want to use the user-assigned managed identity, you must at least provide the `clientId` in the options. If your VM has multiple user-assigned managed identities, you must include `objectId` and `identityId` in the options as well.
+
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIVmOptions = {
-  port: 50342,
+  // The objectId of the managed identity you would like the token for.
+  // Required, if your VM has multiple user-assigned managed identities.
+  //
+  //     objectId: "your-managed-identity-object-id",
+  //
+
+  // The clientId of the managed identity you would like the token for.
+  // Required, if your VM has any user-assigned managed identity.
+  //
+  //     clientId: "your-managed-identity-client-id",
+  //
+
+  // The `Azure Resource ID` of the managed identity you would like the token for.
+  // Required, if your VM has multiple user-assigned managed identities.
+  //
+  //     identityId: "your-managed-identity-identity-id",
+  //
 }
 
 msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
@@ -144,11 +163,18 @@ msRestNodeAuth.loginWithVmMSI(options).then((msiTokenRes) => {
 ```
 
 ### MSI (Managed Service Identity) based login from an AppService or Azure Function created in Azure.
+
+The code below works for both system managed and user-assigned managed identities. You can leave the `options` empty if you want to use system managed identity. If you want to use the user-assigned managed identity, you must at least provide the `clientId` in the options.
+
 ```typescript
 import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.MSIAppServiceOptions = {
-  clientId: "48f97062-a6f3-48ae-b05b-e6df3468c256",
+  // The clientId of the managed identity you would like the token for.
+  // Required, if your app service has user-assigned managed identities.
+  //
+  //     clientId: "your-managed-identity-client-id"
+  //
 }
 
 msRestNodeAuth.loginWithAppServiceMSI(options).then((msiTokenRes) => {
