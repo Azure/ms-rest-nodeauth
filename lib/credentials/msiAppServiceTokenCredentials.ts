@@ -58,7 +58,7 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
    * @param {string} [options.msiEndpoint] - The local URL from which your app can request tokens.
    * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
    * @param {string} [options.msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
+   * Unless this property is specified, any of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
    * - resource management endpoint "https://management.azure.com/" (default)
