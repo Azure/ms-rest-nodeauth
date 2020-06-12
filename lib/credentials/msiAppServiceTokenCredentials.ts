@@ -15,7 +15,7 @@ export interface MSIAppServiceOptions extends MSIOptions {
   msiEndpoint?: string;
   /**
    * @property {string} [msiSecret] - The secret used in communication between your code and the local MSI agent.
-   * Unless this property is specified, any of the two environment variables `IDENTITY_ENDPOINT` or `MSI_ENDPOINT` will be used as the default value.
+   * Unless this property is specified, any of the two environment variables `IDENTITY_SECRET` or `MSI_SECRET` will be used as the default value.
    */
   msiSecret?: string;
   /**
