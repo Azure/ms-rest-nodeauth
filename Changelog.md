@@ -2,16 +2,16 @@
 
 ## 3.0.5 - (unreleased)
 
-- Fixed breaking changes introduced in 3.0.4.
+- Made `buildTenantList` public, to allow users to retrieve all of their tenants after authenticating.
+- Added a new public method to `TokenCredentialsBase` called `setDomain` that can be used to force Adal to renew the token against a different tenant.
+- Added a sample expressing different ways to work around the [issue #89](https://github.com/Azure/ms-rest-nodeauth/issues/89).
 - Fixed typos in error messages.
 - Added support for passing a `clientId` property in the `options` parameter of the MSI based login method `loginWithAppServiceMSI()`. This is required to allow user-assigned managed identities to be used to authenticate through Azure App Services and Azure Functions.
 - Added support for the `IDENTITY_ENDPOINT` and `IDENTITY_SECRET` when using the `MSIAppServiceTokenCredentials` credentials.
 
 ## 3.0.4 - 2020/05/19 (deprecated)
 
-- Made `buildTenantList` public, to allow users to retrieve all of their tenants after authenticating.
-- Added a new public method to `TokenCredentialsBase` called `setDomain` that can be used to force Adal to renew the token against a different tenant.
-- Added a sample expressing different ways to work around the [issue #89](https://github.com/Azure/ms-rest-nodeauth/issues/89).
+- This version was released by mistake with a work in progress version of the changes available in version 3.0.5.
 
 ## 3.0.2 - 2019/08/22
 
