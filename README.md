@@ -13,7 +13,7 @@ You can get the tenant Id from Azure portal or the Azure CLI. If you need to fet
 - Use any of the authentication methods without setting the domain to get a credential.
 - Call the `buildTenantLists(credential)` method by sending that same credential as the first parameter to get the list of all tenants in your account.
 
-You can now use any of the authentication methods and pass in the tenant id or use the `setDomain()` method on the existing credential to change the tenant it uses to create the tokens.
+You can now use any of the authentication methods and pass in the tenant Id or use the `setDomain()` method on the existing credential to change the tenant it uses to create the tokens.
 
 ### Example
 
