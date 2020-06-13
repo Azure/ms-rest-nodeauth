@@ -10,7 +10,7 @@
 
 ## 3.0.4 - 2020/05/19 (deprecated)
 
-- This version was released by mistake with a work in progress version of the changes available in version 3.0.5.
+- Through a mistake of release automation, a CI job from PR #91 got shipped by accident.
 
 ## 3.0.2 - 2019/08/22
 
