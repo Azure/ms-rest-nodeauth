@@ -33,16 +33,14 @@ async function main(): Promise<void> {
 
   const client = new SubscriptionClient(authentication.credentials);
 
-  // For personal accounts, this will return an empty array:
-  let subscriptions = await client.subscriptions.list();
-  console.log(`These subscriptions will be empty for personal accounts`, subscriptions);
-
-  // Some requests will fail for personal accounts until we update the domain on the credential.
   // Note: You must replace `<my-subscription>` with the Id of one of your subscriptions to get the error.
   // If you use this code as it is, you will get `The subscription '<my-subscription>' could not be found.`,
   // which is not an error relevant to the issue we're describing.
+  const subscriptionId = "<my-subscription>"
+
+  // Some requests will fail for personal accounts until we update the domain on the credential.
   try {
-    await client.subscriptions.get("<my-subscription>");
+    await client.subscriptions.get(subscriptionId);
   } catch (e) {
     console.log(`
 Expected error:
@@ -60,15 +58,12 @@ ${e}
   // you can set the credential's domain to the tenant you want to use,
   // then retrieve your tenant's subscriptions with the SubscriptionsClient from @azure/arm-subscriptions:
   authentication.credentials.setDomain(tenants[0]);
-  subscriptions = await client.subscriptions.list();
-  console.log(`Now we should see the full list of subscriptions for the tenant ${tenants[0]}`, subscriptions);
 
   // You can skip all of the above, if you already know the tenant id, and do something like the following:
   // const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
 
   // Once the domain is properly set, further requests will work as expected:
-  const knownSubscription = subscriptions[0]!.subscriptionId!;
-  const subscription = await client.subscriptions.get(knownSubscription);
+  const subscription = await client.subscriptions.get(subscriptionId);
   console.log("After specifying the tenant, we're able to retrieve the full information of our subscriptions:", subscription);
 }
 
