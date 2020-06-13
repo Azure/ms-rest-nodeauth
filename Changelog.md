@@ -2,7 +2,7 @@
 
 ## 3.0.5 - (unreleased)
 
-- Made `buildTenantList` public, to allow users to retrieve all of their tenants after authenticating.
+- The helper method `buildTenantList` is made public. This is helpful if one needs to get the ids of all the tenants in the account programatically.
 - Added a new public method to `TokenCredentialsBase` called `setDomain` that can be used to force Adal to renew the token against a different tenant.
 - Added a sample expressing different ways to work around the [issue #89](https://github.com/Azure/ms-rest-nodeauth/issues/89).
 - Fixed typos in error messages.
