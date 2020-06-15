@@ -1,18 +1,11 @@
 /**
- * When using personal accounts with all of the authentication methods that accept a `domain` property in the optional parameters, if the `domain` is not specified, the credentials will end up not being able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
+ * When using personal accounts, the `domain` property in the options passed to the authentication methods is mandatory and should be set to the tenant id. If this property is not set, the credentials created by the authentication methods will not be able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
+ * 
+ * You can get the tenant Id from Azure portal or the Azure CLI. If you need to fetch the tenant Id programmatically, you can use the helper method `buildTenantList(credential)`.
  *
- * The workaround is to pass a known tenant Id to the `domain` property in the optional parameters when using these authentication methods. You can get the tenant Id from Azure portal or the Azure CLI.
+ * This sample shows how the authentication fails for personal accounts when `domain` is not set, and how to overcome this issue.
  *
- * If you need to fetch the tenant Id programmatically:
- *
- * - Use any of the authentication methods without setting the domain to get a credential.
- * - Call the `buildTenantLists(credential)` method by sending that same credential as the first parameter to get the list of all tenants in your account.
- *
- * If you want to avoid having to create a new credential, once you have access to one of the account's tenants, you can set it as the `domain` of your credentials by using the method `setDomain(tenant)` from the existing credentials object.
- *
- * This sample shows when the authentication fails for personal accounts, and how to overcome this issue.
- *
- * For context: https://github.com/Azure/ms-rest-nodeauth/issues/89#issuecomment-643471343
+ * For more context: https://github.com/Azure/ms-rest-nodeauth/issues/89#issuecomment-643471343
  */
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
