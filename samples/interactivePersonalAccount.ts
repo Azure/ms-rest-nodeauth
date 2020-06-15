@@ -33,9 +33,7 @@ async function main(): Promise<void> {
 
   const client = new SubscriptionClient(authentication.credentials);
 
-  // Note: You must replace `<my-subscription>` with the Id of one of your subscriptions to get the error.
-  // If you use this code as it is, you will get `The subscription '<my-subscription>' could not be found.`,
-  // which is not an error relevant to the issue we're describing.
+  // Note: Replace `<my-subscription>` below with the Id of one of your subscriptions
   const subscriptionId = "<my-subscription>";
 
   // Some requests will fail for personal accounts until we update the domain on the credential.
