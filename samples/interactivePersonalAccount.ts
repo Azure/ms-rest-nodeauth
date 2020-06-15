@@ -59,12 +59,5 @@ ${e}
   const subscription = await client.subscriptions.get(subscriptionId);
   console.log("After specifying the tenant, we're able to retrieve the full information of our subscriptions:", subscription);
 
-  // You can skip all of the above if you already know the tenant Id, and do something like the following:
-  const tenantAuthentication = await msRestNodeAuth.interactiveLoginWithAuthResponse({ domain: "<your-tenant-id>" });
-  console.log(
-    "Subscriptions retrieved after authenticating with a specific domain",
-    tenantAuthentication.subscriptions
-  );
-}
 
 main();
