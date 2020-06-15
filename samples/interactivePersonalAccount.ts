@@ -1,5 +1,5 @@
 /**
- * When using personal accounts, the `domain` property in the options passed to the authentication methods is mandatory and should be set to the tenant id. If this property is not set, the credentials created by the authentication methods will not be able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
+ * When using personal accounts, the `domain` property in the options passed to the authentication methods is mandatory and should be set to the tenant Id. If this property is not set, the credentials created by the authentication methods will not be able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
  *
  * You can get the tenant Id from Azure portal or the Azure CLI. If you need to fetch the tenant Id programmatically, you can use the helper method `buildTenantList(credential)`.
  *
@@ -10,18 +10,15 @@
 import * as msRestNodeAuth from "../lib/msRestNodeAuth";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
 
-// Copy the content of "sample.env" to a file named ".env". It should be stored at the root of the repo.
-// then from the root of the cloned repo run, ts-node ./samples/interactive.ts
-
 async function main(): Promise<void> {
   const authResponse = await msRestNodeAuth.interactiveLoginWithAuthResponse();
 
-  // For personal accounts, the below will print an empty array as we did not set the domain.
+  // For personal accounts, the line below will print an empty array as we did not set the domain.
   console.log("Subscriptions retrieved by default", authResponse.subscriptions);
 
   const client = new SubscriptionClient(authResponse.credentials);
 
-  // Note: Replace `<my-subscription>` below with the Id of one of your subscriptions
+  // Note: Replace `<my-subscription>` below with the Id of one of your subscriptions.
   const subscriptionId = "<my-subscription>";
 
   // The below request to get the subscription details will fail for personal accounts until we update the domain on the credential.
@@ -40,7 +37,7 @@ ${e}
     authResponse.credentials
   );
 
-  // Update the domain used by the credentials so that it can generate token against the right tenant
+  // Update the domain used by the credentials so that it can generate tokens against a specific tenant.
   authResponse.credentials.setDomain(tenants[0]);
 
   // Once the domain is properly set, further requests will work as expected:

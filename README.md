@@ -6,7 +6,7 @@ All the authentication methods support callbacks as well as promises. If they ar
 
 **Things to consider when using personal accounts:**
 
-When using personal accounts, the `domain` property in the options passed to the authentication methods is mandatory and should be set to the tenant id. If this property is not set, the credentials created by the authentication methods will not be able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
+When using personal accounts, the `domain` property in the options passed to the authentication methods is mandatory and should be set to the tenant Id. If this property is not set, the credentials created by the authentication methods will not be able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
 
 You can get the tenant Id from Azure portal or the Azure CLI. If you need to fetch the tenant Id programmatically, follow the below steps:
 

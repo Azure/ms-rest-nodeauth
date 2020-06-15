@@ -2,7 +2,7 @@
 
 ## 3.0.5 - (unreleased)
 
-- The helper method `buildTenantList` is made public. This is helpful if one needs to get the ids of all the tenants in the account programmatically.
+- The helper method `buildTenantList` is made public. This is helpful if one needs to get the Ids of all the tenants in the account programmatically.
 - A new method `setDomain()` which takes the Id of a tenant is now available on all credentials. Use this to change the domain i.e. the tenant against which tokens are created.
 - Fixed typos in error messages.
 - Added support for passing a `clientId` property in the `options` parameter of the MSI based login method `loginWithAppServiceMSI()`. This is required to allow user-assigned managed identities to be used to authenticate through Azure App Services and Azure Functions.
