@@ -52,9 +52,7 @@ ${e}
     authentication.credentials
   );
 
-  // If you have already authenticated and you want to retrieve the subscriptions of a specific tenant,
-  // you can set the credential's domain to the tenant you want to use,
-  // then retrieve your tenant's subscriptions with the SubscriptionsClient from @azure/arm-subscriptions:
+  // Update the domain used by the credentials so that it can generate token against the right tenant
   authentication.credentials.setDomain(tenants[0]);
 
   // Once the domain is properly set, further requests will work as expected:
