@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   // Note: Replace `<my-subscription>` below with the Id of one of your subscriptions
   const subscriptionId = "<my-subscription>";
 
-  // Some requests will fail for personal accounts until we update the domain on the credential.
+  // The below request to get the subscription details will fail for personal accounts until we update the domain on the credential.
   try {
     await client.subscriptions.get(subscriptionId);
   } catch (e) {
