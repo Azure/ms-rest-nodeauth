@@ -12,9 +12,10 @@
 
 - Through a mistake of release automation, a CI job from PR #91 got shipped by accident.
 
-## 3.0.2 - 2019/08/22
+## 3.0.3 - 2019/08/22
 
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
+For more details, see [PR 77](https://github.com/Azure/ms-rest-nodeauth/pull/77)
 
 ## 3.0.2 - 2019/08/16
 - Fix bug prevent tenant IDs from being discovered on auth
