@@ -2,8 +2,15 @@
 
 ## 3.0.5 - (unreleased)
 
+- The helper method `buildTenantList` is made public. This is helpful if one needs to get the Ids of all the tenants in the account programmatically.
+- A new method `setDomain()` which takes the Id of a tenant is now available on all credentials. Use this to change the domain i.e. the tenant against which tokens are created.
+- Fixed typos in error messages.
 - Added support for passing a `clientId` property in the `options` parameter of the MSI based login method `loginWithAppServiceMSI()`. This is required to allow user-assigned managed identities to be used to authenticate through Azure App Services and Azure Functions.
 - Added support for the `IDENTITY_ENDPOINT` and `IDENTITY_SECRET` when using the `MSIAppServiceTokenCredentials` credentials.
+
+## 3.0.4 - 2020/05/19 (deprecated)
+
+- Through a mistake of release automation, a CI job from PR #91 got shipped by accident.
 
 ## 3.0.2 - 2019/08/22
 
@@ -24,7 +31,7 @@
 
 ## 2.0.3 - 2019/07/23
 - Updated min version of dependency `@azure/ms-rest-js` to `^2.0.3`.
-- Updated min version of dependenct `@azure/ms-rest-azure-env` to `^2.0.0`.
+- Updated min version of dependency `@azure/ms-rest-azure-env` to `^2.0.0`.
 - Improved documentation of `MSIOptions.resource`
 - Improved samples in README.md
 

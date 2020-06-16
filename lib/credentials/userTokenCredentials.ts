@@ -22,7 +22,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
    * @param {string} username The user name for the Organization Id account.
    * @param {string} password The password for the Organization Id account.
    * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
-   * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
+   * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferably in a guid format).
    * @param {Environment} [environment] The azure environment to authenticate with.
    * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
    */
@@ -91,7 +91,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
             if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId!)) {
               return resolve((tokenResponse as TokenResponse));
             } else {
-              return reject(`The userId "${tokenResponse.userId}" in access token doesn"t match the username "${self.username}" provided during authentication.`);
+              return reject(`The userId "${tokenResponse.userId}" in access token doesn't match the username "${self.username}" provided during authentication.`);
             }
           });
       });

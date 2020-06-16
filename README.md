@@ -1,7 +1,19 @@
 # ms-rest-nodeauth [![Build Status](https://dev.azure.com/azure-public/adx/_apis/build/status/public.Azure.ms-rest-nodeauth)](https://dev.azure.com/azure-public/adx/_build/latest?definitionId=9)
 
 This library provides different node.js based authentication mechanisms for services in Azure. It also contains rich type definitions thereby providing a good TypeScript experience.
+
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
+
+**Things to consider when using personal accounts:**
+
+When using personal accounts, the `domain` property in the options passed to the authentication methods is mandatory and should be set to the tenant Id. If this property is not set, the credentials created by the authentication methods will not be able to access any of the resources of the personal account. For that same reason, the list of subscriptions expected in the return value of these methods will be empty.
+
+You can get the tenant Id from Azure portal or the Azure CLI. If you need to fetch the tenant Id programmatically, follow the below steps:
+
+- Use any of the authentication methods without setting the domain to get a credential.
+- Call the `buildTenantLists(credential)` method by sending that same credential as the first parameter to get the list of all tenants in your account.
+
+You can now use any of the authentication methods and pass in the tenant Id or use the `setDomain()` method on the existing credential to change the tenant it uses to create the tokens.
 
 ### Example
 
@@ -203,7 +215,7 @@ async function main(): Promise<void> {
     const subscriptions = await AzureCliCredentials.listAllSubscriptions();
     creds.subscriptionInfo = subscriptions[1];
 
-    console.log(">>> The new subscription id associated with the credential object is: '%s'.",
+    console.log(">>> The new subscription Id associated with the credential object is: '%s'.",
       creds.subscriptionInfo.id);
     request.url = getUrl(creds.subscriptionInfo.id);
     console.log(">>> Request url: '%s'.", request.url);

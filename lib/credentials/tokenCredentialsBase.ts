@@ -8,15 +8,15 @@ import { TokenClientCredentials } from "./tokenClientCredentials";
 import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
-  public readonly authContext: AuthenticationContext;
+  public authContext: AuthenticationContext;
 
   public constructor(
     public readonly clientId: string,
     public domain: string,
     public readonly tokenAudience?: TokenAudience,
     public readonly environment: Environment = Environment.AzureCloud,
-    public tokenCache: TokenCache = new MemoryCache()) {
-
+    public tokenCache: TokenCache = new MemoryCache()
+  ) {
     if (!clientId || typeof clientId.valueOf() !== "string") {
       throw new Error("clientId must be a non empty string.");
     }
@@ -26,10 +26,16 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     }
 
     if (this.tokenAudience === "graph" && this.domain.toLowerCase() === "common") {
-      throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"commmon\" tenant.\
-        It must be the actual tenant (preferrably a string in a guid format)."}`);
+      throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"common\" tenant.\
+        It must be the actual tenant (preferably a string in a guid format)."}`);
     }
 
+    const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
+    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
+  }
+
+  public setDomain(domain: string): void {
+    this.domain = domain;
     const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
     this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
   }
