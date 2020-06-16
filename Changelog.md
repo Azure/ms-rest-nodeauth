@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.5 - (unreleased)
+## 3.0.5 - 2020/06/16
 
 - The helper method `buildTenantList` is made public. This is helpful if one needs to get the Ids of all the tenants in the account programmatically.
 - A new method `setDomain()` which takes the Id of a tenant is now available on all credentials. Use this to change the domain i.e. the tenant against which tokens are created.
