@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.6 - 2020/09/24
+
+- Fixed a bug where `buildTenantsList` will throw an error when it can't list tenants
+- Added instructions for authenticating with an existing token
+
 ## 2.0.5 - 2019/08/22
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
 - Fix bug prevent tenant IDs from being discovered on auth
