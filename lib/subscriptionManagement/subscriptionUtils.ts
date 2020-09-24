@@ -90,10 +90,14 @@ export async function buildTenantList(credentials: TokenCredentialsBase, apiVers
   };
   const res = await client.sendRequest(req);
   const result: string[] = [];
-  const tenants: any = res.parsedBody;
-  for (const tenant of tenants.value) {
-    result.push(tenant.tenantId);
+
+  if (res.status < 300) {
+    const tenants: any = res.parsedBody;
+    for (const tenant of tenants.value) {
+      result.push(tenant.tenantId);
+    }
   }
+
   return result;
 }
 
