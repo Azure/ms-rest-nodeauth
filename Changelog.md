@@ -1,7 +1,10 @@
 # Changelog
 
-## 3.0.5 - 2020/06/16
+## 3.0.6 - 2020/09/25
+- Fixed a bug where `buildTenantsList` will throw an error when it can't list tenants
+- Added instructions for authenticating with an existing token
 
+## 3.0.5 - 2020/06/16
 - The helper method `buildTenantList` is made public. This is helpful if one needs to get the Ids of all the tenants in the account programmatically.
 - A new method `setDomain()` which takes the Id of a tenant is now available on all credentials. Use this to change the domain i.e. the tenant against which tokens are created.
 - Fixed typos in error messages.
@@ -9,11 +12,9 @@
 - Added support for the `IDENTITY_ENDPOINT` and `IDENTITY_SECRET` when using the `MSIAppServiceTokenCredentials` credentials.
 
 ## 3.0.4 - 2020/05/19 (deprecated)
-
 - Through a mistake of release automation, a CI job from PR #91 got shipped by accident.
 
 ## 3.0.3 - 2019/08/22
-
 - Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
 For more details, see [PR 77](https://github.com/Azure/ms-rest-nodeauth/pull/77)
 
@@ -26,6 +27,15 @@ For more details, see [PR 77](https://github.com/Azure/ms-rest-nodeauth/pull/77)
 ## 3.0.0 - 2019/08/02
 - **Breaking change:**
   - Updated min version of dependency `@azure/ms-rest-js` from `^1.8.13` to `^2.0.4` there by fixing [#67](https://github.com/Azure/ms-rest-nodeauth/issues/67).
+
+## 2.0.6 - 2020/09/24
+- Fixed a bug where `buildTenantsList` will throw an error when it can't list tenants
+- Added instructions for authenticating with an existing token
+
+## 2.0.5 - 2019/08/22
+- Fixed a bug where the callback to `loginWithServicePrincipalSecretWithAuthResponse` is sometimes not called.
+- Fix bug prevent tenant IDs from being discovered on auth
+- Reduce number of `Promise` object allocations inside `async` functions.
 
 ## 2.0.4 - 2019/08/02
 - Rolled back the min version of dependency `@azure/ms-rest-js` from `^2.0.3` to `^1.8.13` thereby fixing [#69](https://github.com/Azure/ms-rest-nodeauth/issues/69).

@@ -238,6 +238,26 @@ function getUrl(subscriptionId: string): string {
 main();
 ```
 
+### Authenticating with an existing token
+
+If you have acquired a valid Azure Active Directory token from another source, you can use it to authenticate with Azure SDK libraries using the following code snippet:
+
+```js
+const { HttpHeaders } = require("@azure/ms-rest-js");
+
+function getCredentialForToken(accessToken) {
+  return {
+    signRequest: (request) => {
+      if (!request.headers) request.headers = new HttpHeaders();
+      request.headers.set("Authorization", `Bearer ${accessToken}`);
+      return Promise.resolve(request);
+    }
+  };
+}
+
+const creds = getCredentialForToken("your existing token");
+```
+
 ### Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
