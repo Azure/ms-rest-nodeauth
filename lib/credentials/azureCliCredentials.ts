@@ -118,7 +118,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
   /**
    * Tries to get the new token from Azure CLI, if the token has expired or the subscription has
    * changed else uses the cached accessToken.
-   * @return The tokenResponse (tokenType and accessToken are the two important properties).
+   * @returns The tokenResponse (tokenType and accessToken are the two important properties).
    */
   public async getToken(): Promise<TokenResponse> {
     if (this._hasTokenExpired() || this._hasSubscriptionChanged() || this._hasResourceChanged()) {

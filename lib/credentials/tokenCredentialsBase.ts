@@ -74,18 +74,16 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
 
   /**
    * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
-   * @returns {Promise<TokenResponse>}
-   * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
-   * @memberof TokenCredentialsBase
+   * 
+   * @returns The tokenResponse (tokenType and accessToken are the two important properties).
    */
   public async abstract getToken(): Promise<TokenResponse>;
 
   /**
    * Signs a request with the Authentication header.
    *
-   * @param {webResource} The WebResource to be signed.
-   * @param {function(error)}  callback  The callback function.
-   * @return {undefined}
+   * @param The - WebResource to be signed.
+   * @param  - callback  The callback function.
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
