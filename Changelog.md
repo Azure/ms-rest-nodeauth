@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.7 - 2021/02/12
+## 3.0.7 - 2021/02/16
 - Updated doc comments on all exported members to follow TSDoc for better API reference documentations.
 
 ## 3.0.6 - 2020/09/25
