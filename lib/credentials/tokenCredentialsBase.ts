@@ -82,8 +82,7 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
   /**
    * Signs a request with the Authentication header.
    *
-   * @param The - WebResource to be signed.
-   * @param  - callback  The callback function.
+   * @param webResource - The WebResource to be signed.
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();

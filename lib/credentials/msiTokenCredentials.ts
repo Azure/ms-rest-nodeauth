@@ -139,7 +139,7 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
   /**
    * Signs a request with the Authentication header.
    *
-   * @param The - WebResource to be signed.
+   * @param webResource - The WebResource to be signed.
    * @returns Promise with signed WebResource.
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
