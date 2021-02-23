@@ -14,7 +14,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
   /**
    * Creates a new UserTokenCredentials object.
    *
-   * 
+   *
    * @param clientId - The active directory application client id.
    * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
    * for an example.
@@ -65,7 +65,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
 
   /**
    * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
-   * 
+   *
    * @returns The tokenResponse (tokenType and accessToken are the two important properties).
    */
   public async getToken(): Promise<TokenResponse> {

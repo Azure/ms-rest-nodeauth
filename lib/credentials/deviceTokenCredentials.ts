@@ -17,7 +17,7 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
    * When this credential is used, the script will provide a url and code. The user needs to copy the url and the code, paste it
    * in a browser and authenticate over there. If successful, the script will get the access token.
    *
-   * 
+   *
    * @param clientId - The active directory application client id.
    * @param domain - The domain or tenant id containing this application. Default value is "common"
    * @param username - The user name for account in the form: "user@example.com".

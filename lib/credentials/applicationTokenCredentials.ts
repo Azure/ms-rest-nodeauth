@@ -13,7 +13,7 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
    * Creates a new ApplicationTokenCredentials object.
    * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
    * for detailed instructions on creating an Azure Active Directory application.
-   * 
+   *
    * @param clientId - The active directory application client id.
    * @param domain - The domain or tenant id containing this application.
    * @param secret - The authentication secret for the application.
