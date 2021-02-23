@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.7 - 2021/02/23
+- Updated doc comments on all exported members to follow TSDoc for better API reference documentation.
+
 ## 3.0.6 - 2020/09/25
 - Fixed a bug where `buildTenantsList` will throw an error when it can't list tenants
 - Added instructions for authenticating with an existing token

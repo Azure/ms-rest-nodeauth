@@ -11,13 +11,13 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
    * Creates a new ApplicationTokenCredentials object.
    * See {@link https://azure.microsoft.com/en-us/documentation/articles/active-directory-devquickstarts-dotnet/ Active Directory Quickstart for .Net}
    * for detailed instructions on creating an Azure Active Directory application.
-   * @constructor
-   * @param {string} clientId The active directory application client id.
-   * @param {string} domain The domain or tenant id containing this application.
-   * @param {string} [tokenAudience] The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
+   *
+   * @param clientId - The active directory application client id.
+   * @param domain - The domain or tenant id containing this application.
+   * @param tokenAudience - The audience for which the token is requested. Valid values are 'graph', 'batch', or any other resource like 'https://vault.azure.net/'.
    * If tokenAudience is 'graph' then domain should also be provided and its value should not be the default 'common' tenant. It must be a string (preferrably in a guid format).
-   * @param {Environment} [environment] The azure environment to authenticate with.
-   * @param {object} [tokenCache] The token cache. Default value is the MemoryCache object from adal.
+   * @param environment - The azure environment to authenticate with.
+   * @param tokenCache - The token cache. Default value is the MemoryCache object from adal.
    */
   public constructor(
     clientId: string,
@@ -64,8 +64,8 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
    * Rather we resolve with an object that says the result is false and error information is provided in
    * the details property of the resolved object. This is done to do better error handling in the above function
    * where removeInvalidItemsFromCache() is called.
-   * @param {object} query The query to be used for finding the token for service principal from the cache
-   * @returns {result: boolean, details?: Error} resultObject with more info.
+   * @param query - The query to be used for finding the token for service principal from the cache
+   * @returns resultObject with more info.
    */
   private removeInvalidItemsFromCache(
     query: object

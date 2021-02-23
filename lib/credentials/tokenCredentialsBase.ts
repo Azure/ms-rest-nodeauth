@@ -5,7 +5,13 @@ import { Constants as MSRestConstants, WebResource } from "@azure/ms-rest-js";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenAudience } from "../util/authConstants";
 import { TokenClientCredentials } from "./tokenClientCredentials";
-import { TokenResponse, AuthenticationContext, MemoryCache, ErrorResponse, TokenCache } from "adal-node";
+import {
+  TokenResponse,
+  AuthenticationContext,
+  MemoryCache,
+  ErrorResponse,
+  TokenCache,
+} from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
   public authContext: AuthenticationContext;
@@ -25,19 +31,34 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
       throw new Error("domain must be a non empty string.");
     }
 
-    if (this.tokenAudience === "graph" && this.domain.toLowerCase() === "common") {
-      throw new Error(`${"If the tokenAudience is specified as \"graph\" then \"domain\" cannot be defaulted to \"common\" tenant.\
-        It must be the actual tenant (preferably a string in a guid format)."}`);
+    if (
+      this.tokenAudience === "graph" &&
+      this.domain.toLowerCase() === "common"
+    ) {
+      throw new Error(
+        `${'If the tokenAudience is specified as "graph" then "domain" cannot be defaulted to "common" tenant.\
+        It must be the actual tenant (preferably a string in a guid format).'}`
+      );
     }
 
-    const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
-    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
+    const authorityUrl =
+      this.environment.activeDirectoryEndpointUrl + this.domain;
+    this.authContext = new AuthenticationContext(
+      authorityUrl,
+      this.environment.validateAuthority,
+      this.tokenCache
+    );
   }
 
   public setDomain(domain: string): void {
     this.domain = domain;
-    const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
-    this.authContext = new AuthenticationContext(authorityUrl, this.environment.validateAuthority, this.tokenCache);
+    const authorityUrl =
+      this.environment.activeDirectoryEndpointUrl + this.domain;
+    this.authContext = new AuthenticationContext(
+      authorityUrl,
+      this.environment.validateAuthority,
+      this.tokenCache
+    );
   }
 
   protected getActiveDirectoryResourceId(): string {
@@ -58,38 +79,43 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
     const resource = this.getActiveDirectoryResourceId();
 
     return new Promise<TokenResponse>((resolve, reject) => {
-      self.authContext.acquireToken(resource, username!, self.clientId, (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
-        if (error) {
-          return reject(error);
-        }
+      self.authContext.acquireToken(
+        resource,
+        username!,
+        self.clientId,
+        (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
+          if (error) {
+            return reject(error);
+          }
 
-        if (tokenResponse.error || tokenResponse.errorDescription) {
-          return reject(tokenResponse);
-        }
+          if (tokenResponse.error || tokenResponse.errorDescription) {
+            return reject(tokenResponse);
+          }
 
-        return resolve(tokenResponse as TokenResponse);
-      });
+          return resolve(tokenResponse as TokenResponse);
+        }
+      );
     });
   }
 
   /**
    * Tries to get the token from cache initially. If that is unsuccessful then it tries to get the token from ADAL.
-   * @returns {Promise<TokenResponse>}
-   * {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
-   * @memberof TokenCredentialsBase
+   *
+   * @returns The tokenResponse (tokenType and accessToken are the two important properties).
    */
-  public async abstract getToken(): Promise<TokenResponse>;
+  public abstract async getToken(): Promise<TokenResponse>;
 
   /**
    * Signs a request with the Authentication header.
    *
-   * @param {webResource} The WebResource to be signed.
-   * @param {function(error)}  callback  The callback function.
-   * @return {undefined}
+   * @param webResource - The WebResource to be signed.
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
-    webResource.headers.set(MSRestConstants.HeaderConstants.AUTHORIZATION, `${tokenResponse.tokenType} ${tokenResponse.accessToken}`);
+    webResource.headers.set(
+      MSRestConstants.HeaderConstants.AUTHORIZATION,
+      `${tokenResponse.tokenType} ${tokenResponse.accessToken}`
+    );
     return webResource;
   }
 }
