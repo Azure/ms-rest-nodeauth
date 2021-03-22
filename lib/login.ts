@@ -951,7 +951,7 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
  */
 export async function execAz(cmd: string): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    execFile(`az`, [`${cmd}`, `--out json`], { encoding: "utf8" }, (error, stdout) => {
+    execFile(`az`, [cmd, `--out json`], { encoding: "utf8" }, (error, stdout) => {
       if (error) {
         return reject(error);
       }
