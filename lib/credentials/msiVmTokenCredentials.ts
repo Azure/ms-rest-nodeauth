@@ -5,11 +5,11 @@ import { MSITokenCredentials, MSIOptions, MSITokenResponse } from "./msiTokenCre
 import { RequestPrepareOptions, WebResource, URLBuilder, HttpMethods } from "@azure/ms-rest-js";
 
 /**
- * @interface MSIVmOptions Defines the optional parameters for authentication with MSI for Virtual Machine.
+ * Defines the optional parameters for authentication with MSI for Virtual Machine.
  */
 export interface MSIVmOptions extends MSIOptions {
   /**
-   * @property {string} [msiEndpoint] - Azure Instance Metadata Service identity endpoint.
+   * Azure Instance Metadata Service identity endpoint.
    *
    * The default and recommended endpoint is "http://169.254.169.254/metadata/identity/oauth2/token"
    * per https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
@@ -44,7 +44,7 @@ export interface MSIVmOptions extends MSIOptions {
 }
 
 /**
- * @class MSIVmTokenCredentials
+ * Provides information about managed service identity token credentials on a virtual machine provisioned in Azure.
  */
 export class MSIVmTokenCredentials extends MSITokenCredentials {
   msiEndpoint: string;
@@ -89,7 +89,7 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
 
   /**
    * Prepares and sends a POST request to a service endpoint hosted on the Azure VM, which responds with the access token.
-   * @return {Promise<MSITokenResponse>} Promise with the tokenResponse (tokenType and accessToken are the two important properties).
+   * @returns Promise with the tokenResponse (tokenType and accessToken are the two important properties).
    */
   async getToken(): Promise<MSITokenResponse> {
     const reqOptions = this.prepareRequestOptions();

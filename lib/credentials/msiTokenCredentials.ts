@@ -6,7 +6,7 @@ import { TokenClientCredentials, TokenResponse } from "./tokenClientCredentials"
 import { AuthConstants } from "../util/authConstants";
 
 /**
- * @interface MSIOptions Defines the optional parameters for authentication with MSI.
+ * Defines the optional parameters for authentication with MSI.
  */
 export interface MSIOptions {
   /**
@@ -21,24 +21,24 @@ export interface MSIOptions {
   resource?: string;
 
   /**
-   * @property {HttpClient} [httpClient] - The client responsible for sending HTTP requests.
+   * The client responsible for sending HTTP requests.
    * By default it is Axios-based {@link DefaultHttpClient}.
    */
   httpClient?: HttpClient;
 }
 
 /**
- * @interface MSITokenResponse - Describes the MSITokenResponse.
+ * Describes the MSITokenResponse.
  */
 export interface MSITokenResponse extends TokenResponse {
   /**
-   * @property {any} any - Placeholder for unknown properties.
+   * Placeholder for unknown properties.
    */
   readonly [x: string]: any;
 }
 
 /**
- * @class MSITokenCredentials - Provides information about managed service identity token credentials.
+ * Provides information about managed service identity token credentials.
  * This object can only be used to acquire token on a virtual machine provisioned in Azure with managed service identity.
  */
 export abstract class MSITokenCredentials implements TokenClientCredentials {
@@ -55,8 +55,8 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
 
   /**
    * Creates an instance of MSITokenCredentials.
-   * @param {object} [options] - Optional parameters
-   * @param {string} [options.resource] - The resource uri or token audience for which the token is needed.
+   * @param options - Optional parameters
+   * @param options.resource - The resource uri or token audience for which the token is needed.
    * For e.g. it can be:
    * - resource management endpoint "https://management.azure.com/"(default)
    * - management endpoint "https://management.core.windows.net/"
@@ -77,8 +77,8 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
   /**
    * Parses a tokenResponse json string into a object, and converts properties on the first level to camelCase.
    * This method tries to standardize the tokenResponse
-   * @param  {string} body  A json string
-   * @return {object} [tokenResponse] The tokenResponse (tokenType and accessToken are the two important properties).
+   * @param  body - A json string
+   * @returns The tokenResponse (tokenType and accessToken are the two important properties).
    */
   parseTokenResponse(body: string): TokenResponse {
     // Docs show different examples of possible MSI responses for different services. https://docs.microsoft.com/en-us/azure/active-directory/managed-service-identity/overview
@@ -129,8 +129,8 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
 
   /**
    * Prepares and sends a POST request to a service endpoint hosted on the Azure VM, which responds with the access token.
-   * @param  {function} callback  The callback in the form (err, result)
-   * @return {Promise<MSITokenResponse>} Promise with the token response.
+   * @param  callback - The callback in the form (err, result)
+   * @returns Promise with the token response.
    */
   abstract async getToken(): Promise<MSITokenResponse>;
 
@@ -139,8 +139,8 @@ export abstract class MSITokenCredentials implements TokenClientCredentials {
   /**
    * Signs a request with the Authentication header.
    *
-   * @param {webResource} The WebResource to be signed.
-   * @return {Promise<WebResource>} Promise with signed WebResource.
+   * @param webResource - The WebResource to be signed.
+   * @returns Promise with signed WebResource.
    */
   public async signRequest(webResource: WebResource): Promise<WebResource> {
     const tokenResponse = await this.getToken();
