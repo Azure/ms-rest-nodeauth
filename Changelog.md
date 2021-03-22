@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.8 - Unreleased
+- Pass user provided `tokenCache` option to `withUsernamePasswordWithAuthResponse` and `withServicePrincipalSecretWithAuthResponse` methods to the credentials being created.
+
 ## 3.0.7 - 2021/02/23
 - Updated doc comments on all exported members to follow TSDoc for better API reference documentation.
 
