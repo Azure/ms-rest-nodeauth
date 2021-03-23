@@ -45,13 +45,13 @@ stages:
               echo "##vso[task.setvariable variable=TAR_NAME;isOutput=true;]$TAR_NAME"
             name: PackArtifacts
           - task: CopyFiles@2
-            displayName: "Copy Files to: drop"
+            displayName: "Copy Files to: packages"
             inputs:
               Contents: "*.tgz"
-              TargetFolder: drop
+              TargetFolder: packages
           - task: PublishBuildArtifacts@1
             inputs:
-              pathtoPublish: $(Build.SourcesDirectory)/drop
+              pathtoPublish: $(Build.SourcesDirectory)/packages
   - ? ${{if and(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.TeamProject'], 'internal'))}}
     : - stage: Release
         dependsOn: BuildStage
