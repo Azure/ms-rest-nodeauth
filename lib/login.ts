@@ -3,7 +3,7 @@
 
 import * as adal from "adal-node";
 import * as msRest from "@azure/ms-rest-js";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { readFileSync } from "fs";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
@@ -951,7 +951,7 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
  */
 export async function execAz(cmd: string): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    exec(`az ${cmd} --out json`, { encoding: "utf8" }, (error, stdout) => {
+    execFile(`az`, [cmd, `--out json`], { encoding: "utf8" }, (error, stdout) => {
       if (error) {
         return reject(error);
       }
