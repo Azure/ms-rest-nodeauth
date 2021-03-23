@@ -1,6 +1,11 @@
 trigger:
   - master
 
+parameters:
+  - name: NpmTag
+    type: string
+    default: latest
+
 stages:
   - stage: BuildStage
     jobs:
@@ -78,6 +83,6 @@ stages:
                         echo $(TAR_NAME)
                         tree
                         npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
-                        npm publish $(TAR_NAME) --access public
+                        npm publish --dry-run $(TAR_NAME) --access public --tag ${{ parameters.NpmTag }}
                         npm config delete //registry.npmjs.org/:_authToken
                       displayName: "Publish to NPM"
