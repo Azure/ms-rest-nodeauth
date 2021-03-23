@@ -2,7 +2,7 @@ trigger:
   - master
 
 stages:
-  - stage: Build
+  - stage: BuildStage
     jobs:
       - job: Test
         pool:
