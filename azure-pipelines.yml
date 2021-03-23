@@ -52,16 +52,6 @@ stages:
           - task: PublishBuildArtifacts@1
             inputs:
               pathtoPublish: $(Build.SourcesDirectory)/drop
-      - job: Check_PackageJson_Version_Number
-        pool:
-          vmImage: "Ubuntu 16.04"
-        steps:
-          - task: Npm@1
-            displayName: "npm install"
-            inputs:
-              command: custom
-              verbose: false
-              customCommand: install
   - ? ${{if and(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.TeamProject'], 'internal'))}}
     : - stage: Release
         dependsOn: BuildStage
