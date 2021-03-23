@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.8 - 2021/03/22
+## 3.0.8 - 2021/03/23
 - Fix command injection in core function `execAz()` by replacing `exec()` with `execFile()` - CVE-2021-28458
 
 ## 3.0.7 - 2021/02/23
