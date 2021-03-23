@@ -42,6 +42,7 @@ stages:
         steps:
           - script: |
               export TAR_NAME=$(npm pack -q)
+              echo $TAR_NAME
               echo "##vso[task.setvariable variable=TAR_NAME;isOutput=true;]$TAR_NAME"
             name: PackArtifacts
           - task: CopyFiles@2
@@ -74,7 +75,8 @@ stages:
                     - script: |
                         tree $(Pipeline.Workspace)
                         cd $(Pipeline.Workspace)/drop
-                        echo $(TAR_NAME) 
+                        echo $(TAR_NAME)
+                        tree
                         npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
                         npm publish $(TAR_NAME) --access public
                         npm config delete //registry.npmjs.org/:_authToken
