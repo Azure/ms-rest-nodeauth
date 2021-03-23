@@ -74,6 +74,7 @@ stages:
                     - script: |
                         tree $(Pipeline.Workspace)
                         cd $(Pipeline.Workspace)/drop
+                        echo $(TAR_NAME) 
                         npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
                         npm publish $(TAR_NAME) --access public
                         npm config delete //registry.npmjs.org/:_authToken
