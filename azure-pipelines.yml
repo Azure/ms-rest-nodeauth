@@ -65,15 +65,15 @@ stages:
             displayName: Publish to NPM
             strategy:
               runOnce:
-              deploy:
-                steps:
-                  - task: NodeTool@0
-                    inputs:
-                      versionSpec: "14.x"
-                    displayName: "Install Node.js"
-                  - script: |
-                      cd $(Pipeline.Workspace)/packages
-                      npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
-                      npm publish $(TAR_NAME) --access public
-                      npm config delete //registry.npmjs.org/:_authToken
-                    displayName: "Publish to NPM"
+                deploy:
+                  steps:
+                    - task: NodeTool@0
+                      inputs:
+                        versionSpec: "14.x"
+                      displayName: "Install Node.js"
+                    - script: |
+                        cd $(Pipeline.Workspace)/packages
+                        npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
+                        npm publish $(TAR_NAME) --access public
+                        npm config delete //registry.npmjs.org/:_authToken
+                      displayName: "Publish to NPM"
