@@ -79,10 +79,11 @@ stages:
                       displayName: "Install Node.js"
                     - script: |
                         cd $(Pipeline.Workspace)/drop
+                        export TAR_NAME=$(ls *.tgz)
                         echo === tar
-                        echo $(TAR_NAME)
+                        echo $TAR_NAME
                         echo === tar
                         npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
-                        npm publish --dry-run $(TAR_NAME) --access public --tag ${{ parameters.NpmTag }}
+                        npm publish --dry-run $TAR_NAME --access public --tag ${{ parameters.NpmTag }}
                         npm config delete //registry.npmjs.org/:_authToken
                       displayName: "Publish to NPM"
