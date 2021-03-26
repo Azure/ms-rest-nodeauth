@@ -33,9 +33,7 @@ ${e}
   }
 
   // To get the tenants for your account, you can use the buildTenantList method:
-  const tenants = await msRestNodeAuth.buildTenantList(
-    authResponse.credentials
-  );
+  const tenants = await msRestNodeAuth.buildTenantList(authResponse.credentials);
 
   // Update the domain used by the credentials so that it can generate tokens against a specific tenant.
   authResponse.credentials.setDomain(tenants[0]);

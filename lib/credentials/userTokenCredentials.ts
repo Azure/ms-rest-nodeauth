@@ -7,7 +7,6 @@ import { TokenAudience } from "../util/authConstants";
 import { TokenResponse, ErrorResponse, TokenCache } from "adal-node";
 
 export class UserTokenCredentials extends TokenCredentialsBase {
-
   readonly username: string;
   readonly password: string;
 
@@ -33,8 +32,8 @@ export class UserTokenCredentials extends TokenCredentialsBase {
     password: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: TokenCache) {
-
+    tokenCache?: TokenCache
+  ) {
     if (!clientId || typeof clientId.valueOf() !== "string") {
       throw new Error("clientId must be a non empty string.");
     }
@@ -60,7 +59,7 @@ export class UserTokenCredentials extends TokenCredentialsBase {
   private crossCheckUserNameWithToken(username: string, userIdFromToken: string): boolean {
     // to maintain the casing consistency between "azureprofile.json" and token cache. (RD 1996587)
     // use the "userId" here, which should be the same with "username" except the casing.
-    return (username.toLowerCase() === userIdFromToken.toLowerCase());
+    return username.toLowerCase() === userIdFromToken.toLowerCase();
   }
 
   /**
@@ -76,7 +75,11 @@ export class UserTokenCredentials extends TokenCredentialsBase {
       const resource = this.getActiveDirectoryResourceId();
 
       return new Promise<TokenResponse>((resolve, reject) => {
-        self.authContext.acquireTokenWithUsernamePassword(resource, self.username, self.password, self.clientId,
+        self.authContext.acquireTokenWithUsernamePassword(
+          resource,
+          self.username,
+          self.password,
+          self.clientId,
           (error: Error, tokenResponse: TokenResponse | ErrorResponse) => {
             if (error) {
               return reject(error);
@@ -88,11 +91,14 @@ export class UserTokenCredentials extends TokenCredentialsBase {
 
             tokenResponse = tokenResponse as TokenResponse;
             if (self.crossCheckUserNameWithToken(self.username, tokenResponse.userId!)) {
-              return resolve((tokenResponse as TokenResponse));
+              return resolve(tokenResponse as TokenResponse);
             } else {
-              return reject(`The userId "${tokenResponse.userId}" in access token doesn't match the username "${self.username}" provided during authentication.`);
+              return reject(
+                `The userId "${tokenResponse.userId}" in access token doesn't match the username "${self.username}" provided during authentication.`
+              );
             }
-          });
+          }
+        );
       });
     }
   }

@@ -70,16 +70,28 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
   constructor(options?: MSIAppServiceOptions) {
     if (!options) options = {};
     super(options);
-    options.msiEndpoint = options.msiEndpoint || process.env["IDENTITY_ENDPOINT"] || process.env["MSI_ENDPOINT"];
-    options.msiSecret = options.msiSecret || process.env["IDENTITY_SECRET"] || process.env["MSI_SECRET"];
-    if (!options.msiEndpoint || (options.msiEndpoint && typeof options.msiEndpoint.valueOf() !== "string")) {
-      throw new Error('Either provide "msiEndpoint" as a property of the "options" object ' +
-        'or set the environment variable "IDENTITY_ENDPOINT" or "MSI_ENDPOINT" and it must be of type "string".');
+    options.msiEndpoint =
+      options.msiEndpoint || process.env["IDENTITY_ENDPOINT"] || process.env["MSI_ENDPOINT"];
+    options.msiSecret =
+      options.msiSecret || process.env["IDENTITY_SECRET"] || process.env["MSI_SECRET"];
+    if (
+      !options.msiEndpoint ||
+      (options.msiEndpoint && typeof options.msiEndpoint.valueOf() !== "string")
+    ) {
+      throw new Error(
+        'Either provide "msiEndpoint" as a property of the "options" object ' +
+          'or set the environment variable "IDENTITY_ENDPOINT" or "MSI_ENDPOINT" and it must be of type "string".'
+      );
     }
 
-    if (!options.msiSecret || (options.msiSecret && typeof options.msiSecret.valueOf() !== "string")) {
-      throw new Error('Either provide "msiSecret" as a property of the "options" object ' +
-        'or set the environment variable "IDENTITY_SECRET" or "MSI_SECRET" and it must be of type "string".');
+    if (
+      !options.msiSecret ||
+      (options.msiSecret && typeof options.msiSecret.valueOf() !== "string")
+    ) {
+      throw new Error(
+        'Either provide "msiSecret" as a property of the "options" object ' +
+          'or set the environment variable "IDENTITY_SECRET" or "MSI_SECRET" and it must be of type "string".'
+      );
     }
 
     if (!options.msiApiVersion) {
@@ -103,14 +115,20 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
 
     const opRes = await this._httpClient.sendRequest(reqOptions);
     if (opRes.bodyAsText === undefined || opRes.bodyAsText!.indexOf("ExceptionMessage") !== -1) {
-      throw new Error(`MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`);
+      throw new Error(
+        `MSI: Failed to retrieve a token from "${reqOptions.url}" with an error: ${opRes.bodyAsText}`
+      );
     }
 
     const result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
     if (!result.tokenType) {
-      throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
+      throw new Error(
+        `Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`
+      );
     } else if (!result.accessToken) {
-      throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
+      throw new Error(
+        `Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`
+      );
     }
 
     return result;
@@ -121,14 +139,14 @@ export class MSIAppServiceTokenCredentials extends MSITokenCredentials {
     const reqOptions: RequestPrepareOptions = {
       url: endpoint,
       headers: {
-        secret: this.msiSecret,
+        secret: this.msiSecret
       },
       queryParameters: {
-        "resource": this.resource,
+        resource: this.resource,
         "api-version": this.msiApiVersion,
-        "clientid": this.clientId,
+        clientid: this.clientId
       },
-      method: "GET",
+      method: "GET"
     };
 
     const webResource = new WebResource();

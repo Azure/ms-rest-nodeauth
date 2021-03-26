@@ -76,7 +76,10 @@ export interface LinkedSubscription {
  * @param apiVersion - default value 2016-06-01
  * @returns A promise that resolves to an array of tenantIds and rejects with an error.
  */
-export async function buildTenantList(credentials: TokenCredentialsBase, apiVersion = "2016-06-01"): Promise<string[]> {
+export async function buildTenantList(
+  credentials: TokenCredentialsBase,
+  apiVersion = "2016-06-01"
+): Promise<string[]> {
   if (credentials.domain && credentials.domain !== AuthConstants.AAD_COMMON_TENANT) {
     return [credentials.domain];
   }
@@ -86,7 +89,7 @@ export async function buildTenantList(credentials: TokenCredentialsBase, apiVers
   const reqUrl = `${baseUrl}${baseUrl.endsWith("/") ? "" : "/"}tenants?api-version=${apiVersion}`;
   const req: msRest.RequestPrepareOptions = {
     url: reqUrl,
-    method: "GET",
+    method: "GET"
   };
   const res = await client.sendRequest(req);
   const result: string[] = [];
@@ -101,7 +104,11 @@ export async function buildTenantList(credentials: TokenCredentialsBase, apiVers
   return result;
 }
 
-export async function getSubscriptionsFromTenants(credentials: TokenCredentialsBase, tenantList: string[], apiVersion = "2016-06-01"): Promise<LinkedSubscription[]> {
+export async function getSubscriptionsFromTenants(
+  credentials: TokenCredentialsBase,
+  tenantList: string[],
+  apiVersion = "2016-06-01"
+): Promise<LinkedSubscription[]> {
   let subscriptions: LinkedSubscription[] = [];
   let userType = "user";
   let username: string;
@@ -116,25 +123,29 @@ export async function getSubscriptionsFromTenants(credentials: TokenCredentialsB
     credentials.domain = tenant;
     const client = new msRest.ServiceClient(credentials);
     const baseUrl = credentials.environment.resourceManagerEndpointUrl;
-    const reqUrl = `${baseUrl}${baseUrl.endsWith("/") ? "" : "/"}subscriptions?api-version=${apiVersion}`;
+    const reqUrl = `${baseUrl}${
+      baseUrl.endsWith("/") ? "" : "/"
+    }subscriptions?api-version=${apiVersion}`;
     const req: msRest.RequestPrepareOptions = {
       url: reqUrl,
-      method: "GET",
+      method: "GET"
     };
 
     const res = await client.sendRequest(req);
     const subscriptionList: any[] = (<any>res.parsedBody).value;
-    subscriptions = subscriptions.concat(subscriptionList.map((s: any) => {
-      s.tenantId = tenant;
-      s.user = { name: username, type: userType };
-      s.environmentName = credentials.environment.name;
-      s.name = s.displayName;
-      s.id = s.subscriptionId;
-      delete s.displayName;
-      delete s.subscriptionId;
-      delete s.subscriptionPolicies;
-      return s;
-    }));
+    subscriptions = subscriptions.concat(
+      subscriptionList.map((s: any) => {
+        s.tenantId = tenant;
+        s.user = { name: username, type: userType };
+        s.environmentName = credentials.environment.name;
+        s.name = s.displayName;
+        s.id = s.subscriptionId;
+        delete s.displayName;
+        delete s.subscriptionId;
+        delete s.subscriptionPolicies;
+        return s;
+      })
+    );
   }
   // Reset the original domain.
   credentials.domain = originalDomain;

@@ -16,16 +16,21 @@ async function listKeyVaultSecrets(creds: AzureCliCredentials): Promise<void> {
   try {
     console.log(">>>>>>> KeyVault <<<<<<<<<<<");
     const client = new ServiceClient(creds);
-    console.log(">>> Subscription associated with the access token: '%s'.",
-      creds.tokenInfo.subscription);
+    console.log(
+      ">>> Subscription associated with the access token: '%s'.",
+      creds.tokenInfo.subscription
+    );
     const request: RequestPrepareOptions = {
       url: getKVUrl(keyvaultAccountName),
       method: "GET"
     };
     console.log(">>> Request url: '%s'.", request.url);
     const res = await client.sendRequest(request);
-    console.log("List of secrets from keyvault account '%s': \n%O",
-      keyvaultAccountName, res.parsedBody);
+    console.log(
+      "List of secrets from keyvault account '%s': \n%O",
+      keyvaultAccountName,
+      res.parsedBody
+    );
   } catch (err) {
     console.log(err);
   }
@@ -40,29 +45,41 @@ async function listResourceGroups(creds: AzureCliCredentials): Promise<void> {
     // Setting the resource to ARM endpoint.
     creds.resource = "https://management.azure.com";
     const client = new ServiceClient(creds);
-    console.log(">>> Subscription associated with the access token: '%s'.",
-      creds.tokenInfo.subscription);
+    console.log(
+      ">>> Subscription associated with the access token: '%s'.",
+      creds.tokenInfo.subscription
+    );
     const request: RequestPrepareOptions = {
       url: getUrl(creds.subscriptionInfo.id),
       method: "GET"
     };
     console.log(">>> Request url: '%s'.", request.url);
     const res = await client.sendRequest(request);
-    console.log("List of resource groups from subscriptionId '%s': \n%O",
-      creds.subscriptionInfo.id, res.parsedBody);
+    console.log(
+      "List of resource groups from subscriptionId '%s': \n%O",
+      creds.subscriptionInfo.id,
+      res.parsedBody
+    );
 
     // Let us change the subscriptionId, which should trigger refreshing the access token.
     const subscriptions = await AzureCliCredentials.listAllSubscriptions();
     creds.subscriptionInfo = subscriptions[1];
-    console.log(">>> The new subscription id associated with the credential object is: '%s'.",
-      creds.subscriptionInfo.id);
+    console.log(
+      ">>> The new subscription id associated with the credential object is: '%s'.",
+      creds.subscriptionInfo.id
+    );
     request.url = getUrl(creds.subscriptionInfo.id);
     console.log(">>> Request url: '%s'.", request.url);
     const res2 = await client.sendRequest(request);
-    console.log("List of resource groups from subscriptionId '%s': \n%O",
-      creds.subscriptionInfo.id, res2.parsedBody);
-    console.log(">>> Subscription associated with the access token: '%s'.",
-      creds.tokenInfo.subscription);
+    console.log(
+      "List of resource groups from subscriptionId '%s': \n%O",
+      creds.subscriptionInfo.id,
+      res2.parsedBody
+    );
+    console.log(
+      ">>> Subscription associated with the access token: '%s'.",
+      creds.tokenInfo.subscription
+    );
   } catch (err) {
     console.log(err);
   }

@@ -46,10 +46,7 @@ export class ApplicationTokenCredentials extends ApplicationTokenCredentialsBase
     try {
       return await this.getTokenFromCache();
     } catch (error) {
-      if (
-        error.message &&
-        error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)
-      ) {
+      if (error.message && error.message.startsWith(AuthConstants.SDK_INTERNAL_ERROR)) {
         throw error;
       }
       const resource = this.getActiveDirectoryResourceId();
