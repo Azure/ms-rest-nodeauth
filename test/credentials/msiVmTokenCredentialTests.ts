@@ -6,14 +6,23 @@ import { expect, assert } from "chai";
 import { HttpClient, HttpOperationResponse, WebResource, HttpHeaders } from "@azure/ms-rest-js";
 
 describe("MSI Vm Authentication", () => {
-
-  function setupNockResponse(msiEndpoint?: string, expectedRequestHeaders?: any, response?: any, error?: any): HttpClient {
+  function setupNockResponse(
+    msiEndpoint?: string,
+    expectedRequestHeaders?: any,
+    response?: any,
+    error?: any
+  ): HttpClient {
     if (!msiEndpoint) {
       msiEndpoint = "http://169.254.169.254/metadata/identity/oauth2/token";
     }
 
     const isMatch = (actualRequest: WebResource, expectedRequestHeaders: any) => {
-      return actualRequest.url === `${msiEndpoint}?api-version=${expectedRequestHeaders.apiVersion}&resource=${encodeURIComponent(expectedRequestHeaders.resource)}`;
+      return (
+        actualRequest.url ===
+        `${msiEndpoint}?api-version=${
+          expectedRequestHeaders.apiVersion
+        }&resource=${encodeURIComponent(expectedRequestHeaders.resource)}`
+      );
     };
 
     const httpClient = {
@@ -47,8 +56,8 @@ describe("MSI Vm Authentication", () => {
     };
 
     const expectedQuery = {
-      "apiVersion": "2018-02-01",
-      "resource": "https://management.azure.com/"
+      apiVersion: "2018-02-01",
+      resource: "https://management.azure.com/"
     };
 
     const httpClient = setupNockResponse(undefined, expectedQuery, mockResponse);
@@ -72,13 +81,16 @@ describe("MSI Vm Authentication", () => {
     };
 
     const expectedQuery = {
-      "apiVersion": "2018-02-01",
-      "resource": "https://management.azure.com/"
+      apiVersion: "2018-02-01",
+      resource: "https://management.azure.com/"
     };
     const customMsiEndpoint = "http://localhost:50342/oauth2/token";
     const httpClient = setupNockResponse(customMsiEndpoint, expectedQuery, mockResponse);
 
-    const msiCredsObj = new MSIVmTokenCredentials({ msiEndpoint: customMsiEndpoint, httpClient: httpClient });
+    const msiCredsObj = new MSIVmTokenCredentials({
+      msiEndpoint: customMsiEndpoint,
+      httpClient: httpClient
+    });
     const response = await msiCredsObj.getToken();
     expect(response).to.exist;
     expect(response!.accessToken).to.exist;
@@ -87,18 +99,19 @@ describe("MSI Vm Authentication", () => {
 
   it("should throw on requests with bad resource", async () => {
     const errorMessage = "unknown";
-    const errorDescription = "Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log";
+    const errorDescription =
+      "Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log";
     const errorResponse = {
-      "error": errorMessage,
-      "error_description": errorDescription
+      error: errorMessage,
+      error_description: errorDescription
     };
 
     const requestBodyToMatch = {
-      "resource": "badvalue"
+      resource: "badvalue"
     };
 
     const httpClient = setupNockResponse(undefined, requestBodyToMatch, undefined, errorResponse);
-    const msiCredsObj = new MSIVmTokenCredentials({ "resource": "badvalue", httpClient: httpClient });
+    const msiCredsObj = new MSIVmTokenCredentials({ resource: "badvalue", httpClient: httpClient });
 
     try {
       await msiCredsObj.getToken();
@@ -114,16 +127,16 @@ describe("MSI Vm Authentication", () => {
     const errorMessage = "bad_resource_200";
     const errorDescription = "Invalid Resource";
     const errorResponse = {
-      "error": errorMessage,
-      "error_description": errorDescription
+      error: errorMessage,
+      error_description: errorDescription
     };
 
     const requestBodyToMatch = {
-      "resource": "  "
+      resource: "  "
     };
 
     const httpClient = setupNockResponse(undefined, requestBodyToMatch, undefined, errorResponse);
-    const msiCredsObj = new MSIVmTokenCredentials({ "resource": "  ", httpClient: httpClient });
+    const msiCredsObj = new MSIVmTokenCredentials({ resource: "  ", httpClient: httpClient });
 
     try {
       await msiCredsObj.getToken();

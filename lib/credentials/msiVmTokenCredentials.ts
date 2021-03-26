@@ -97,11 +97,14 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
     const opRes = await this._httpClient.sendRequest(reqOptions);
     const result = this.parseTokenResponse(opRes.bodyAsText!) as MSITokenResponse;
     if (!result.tokenType) {
-      throw new Error(`Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`);
+      throw new Error(
+        `Invalid token response, did not find tokenType. Response body is: ${opRes.bodyAsText}`
+      );
     } else if (!result.accessToken) {
-      throw new Error(`Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`);
+      throw new Error(
+        `Invalid token response, did not find accessToken. Response body is: ${opRes.bodyAsText}`
+      );
     }
-
 
     return result;
   }
@@ -111,15 +114,15 @@ export class MSIVmTokenCredentials extends MSITokenCredentials {
       url: this.msiEndpoint,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Metadata": "true"
+        Metadata: "true"
       },
       method: this.httpMethod,
       queryParameters: {
         "api-version": this.apiVersion,
-        "resource": this.resource,
-        "object_id": this.objectId,
-        "client_id": this.clientId,
-        "mi_res_id": this.identityId
+        resource: this.resource,
+        object_id: this.objectId,
+        client_id: this.clientId,
+        mi_res_id: this.identityId
       }
     };
 

@@ -7,7 +7,6 @@ import { AuthConstants, TokenAudience } from "../util/authConstants";
 import { TokenResponse, TokenCache } from "adal-node";
 
 export class DeviceTokenCredentials extends TokenCredentialsBase {
-
   readonly username: string;
 
   /**
@@ -34,8 +33,8 @@ export class DeviceTokenCredentials extends TokenCredentialsBase {
     username?: string,
     tokenAudience?: TokenAudience,
     environment?: Environment,
-    tokenCache?: TokenCache) {
-
+    tokenCache?: TokenCache
+  ) {
     if (!username) {
       username = "user@example.com";
     }

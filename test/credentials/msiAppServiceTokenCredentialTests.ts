@@ -7,7 +7,6 @@ import { expect, assert } from "chai";
 import { WebResource, HttpHeaders, HttpClient, HttpOperationResponse } from "@azure/ms-rest-js";
 
 describe("MSI App Service Authentication", function () {
-
   function getMockHttpClient(response?: any, error?: any): HttpClient {
     const httpClient = {
       sendRequest: async (request: WebResource): Promise<HttpOperationResponse> => {
@@ -60,7 +59,6 @@ describe("MSI App Service Authentication", function () {
         token_type: "Bearer"
       };
 
-
       const httpClient = getMockHttpClient(mockResponse);
       process.env["MSI_ENDPOINT"] = "http://127.0.0.1:41741/MSI/token/";
       process.env["MSI_SECRET"] = "69418689F1E342DD946CB82994CDA3CB";
@@ -73,8 +71,9 @@ describe("MSI App Service Authentication", function () {
 
     it('should throw if the response contains "ExceptionMessage"', async function () {
       const errorResponse = {
-        "error": "unknown",
-        "error_description": "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
+        error: "unknown",
+        error_description:
+          "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
       };
 
       const httpClient = getMockHttpClient(undefined, errorResponse);
@@ -84,15 +83,13 @@ describe("MSI App Service Authentication", function () {
       try {
         await msiCredsObj.getToken();
         assert.fail(undefined, undefined, "getToken should throw an exception");
-      }
-      catch (err) {
+      } catch (err) {
         expect(err);
       }
     });
   });
 
   describe("loginWithAppServiceMSI (callback)", () => {
-
     it("should successfully provide MSIAppServiceTokenCredentials object by providing optional properties", (done) => {
       const mockResponse = {
         access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1d",
@@ -139,8 +136,9 @@ describe("MSI App Service Authentication", function () {
 
     it('should throw if the response contains "ExceptionMessage"', async () => {
       const errorResponse = {
-        "error": "unknown",
-        "error_description": "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
+        error: "unknown",
+        error_description:
+          "ExceptionMessage: Failed to retrieve token from the Active directory. For details see logs in C:\\User1\\Logs\\Plugins\\Microsoft.Identity.MSI\\1.0\\service_identity_0.log"
       };
 
       const httpClient = getMockHttpClient(undefined, errorResponse);

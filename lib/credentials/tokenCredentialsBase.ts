@@ -10,7 +10,7 @@ import {
   AuthenticationContext,
   MemoryCache,
   ErrorResponse,
-  TokenCache,
+  TokenCache
 } from "adal-node";
 
 export abstract class TokenCredentialsBase implements TokenClientCredentials {
@@ -31,18 +31,14 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
       throw new Error("domain must be a non empty string.");
     }
 
-    if (
-      this.tokenAudience === "graph" &&
-      this.domain.toLowerCase() === "common"
-    ) {
+    if (this.tokenAudience === "graph" && this.domain.toLowerCase() === "common") {
       throw new Error(
         `${'If the tokenAudience is specified as "graph" then "domain" cannot be defaulted to "common" tenant.\
         It must be the actual tenant (preferably a string in a guid format).'}`
       );
     }
 
-    const authorityUrl =
-      this.environment.activeDirectoryEndpointUrl + this.domain;
+    const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
     this.authContext = new AuthenticationContext(
       authorityUrl,
       this.environment.validateAuthority,
@@ -52,8 +48,7 @@ export abstract class TokenCredentialsBase implements TokenClientCredentials {
 
   public setDomain(domain: string): void {
     this.domain = domain;
-    const authorityUrl =
-      this.environment.activeDirectoryEndpointUrl + this.domain;
+    const authorityUrl = this.environment.activeDirectoryEndpointUrl + this.domain;
     this.authContext = new AuthenticationContext(
       authorityUrl,
       this.environment.validateAuthority,

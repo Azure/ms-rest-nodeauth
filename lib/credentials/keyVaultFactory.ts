@@ -33,51 +33,83 @@ function _convert(credentials: MSITokenCredentials): MSITokenCredentials {
       msiEndpoint: credentials.msiEndpoint
     });
   } else if (credentials instanceof MSITokenCredentials) {
-    throw new Error("MSI-credentials not one of: MSIVmTokenCredentials, MSIAppServiceTokenCredentials");
+    throw new Error(
+      "MSI-credentials not one of: MSIVmTokenCredentials, MSIAppServiceTokenCredentials"
+    );
   } else {
     return credentials;
   }
 }
 
 function _createAuthenticatorMapper(credentials: MSITokenCredentials): Authenticator {
-  return (challenge: any) => new Promise((resolve, reject) => {
-    // Function to take token Response and format a authorization value
-    const _formAuthorizationValue = (err: Error, tokenResponse: TokenResponse | ErrorResponse) => {
-      if (err) {
-        return reject(err);
-      }
+  return (challenge: any) =>
+    new Promise((resolve, reject) => {
+      // Function to take token Response and format a authorization value
+      const _formAuthorizationValue = (
+        err: Error,
+        tokenResponse: TokenResponse | ErrorResponse
+      ) => {
+        if (err) {
+          return reject(err);
+        }
 
-      if (tokenResponse.error) {
-        return reject(tokenResponse.error);
-      }
+        if (tokenResponse.error) {
+          return reject(tokenResponse.error);
+        }
 
-      tokenResponse = tokenResponse as TokenResponse;
-      // Calculate the value to be set in the request's Authorization header and resume the call.
-      const authorizationValue = tokenResponse.tokenType + " " + tokenResponse.accessToken;
-      return resolve(authorizationValue);
-    };
+        tokenResponse = tokenResponse as TokenResponse;
+        // Calculate the value to be set in the request's Authorization header and resume the call.
+        const authorizationValue = tokenResponse.tokenType + " " + tokenResponse.accessToken;
+        return resolve(authorizationValue);
+      };
 
-    // Create a new authentication context.
-    if (credentials instanceof TokenCredentialsBase) {
-      const context = new AuthenticationContext(challenge.authorization, true, credentials.authContext && credentials.authContext.cache);
-      if (credentials instanceof ApplicationTokenCredentials) {
-        return context.acquireTokenWithClientCredentials(
-          challenge.resource, credentials.clientId, credentials.secret, _formAuthorizationValue);
-      } else if (credentials instanceof ApplicationTokenCertificateCredentials) {
-        return context.acquireTokenWithClientCertificate(
-          challenge.resource, credentials.clientId, credentials.certificate, credentials.thumbprint, _formAuthorizationValue);
-      } else if (credentials instanceof UserTokenCredentials) {
-        return context.acquireTokenWithUsernamePassword(
-          challenge.resource, credentials.username, credentials.password, credentials.clientId, _formAuthorizationValue);
-      } else if (credentials instanceof DeviceTokenCredentials) {
-        return context.acquireToken(
-          challenge.resource, credentials.username, credentials.clientId, _formAuthorizationValue);
+      // Create a new authentication context.
+      if (credentials instanceof TokenCredentialsBase) {
+        const context = new AuthenticationContext(
+          challenge.authorization,
+          true,
+          credentials.authContext && credentials.authContext.cache
+        );
+        if (credentials instanceof ApplicationTokenCredentials) {
+          return context.acquireTokenWithClientCredentials(
+            challenge.resource,
+            credentials.clientId,
+            credentials.secret,
+            _formAuthorizationValue
+          );
+        } else if (credentials instanceof ApplicationTokenCertificateCredentials) {
+          return context.acquireTokenWithClientCertificate(
+            challenge.resource,
+            credentials.clientId,
+            credentials.certificate,
+            credentials.thumbprint,
+            _formAuthorizationValue
+          );
+        } else if (credentials instanceof UserTokenCredentials) {
+          return context.acquireTokenWithUsernamePassword(
+            challenge.resource,
+            credentials.username,
+            credentials.password,
+            credentials.clientId,
+            _formAuthorizationValue
+          );
+        } else if (credentials instanceof DeviceTokenCredentials) {
+          return context.acquireToken(
+            challenge.resource,
+            credentials.username,
+            credentials.clientId,
+            _formAuthorizationValue
+          );
+        }
+      } else if (credentials instanceof MSITokenCredentials) {
+        return credentials.getToken();
+      } else {
+        return reject(
+          new Error(
+            "credentials must be one of: ApplicationTokenCredentials, UserTokenCredentials, " +
+              "DeviceTokenCredentials, MSITokenCredentials"
+          )
+        );
       }
-    } else if (credentials instanceof MSITokenCredentials) {
-      return credentials.getToken();
-    } else {
-      return reject(new Error("credentials must be one of: ApplicationTokenCredentials, UserTokenCredentials, " +
-        "DeviceTokenCredentials, MSITokenCredentials"));
-    }
-  });
+    });
 }

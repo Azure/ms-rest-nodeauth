@@ -101,19 +101,11 @@ export class ApplicationTokenCertificateCredentials extends ApplicationTokenCred
     domain: string,
     options: AzureTokenCredentialsOptions
   ): ApplicationTokenCertificateCredentials {
-    if (
-      !certificateStringOrFilePath ||
-      typeof certificateStringOrFilePath.valueOf() !== "string"
-    ) {
-      throw new Error(
-        "'certificateStringOrFilePath' must be a non empty string."
-      );
+    if (!certificateStringOrFilePath || typeof certificateStringOrFilePath.valueOf() !== "string") {
+      throw new Error("'certificateStringOrFilePath' must be a non empty string.");
     }
     if (!certificateStringOrFilePath.startsWith("-----BEGIN")) {
-      certificateStringOrFilePath = readFileSync(
-        certificateStringOrFilePath,
-        "utf8"
-      );
+      certificateStringOrFilePath = readFileSync(certificateStringOrFilePath, "utf8");
     }
     const certificatePattern = /(-+BEGIN CERTIFICATE-+)(\n\r?|\r\n?)([A-Za-z0-9\+\/\n\r]+\=*)(\n\r?|\r\n?)(-+END CERTIFICATE-+)/;
     const matchCert = certificateStringOrFilePath.match(certificatePattern);

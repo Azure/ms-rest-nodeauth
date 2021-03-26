@@ -12,9 +12,16 @@ import { ApplicationTokenCertificateCredentials } from "./credentials/applicatio
 import { DeviceTokenCredentials } from "./credentials/deviceTokenCredentials";
 import { UserTokenCredentials } from "./credentials/userTokenCredentials";
 import { AuthConstants, TokenAudience } from "./util/authConstants";
-import { buildTenantList, getSubscriptionsFromTenants, LinkedSubscription } from "./subscriptionManagement/subscriptionUtils";
+import {
+  buildTenantList,
+  getSubscriptionsFromTenants,
+  LinkedSubscription
+} from "./subscriptionManagement/subscriptionUtils";
 import { MSIVmTokenCredentials, MSIVmOptions } from "./credentials/msiVmTokenCredentials";
-import { MSIAppServiceTokenCredentials, MSIAppServiceOptions } from "./credentials/msiAppServiceTokenCredentials";
+import {
+  MSIAppServiceTokenCredentials,
+  MSIAppServiceOptions
+} from "./credentials/msiAppServiceTokenCredentials";
 import { MSITokenResponse } from "./credentials/msiTokenCredentials";
 
 /**
@@ -36,17 +43,16 @@ const managementPlaneTokenAudiences = [
 
 function turnOnLogging() {
   const log = adal.Logging;
-  log.setLoggingOptions(
-    {
-      level: 3, // Please use log.LOGGING_LEVEL.VERBOSE once AD TypeScript mappings are updated,
-      log: function (level: any, message: any, error: any) {
-        level;
-        console.info(message);
-        if (error) {
-          console.error(error);
-        }
+  log.setLoggingOptions({
+    level: 3, // Please use log.LOGGING_LEVEL.VERBOSE once AD TypeScript mappings are updated,
+    log: function (level: any, message: any, error: any) {
+      level;
+      console.info(message);
+      if (error) {
+        console.error(error);
       }
-    });
+    }
+  });
 }
 
 if (process.env["AZURE_ADAL_LOGGING_ENABLED"]) {
@@ -160,7 +166,11 @@ export type Callback<TResult> = (error?: Error, result?: TResult) => void;
  *
  * @returns A Promise that resolves to AuthResponse, which contains `credentials` and an optional `subscriptions` array, and rejects with an Error.
  */
-export async function withUsernamePasswordWithAuthResponse(username: string, password: string, options?: LoginWithUsernamePasswordOptions): Promise<AuthResponse> {
+export async function withUsernamePasswordWithAuthResponse(
+  username: string,
+  password: string,
+  options?: LoginWithUsernamePasswordOptions
+): Promise<AuthResponse> {
   if (!options) {
     options = {};
   }
@@ -174,7 +184,15 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     options.environment = Environment.AzureCloud;
   }
 
-  const creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment, options.tokenCache);
+  const creds = new UserTokenCredentials(
+    options.clientId,
+    options.domain,
+    username,
+    password,
+    options.tokenAudience,
+    options.environment,
+    options.tokenCache
+  );
   const tokenResponse = await creds.getToken();
 
   // The token cache gets propulated for all the tenants as a part of building the tenantList.
@@ -183,7 +201,11 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     tenantList = [tokenResponse.tenantId];
   }
 
-  const subscriptionList: LinkedSubscription[] = await _getSubscriptions(creds, tenantList, options.tokenAudience);
+  const subscriptionList: LinkedSubscription[] = await _getSubscriptions(
+    creds,
+    tenantList,
+    options.tokenAudience
+  );
 
   return { credentials: creds, subscriptions: subscriptionList };
 }
@@ -206,7 +228,12 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
  *
  * @returns A Promise that resolves to AuthResponse, which contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withServicePrincipalSecretWithAuthResponse(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse> {
+export async function withServicePrincipalSecretWithAuthResponse(
+  clientId: string,
+  secret: string,
+  domain: string,
+  options?: AzureTokenCredentialsOptions
+): Promise<AuthResponse> {
   if (!options) {
     options = {};
   }
@@ -214,7 +241,14 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
     options.environment = Environment.AzureCloud;
   }
 
-  const creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment, options.tokenCache);
+  const creds = new ApplicationTokenCredentials(
+    clientId,
+    domain,
+    secret,
+    options.tokenAudience,
+    options.environment,
+    options.tokenCache
+  );
   await creds.getToken();
 
   const subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
@@ -242,7 +276,12 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
  *
  * @returns A Promise that resolves to AuthResponse, which contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withServicePrincipalCertificateWithAuthResponse(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions): Promise<AuthResponse> {
+export async function withServicePrincipalCertificateWithAuthResponse(
+  clientId: string,
+  certificateStringOrFilePath: string,
+  domain: string,
+  options?: AzureTokenCredentialsOptions
+): Promise<AuthResponse> {
   if (!options) {
     options = {};
   }
@@ -250,7 +289,12 @@ export async function withServicePrincipalCertificateWithAuthResponse(clientId: 
     options.environment = Environment.AzureCloud;
   }
 
-  const creds = ApplicationTokenCertificateCredentials.create(clientId, certificateStringOrFilePath, domain, options);
+  const creds = ApplicationTokenCertificateCredentials.create(
+    clientId,
+    certificateStringOrFilePath,
+    domain,
+    options
+  );
   await creds.getToken();
 
   const subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
@@ -269,7 +313,9 @@ function validateAuthFileContent(credsObj: any, filePath: string) {
     throw new Error(`"clientId" is missing from the auth file: ${filePath}.`);
   }
   if (!credsObj.clientSecret && !credsObj.clientCertificate) {
-    throw new Error(`Either "clientSecret" or "clientCertificate" must be present in the auth file: ${filePath}.`);
+    throw new Error(
+      `Either "clientSecret" or "clientCertificate" must be present in the auth file: ${filePath}.`
+    );
   }
   if (!credsObj.subscriptionId) {
     throw new Error(`"subscriptionId" is missing from the auth file: ${filePath}.`);
@@ -302,7 +348,7 @@ function foundManagementEndpointUrl(authFileUrl: string, envUrl: string): boolea
 
   authFileUrl = authFileUrl.endsWith("/") ? authFileUrl.slice(0, -1) : authFileUrl;
   envUrl = envUrl.endsWith("/") ? envUrl.slice(0, -1) : envUrl;
-  return (authFileUrl.toLowerCase() === envUrl.toLowerCase());
+  return authFileUrl.toLowerCase() === envUrl.toLowerCase();
 }
 
 /**
@@ -330,15 +376,19 @@ function foundManagementEndpointUrl(authFileUrl: string, envUrl: string): boolea
  *
  * @returns A Promise that resolves to AuthResponse, which contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOptions): Promise<AuthResponse> {
+export async function withAuthFileWithAuthResponse(
+  options?: LoginWithAuthFileOptions
+): Promise<AuthResponse> {
   if (!options) options = { filePath: "" };
   const filePath = options.filePath || process.env[AuthConstants.AZURE_AUTH_LOCATION];
-  const subscriptionEnvVariableName = options.subscriptionEnvVariableName || "AZURE_SUBSCRIPTION_ID";
+  const subscriptionEnvVariableName =
+    options.subscriptionEnvVariableName || "AZURE_SUBSCRIPTION_ID";
   if (!filePath) {
     const msg = `Either provide an absolute file path to the auth file or set/export the environment variable - ${AuthConstants.AZURE_AUTH_LOCATION}.`;
     throw new Error(msg);
   }
-  let content: string, credsObj: any = {};
+  let content: string,
+    credsObj: any = {};
   const optionsForSp: any = {};
 
   content = readFileSync(filePath, { encoding: "utf8" });
@@ -358,9 +408,14 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
   for (let i = 0; i < envNames.length; i++) {
     const env = envNames[i];
     const environmentObj = (Environment as any)[env];
-    if (environmentObj &&
+    if (
+      environmentObj &&
       environmentObj.managementEndpointUrl &&
-      foundManagementEndpointUrl(credsObj.managementEndpointUrl, environmentObj.managementEndpointUrl)) {
+      foundManagementEndpointUrl(
+        credsObj.managementEndpointUrl,
+        environmentObj.managementEndpointUrl
+      )
+    ) {
       envFound.name = environmentObj.name;
       break;
     }
@@ -376,7 +431,9 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     const keys = Object.keys(credsObj);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      if (key.match(/^(clientId|clientSecret|clientCertificate|subscriptionId|tenantId)$/ig) === null) {
+      if (
+        key.match(/^(clientId|clientSecret|clientCertificate|subscriptionId|tenantId)$/gi) === null
+      ) {
         if (key === "activeDirectoryEndpointUrl" && !key.endsWith("/")) {
           envParams[key] = credsObj[key] + "/";
         } else {
@@ -393,12 +450,21 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
     optionsForSp.environment = Environment.add(envParams);
   }
   if (credsObj.clientSecret) {
-    return withServicePrincipalSecretWithAuthResponse(credsObj.clientId, credsObj.clientSecret, credsObj.tenantId, optionsForSp);
+    return withServicePrincipalSecretWithAuthResponse(
+      credsObj.clientId,
+      credsObj.clientSecret,
+      credsObj.tenantId,
+      optionsForSp
+    );
   }
 
-  return withServicePrincipalCertificateWithAuthResponse(credsObj.clientId, credsObj.clientCertificate, credsObj.tenantId, optionsForSp);
+  return withServicePrincipalCertificateWithAuthResponse(
+    credsObj.clientId,
+    credsObj.clientCertificate,
+    credsObj.tenantId,
+    optionsForSp
+  );
 }
-
 
 /**
  * Provides a url and code that needs to be copy and pasted in a browser and authenticated over there. If successful, the user will get a DeviceTokenCredentials object and the list of subscriptions associated with that userId across all the applicable tenants.
@@ -429,7 +495,9 @@ export async function withAuthFileWithAuthResponse(options?: LoginWithAuthFileOp
  *
  * @returns A Promise that resolves to AuthResponse, which contains "credentials" and optional "subscriptions" array and rejects with an Error.
  */
-export async function withInteractiveWithAuthResponse(options?: InteractiveLoginOptions): Promise<AuthResponse> {
+export async function withInteractiveWithAuthResponse(
+  options?: InteractiveLoginOptions
+): Promise<AuthResponse> {
   if (!options) {
     options = {};
   }
@@ -465,32 +533,42 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
   interactiveOptions.tokenCache = options.tokenCache;
   interactiveOptions.language = options.language;
   interactiveOptions.userCodeResponseLogger = options.userCodeResponseLogger;
-  const authorityUrl: string = interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
-  const authContext = new adal.AuthenticationContext(authorityUrl, interactiveOptions.environment.validateAuthority, interactiveOptions.tokenCache);
+  const authorityUrl: string =
+    interactiveOptions.environment.activeDirectoryEndpointUrl + interactiveOptions.domain;
+  const authContext = new adal.AuthenticationContext(
+    authorityUrl,
+    interactiveOptions.environment.validateAuthority,
+    interactiveOptions.tokenCache
+  );
   interactiveOptions.context = authContext;
 
   function tryAcquireToken(interactiveOptions: InteractiveLoginOptions, resolve: any, reject: any) {
-    authContext.acquireUserCode(interactiveOptions.tokenAudience!, interactiveOptions.clientId!, interactiveOptions.language!, (err: any, userCodeRes: adal.UserCodeInfo) => {
-      if (err) {
-        if (err.error === "authorization_pending") {
-          setTimeout(() => {
-            tryAcquireToken(interactiveOptions, resolve, reject);
-          }, 1000);
-        } else {
-          reject(err);
+    authContext.acquireUserCode(
+      interactiveOptions.tokenAudience!,
+      interactiveOptions.clientId!,
+      interactiveOptions.language!,
+      (err: any, userCodeRes: adal.UserCodeInfo) => {
+        if (err) {
+          if (err.error === "authorization_pending") {
+            setTimeout(() => {
+              tryAcquireToken(interactiveOptions, resolve, reject);
+            }, 1000);
+          } else {
+            reject(err);
+          }
+
+          return;
         }
 
-        return;
-      }
+        if (interactiveOptions.userCodeResponseLogger) {
+          interactiveOptions.userCodeResponseLogger(userCodeRes.message);
+        } else {
+          console.log(userCodeRes.message);
+        }
 
-      if (interactiveOptions.userCodeResponseLogger) {
-        interactiveOptions.userCodeResponseLogger(userCodeRes.message);
-      } else {
-        console.log(userCodeRes.message);
+        return resolve(userCodeRes);
       }
-
-      return resolve(userCodeRes);
-    });
+    );
   }
 
   const getUserCode = new Promise<adal.UserCodeInfo>((resolve, reject) => {
@@ -499,24 +577,35 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
 
   const userCodeResponse = await getUserCode;
   const creds = await new Promise<DeviceTokenCredentials>((resolve, reject) => {
-    return authContext.acquireTokenWithDeviceCode(interactiveOptions.tokenAudience, interactiveOptions.clientId, userCodeResponse, (error, tokenResponse) => {
-      if (error) {
-        return reject(error);
-      }
+    return authContext.acquireTokenWithDeviceCode(
+      interactiveOptions.tokenAudience,
+      interactiveOptions.clientId,
+      userCodeResponse,
+      (error, tokenResponse) => {
+        if (error) {
+          return reject(error);
+        }
 
-      const response = tokenResponse as adal.TokenResponse;
-      interactiveOptions.userName = response.userId;
-      interactiveOptions.authorizationScheme = response.tokenType;
+        const response = tokenResponse as adal.TokenResponse;
+        interactiveOptions.userName = response.userId;
+        interactiveOptions.authorizationScheme = response.tokenType;
 
-      let creds;
-      try {
-        creds = new DeviceTokenCredentials(interactiveOptions.clientId, interactiveOptions.domain, interactiveOptions.userName,
-          interactiveOptions.tokenAudience, interactiveOptions.environment, interactiveOptions.tokenCache);
-      } catch (err) {
-        return reject(err);
+        let creds;
+        try {
+          creds = new DeviceTokenCredentials(
+            interactiveOptions.clientId,
+            interactiveOptions.domain,
+            interactiveOptions.userName,
+            interactiveOptions.tokenAudience,
+            interactiveOptions.environment,
+            interactiveOptions.tokenCache
+          );
+        } catch (err) {
+          return reject(err);
+        }
+        return resolve(creds);
       }
-      return resolve(creds);
-    });
+    );
   });
 
   const tenants = await buildTenantList(creds);
@@ -560,9 +649,27 @@ export async function withInteractiveWithAuthResponse(options?: InteractiveLogin
  */
 export function withAuthFile(): Promise<TokenCredentialsBase>;
 export function withAuthFile(options: LoginWithAuthFileOptions): Promise<TokenCredentialsBase>;
-export function withAuthFile(options: LoginWithAuthFileOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function withAuthFile(
+  options: LoginWithAuthFileOptions,
+  callback: {
+    (
+      err: Error,
+      credentials: ApplicationTokenCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): void;
 export function withAuthFile(callback: any): void;
-export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withAuthFile(
+  options?: LoginWithAuthFileOptions,
+  callback?: {
+    (
+      err: Error,
+      credentials: ApplicationTokenCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -573,12 +680,14 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withAuthFileWithAuthResponse(options))((err: Error, authRes: AuthResponse) => {
-      if (err) {
-        return cb(err);
+    msRest.promiseToCallback(withAuthFileWithAuthResponse(options))(
+      (err: Error, authRes: AuthResponse) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(undefined, authRes.credentials, authRes.subscriptions);
       }
-      return cb(undefined, authRes.credentials, authRes.subscriptions);
-    });
+    );
   }
 }
 
@@ -613,9 +722,27 @@ export function withAuthFile(options?: LoginWithAuthFileOptions, callback?: { (e
  */
 export function interactive(): Promise<DeviceTokenCredentials>;
 export function interactive(options: InteractiveLoginOptions): Promise<DeviceTokenCredentials>;
-export function interactive(options: InteractiveLoginOptions, callback: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
+export function interactive(
+  options: InteractiveLoginOptions,
+  callback: {
+    (
+      err: Error,
+      credentials: DeviceTokenCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): void;
 export function interactive(callback: any): void;
-export function interactive(options?: InteractiveLoginOptions, callback?: { (err: Error, credentials: DeviceTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function interactive(
+  options?: InteractiveLoginOptions,
+  callback?: {
+    (
+      err: Error,
+      credentials: DeviceTokenCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -626,12 +753,14 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withInteractiveWithAuthResponse(options))((err: Error, authRes: AuthResponse) => {
-      if (err) {
-        return cb(err);
+    msRest.promiseToCallback(withInteractiveWithAuthResponse(options))(
+      (err: Error, authRes: AuthResponse) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(undefined, authRes.credentials, authRes.subscriptions);
       }
-      return cb(undefined, authRes.credentials, authRes.subscriptions);
-    });
+    );
   }
 }
 
@@ -662,22 +791,64 @@ export function interactive(options?: InteractiveLoginOptions, callback?: { (err
  *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string): Promise<ApplicationTokenCredentials>;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, callback: any): void;
-export function withServicePrincipalSecret(clientId: string, secret: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withServicePrincipalSecret(
+  clientId: string,
+  secret: string,
+  domain: string
+): Promise<ApplicationTokenCredentials>;
+export function withServicePrincipalSecret(
+  clientId: string,
+  secret: string,
+  domain: string,
+  options: AzureTokenCredentialsOptions
+): Promise<ApplicationTokenCredentials>;
+export function withServicePrincipalSecret(
+  clientId: string,
+  secret: string,
+  domain: string,
+  options: AzureTokenCredentialsOptions,
+  callback: {
+    (
+      err: Error,
+      credentials: ApplicationTokenCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): void;
+export function withServicePrincipalSecret(
+  clientId: string,
+  secret: string,
+  domain: string,
+  callback: any
+): void;
+export function withServicePrincipalSecret(
+  clientId: string,
+  secret: string,
+  domain: string,
+  options?: AzureTokenCredentialsOptions,
+  callback?: {
+    (
+      err: Error,
+      credentials: ApplicationTokenCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
   const cb = callback as Function;
   if (!callback) {
-    return withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options).then((authRes) => {
-      return authRes.credentials;
-    });
+    return withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options).then(
+      (authRes) => {
+        return authRes.credentials;
+      }
+    );
   } else {
-    msRest.promiseToCallback(withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(
+      withServicePrincipalSecretWithAuthResponse(clientId, secret, domain, options)
+    )((err: Error, authRes: AuthResponse) => {
       if (err) {
         return cb(err);
       }
@@ -715,22 +886,72 @@ export function withServicePrincipalSecret(clientId: string, secret: string, dom
  *             @resolve {ApplicationTokenCertificateCredentials} The ApplicationTokenCertificateCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string): Promise<ApplicationTokenCertificateCredentials>;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions): Promise<ApplicationTokenCredentials>;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options: AzureTokenCredentialsOptions, callback: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, callback: any): void;
-export function withServicePrincipalCertificate(clientId: string, certificateStringOrFilePath: string, domain: string, options?: AzureTokenCredentialsOptions, callback?: { (err: Error, credentials: ApplicationTokenCertificateCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withServicePrincipalCertificate(
+  clientId: string,
+  certificateStringOrFilePath: string,
+  domain: string
+): Promise<ApplicationTokenCertificateCredentials>;
+export function withServicePrincipalCertificate(
+  clientId: string,
+  certificateStringOrFilePath: string,
+  domain: string,
+  options: AzureTokenCredentialsOptions
+): Promise<ApplicationTokenCredentials>;
+export function withServicePrincipalCertificate(
+  clientId: string,
+  certificateStringOrFilePath: string,
+  domain: string,
+  options: AzureTokenCredentialsOptions,
+  callback: {
+    (
+      err: Error,
+      credentials: ApplicationTokenCertificateCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): void;
+export function withServicePrincipalCertificate(
+  clientId: string,
+  certificateStringOrFilePath: string,
+  domain: string,
+  callback: any
+): void;
+export function withServicePrincipalCertificate(
+  clientId: string,
+  certificateStringOrFilePath: string,
+  domain: string,
+  options?: AzureTokenCredentialsOptions,
+  callback?: {
+    (
+      err: Error,
+      credentials: ApplicationTokenCertificateCredentials,
+      subscriptions: Array<LinkedSubscription>
+    ): void;
+  }
+): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
   }
   const cb = callback as Function;
   if (!callback) {
-    return withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options).then((authRes) => {
+    return withServicePrincipalCertificateWithAuthResponse(
+      clientId,
+      certificateStringOrFilePath,
+      domain,
+      options
+    ).then((authRes) => {
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withServicePrincipalCertificateWithAuthResponse(clientId, certificateStringOrFilePath, domain, options))((err: Error, authRes: AuthResponse) => {
+    msRest.promiseToCallback(
+      withServicePrincipalCertificateWithAuthResponse(
+        clientId,
+        certificateStringOrFilePath,
+        domain,
+        options
+      )
+    )((err: Error, authRes: AuthResponse) => {
       if (err) {
         return cb(err);
       }
@@ -769,11 +990,32 @@ export function withServicePrincipalCertificate(clientId: string, certificateStr
  *             @resolve {UserTokenCredentials} The UserTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withUsernamePassword(username: string, password: string): Promise<UserTokenCredentials>;
-export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions): Promise<UserTokenCredentials>;
+export function withUsernamePassword(
+  username: string,
+  password: string
+): Promise<UserTokenCredentials>;
+export function withUsernamePassword(
+  username: string,
+  password: string,
+  options: LoginWithUsernamePasswordOptions
+): Promise<UserTokenCredentials>;
 export function withUsernamePassword(username: string, password: string, callback: any): void;
-export function withUsernamePassword(username: string, password: string, options: LoginWithUsernamePasswordOptions, callback: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): void;
-export function withUsernamePassword(username: string, password: string, options?: LoginWithUsernamePasswordOptions, callback?: { (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void }): any {
+export function withUsernamePassword(
+  username: string,
+  password: string,
+  options: LoginWithUsernamePasswordOptions,
+  callback: {
+    (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void;
+  }
+): void;
+export function withUsernamePassword(
+  username: string,
+  password: string,
+  options?: LoginWithUsernamePasswordOptions,
+  callback?: {
+    (err: Error, credentials: UserTokenCredentials, subscriptions: Array<LinkedSubscription>): void;
+  }
+): any {
   if (!callback && typeof options === "function") {
     callback = options;
     options = undefined;
@@ -784,12 +1026,14 @@ export function withUsernamePassword(username: string, password: string, options
       return authRes.credentials;
     });
   } else {
-    msRest.promiseToCallback(withUsernamePasswordWithAuthResponse(username, password, options))((err: Error, authRes: AuthResponse) => {
-      if (err) {
-        return cb(err);
+    msRest.promiseToCallback(withUsernamePasswordWithAuthResponse(username, password, options))(
+      (err: Error, authRes: AuthResponse) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(undefined, authRes.credentials, authRes.subscriptions);
       }
-      return cb(undefined, authRes.credentials, authRes.subscriptions);
-    });
+    );
   }
 }
 
@@ -799,9 +1043,14 @@ export function withUsernamePassword(username: string, password: string, options
 function _getSubscriptions(
   creds: TokenCredentialsBase,
   tenants: string[],
-  tokenAudience?: string): Promise<LinkedSubscription[]> {
-  if (tokenAudience &&
-    !managementPlaneTokenAudiences.some((item) => { return item === tokenAudience!.toLowerCase(); })) {
+  tokenAudience?: string
+): Promise<LinkedSubscription[]> {
+  if (
+    tokenAudience &&
+    !managementPlaneTokenAudiences.some((item) => {
+      return item === tokenAudience!.toLowerCase();
+    })
+  ) {
     return Promise.resolve([]);
   }
   return getSubscriptionsFromTenants(creds, tenants);
@@ -865,9 +1114,15 @@ async function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> 
  */
 export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
 export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
-export function loginWithVmMSI(options: MSIVmOptions, callback: Callback<MSIVmTokenCredentials>): void;
+export function loginWithVmMSI(
+  options: MSIVmOptions,
+  callback: Callback<MSIVmTokenCredentials>
+): void;
 export function loginWithVmMSI(callback: Callback<MSIVmTokenCredentials>): void;
-export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCredentials>, callback?: Callback<MSIVmTokenCredentials>): void | Promise<MSIVmTokenCredentials> {
+export function loginWithVmMSI(
+  options?: MSIVmOptions | Callback<MSIVmTokenCredentials>,
+  callback?: Callback<MSIVmTokenCredentials>
+): void | Promise<MSIVmTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
@@ -876,19 +1131,23 @@ export function loginWithVmMSI(options?: MSIVmOptions | Callback<MSIVmTokenCrede
   if (!callback) {
     return _withMSI(options as MSIVmOptions);
   } else {
-    msRest.promiseToCallback(_withMSI(options as MSIVmOptions))((err: Error, tokenRes: MSITokenResponse) => {
-      if (err) {
-        return cb(err);
+    msRest.promiseToCallback(_withMSI(options as MSIVmOptions))(
+      (err: Error, tokenRes: MSITokenResponse) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(undefined, tokenRes);
       }
-      return cb(undefined, tokenRes);
-    });
+    );
   }
 }
 
 /**
  * Private method
  */
-async function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials> {
+async function _withAppServiceMSI(
+  options: MSIAppServiceOptions
+): Promise<MSIAppServiceTokenCredentials> {
   if (!options) {
     options = {};
   }
@@ -923,10 +1182,18 @@ async function _withAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIApp
  *             @reject {Error} - error object.
  */
 export function loginWithAppServiceMSI(): Promise<MSIAppServiceTokenCredentials>;
-export function loginWithAppServiceMSI(options: MSIAppServiceOptions): Promise<MSIAppServiceTokenCredentials>;
-export function loginWithAppServiceMSI(options: MSIAppServiceOptions, callback: Callback<MSIAppServiceTokenCredentials>): void;
+export function loginWithAppServiceMSI(
+  options: MSIAppServiceOptions
+): Promise<MSIAppServiceTokenCredentials>;
+export function loginWithAppServiceMSI(
+  options: MSIAppServiceOptions,
+  callback: Callback<MSIAppServiceTokenCredentials>
+): void;
 export function loginWithAppServiceMSI(callback: Callback<MSIAppServiceTokenCredentials>): void;
-export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>, callback?: Callback<MSIAppServiceTokenCredentials>): void | Promise<MSIAppServiceTokenCredentials> {
+export function loginWithAppServiceMSI(
+  options?: MSIAppServiceOptions | Callback<MSIAppServiceTokenCredentials>,
+  callback?: Callback<MSIAppServiceTokenCredentials>
+): void | Promise<MSIAppServiceTokenCredentials> {
   if (!callback && typeof options === "function") {
     callback = options;
     options = {};
@@ -935,12 +1202,14 @@ export function loginWithAppServiceMSI(options?: MSIAppServiceOptions | Callback
   if (!callback) {
     return _withAppServiceMSI(options as MSIAppServiceOptions);
   } else {
-    msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))((err: Error, tokenRes: MSITokenResponse) => {
-      if (err) {
-        return cb(err);
+    msRest.promiseToCallback(_withAppServiceMSI(options as MSIAppServiceOptions))(
+      (err: Error, tokenRes: MSITokenResponse) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(undefined, tokenRes);
       }
-      return cb(undefined, tokenRes);
-    });
+    );
   }
 }
 
@@ -959,7 +1228,8 @@ export async function execAz(cmd: string): Promise<any> {
         try {
           return resolve(JSON.parse(stdout));
         } catch (err) {
-          const msg = `An error occurred while parsing the output "${stdout}", of ` +
+          const msg =
+            `An error occurred while parsing the output "${stdout}", of ` +
             `the cmd "${cmd}": ${err.stack}.`;
           return reject(new Error(msg));
         }
@@ -967,5 +1237,4 @@ export async function execAz(cmd: string): Promise<any> {
       return resolve();
     });
   });
-
 }

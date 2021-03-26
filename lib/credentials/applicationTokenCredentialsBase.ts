@@ -52,9 +52,9 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
 
       throw new Error(
         AuthConstants.SDK_INTERNAL_ERROR +
-        " : " +
-        "critical failure while removing expired token for service principal from token cache. " +
-        message
+          " : " +
+          "critical failure while removing expired token for service principal from token cache. " +
+          message
       );
     }
   }
@@ -71,7 +71,7 @@ export abstract class ApplicationTokenCredentialsBase extends TokenCredentialsBa
     query: object
   ): Promise<{ result: boolean; details?: Error }> {
     const self = this;
-    return new Promise<{ result: boolean; details?: Error }>(resolve => {
+    return new Promise<{ result: boolean; details?: Error }>((resolve) => {
       self.tokenCache.find(query, (error: Error, entries: any[]) => {
         if (error) {
           return resolve({ result: false, details: error });

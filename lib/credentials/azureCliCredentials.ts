@@ -109,7 +109,8 @@ export class AzureCliCredentials implements TokenClientCredentials {
     subscriptionInfo: LinkedSubscription,
     tokenInfo: CliAccessToken,
     // tslint:disable-next-line: no-inferrable-types
-    resource: string = "https://management.azure.com") {
+    resource: string = "https://management.azure.com"
+  ) {
     this.subscriptionInfo = subscriptionInfo;
     this.tokenInfo = tokenInfo;
     this.resource = resource;
@@ -124,16 +125,14 @@ export class AzureCliCredentials implements TokenClientCredentials {
     if (this._hasTokenExpired() || this._hasSubscriptionChanged() || this._hasResourceChanged()) {
       try {
         // refresh the access token
-        this.tokenInfo = await AzureCliCredentials.getAccessToken(
-          {
-            subscriptionIdOrName: this.subscriptionInfo.id,
-            resource: this.resource
-          }
-        );
+        this.tokenInfo = await AzureCliCredentials.getAccessToken({
+          subscriptionIdOrName: this.subscriptionInfo.id,
+          resource: this.resource
+        });
       } catch (err) {
         throw new Error(
           `An error occurred while refreshing the new access ` +
-          `token:${err.stderr ? err.stderr : err.message}`
+            `token:${err.stderr ? err.stderr : err.message}`
         );
       }
     }
@@ -162,9 +161,12 @@ export class AzureCliCredentials implements TokenClientCredentials {
   private _hasTokenExpired(): boolean {
     let result = true;
     const now = Math.floor(Date.now() / 1000);
-    if (this.tokenInfo.expiresOn &&
+    if (
+      this.tokenInfo.expiresOn &&
       this.tokenInfo.expiresOn instanceof Date &&
-      Math.floor(this.tokenInfo.expiresOn.getTime() / 1000) - now > this._tokenRenewalMarginInSeconds) {
+      Math.floor(this.tokenInfo.expiresOn.getTime() / 1000) - now >
+        this._tokenRenewalMarginInSeconds
+    ) {
       result = false;
     }
     return result;
@@ -178,9 +180,14 @@ export class AzureCliCredentials implements TokenClientCredentials {
     try {
       const base64Url: string = this.tokenInfo.accessToken.split(".")[1];
       const base64: string = decodeURIComponent(
-        Buffer.from(base64Url, "base64").toString("binary").split("").map((c) => {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(""));
+        Buffer.from(base64Url, "base64")
+          .toString("binary")
+          .split("")
+          .map((c) => {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
 
       return JSON.parse(base64);
     } catch (err) {
@@ -192,22 +199,23 @@ export class AzureCliCredentials implements TokenClientCredentials {
   private _isAzureResourceManagerEndpoint(newResource: string, currentResource: string): boolean {
     if (newResource.endsWith("/")) newResource = newResource.slice(0, -1);
     if (currentResource.endsWith("/")) currentResource = currentResource.slice(0, -1);
-    return (newResource === "https://management.core.windows.net" &&
-      currentResource === "https://management.azure.com") ||
+    return (
+      (newResource === "https://management.core.windows.net" &&
+        currentResource === "https://management.azure.com") ||
       (newResource === "https://management.azure.com" &&
-        currentResource === "https://management.core.windows.net");
+        currentResource === "https://management.core.windows.net")
+    );
   }
 
   private _hasResourceChanged(): boolean {
     const parsedToken: ParsedToken = this._parseToken();
     // normalize the resource string, since it is possible to
     // provide a resource without a trailing slash
-    const currentResource = parsedToken.aud && parsedToken.aud.endsWith("/")
-      ? parsedToken.aud.slice(0, -1)
-      : parsedToken.aud;
-    const newResource = this.resource.endsWith("/")
-      ? this.resource.slice(0, -1)
-      : this.resource;
+    const currentResource =
+      parsedToken.aud && parsedToken.aud.endsWith("/")
+        ? parsedToken.aud.slice(0, -1)
+        : parsedToken.aud;
+    const newResource = this.resource.endsWith("/") ? this.resource.slice(0, -1) : this.resource;
     const result = this._isAzureResourceManagerEndpoint(newResource, currentResource)
       ? false
       : currentResource !== newResource;
@@ -232,8 +240,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
       return result as CliAccessToken;
     } catch (err) {
       const message =
-        `An error occurred while getting credentials from ` +
-        `Azure CLI: ${err.stack}`;
+        `An error occurred while getting credentials from ` + `Azure CLI: ${err.stack}`;
       throw new Error(message);
     }
   }
@@ -244,7 +251,10 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * required.
    */
   static async getSubscription(subscriptionIdOrName?: string): Promise<LinkedSubscription> {
-    if (subscriptionIdOrName && (typeof subscriptionIdOrName !== "string" || !subscriptionIdOrName.length)) {
+    if (
+      subscriptionIdOrName &&
+      (typeof subscriptionIdOrName !== "string" || !subscriptionIdOrName.length)
+    ) {
       throw new Error("'subscriptionIdOrName' must be a non-empty string.");
     }
     try {
@@ -282,7 +292,9 @@ export class AzureCliCredentials implements TokenClientCredentials {
    * Returns a list of all the subscriptions from Azure CLI.
    * @param options Optional parameters that can be provided while listing all the subcriptions.
    */
-  static async listAllSubscriptions(options: ListAllSubscriptionOptions = {}): Promise<LinkedSubscription[]> {
+  static async listAllSubscriptions(
+    options: ListAllSubscriptionOptions = {}
+  ): Promise<LinkedSubscription[]> {
     let subscriptionList: any[] = [];
     try {
       let cmd = "account list";
