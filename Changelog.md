@@ -1,7 +1,10 @@
 # Changelog
 
-## 3.0.8 - Unreleased
+## 3.0.9 - Unreleased
 - Pass user provided `tokenCache` option to `withUsernamePasswordWithAuthResponse` and `withServicePrincipalSecretWithAuthResponse` methods to the credentials being created.
+
+## 3.0.8 - 2021/03/23
+- Fix command injection in core function `execAz()` by replacing `exec()` with `execFile()` - CVE-2021-28458
 
 ## 3.0.7 - 2021/02/23
 - Updated doc comments on all exported members to follow TSDoc for better API reference documentation.
