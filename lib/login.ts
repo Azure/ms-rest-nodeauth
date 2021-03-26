@@ -112,11 +112,11 @@ export interface InteractiveLoginOptions extends LoginWithUsernamePasswordOption
 /**
  * Describes the authentication response.
  */
-export interface AuthResponse {
+export interface AuthResponse<T extends TokenCredentialsBase = TokenCredentialsBase> {
   /**
    *  The credentials object.
    */
-  credentials: TokenCredentialsBase;
+  credentials: T;
   /**
    * List of associated subscriptions. It will be empty for personal accounts, unless the login method is called with a tenant Id sent as the `domain` optional parameter.
    */
@@ -170,7 +170,7 @@ export async function withUsernamePasswordWithAuthResponse(
   username: string,
   password: string,
   options?: LoginWithUsernamePasswordOptions
-): Promise<AuthResponse> {
+): Promise<AuthResponse<UserTokenCredentials>> {
   if (!options) {
     options = {};
   }
@@ -233,7 +233,7 @@ export async function withServicePrincipalSecretWithAuthResponse(
   secret: string,
   domain: string,
   options?: AzureTokenCredentialsOptions
-): Promise<AuthResponse> {
+): Promise<AuthResponse<ApplicationTokenCredentials>> {
   if (!options) {
     options = {};
   }
@@ -281,7 +281,7 @@ export async function withServicePrincipalCertificateWithAuthResponse(
   certificateStringOrFilePath: string,
   domain: string,
   options?: AzureTokenCredentialsOptions
-): Promise<AuthResponse> {
+): Promise<AuthResponse<ApplicationTokenCertificateCredentials>> {
   if (!options) {
     options = {};
   }
@@ -378,7 +378,7 @@ function foundManagementEndpointUrl(authFileUrl: string, envUrl: string): boolea
  */
 export async function withAuthFileWithAuthResponse(
   options?: LoginWithAuthFileOptions
-): Promise<AuthResponse> {
+): Promise<AuthResponse<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>> {
   if (!options) options = { filePath: "" };
   const filePath = options.filePath || process.env[AuthConstants.AZURE_AUTH_LOCATION];
   const subscriptionEnvVariableName =
@@ -497,7 +497,7 @@ export async function withAuthFileWithAuthResponse(
  */
 export async function withInteractiveWithAuthResponse(
   options?: InteractiveLoginOptions
-): Promise<AuthResponse> {
+): Promise<AuthResponse<DeviceTokenCredentials>> {
   if (!options) {
     options = {};
   }
@@ -647,14 +647,18 @@ export async function withInteractiveWithAuthResponse(
  *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
  *             @reject {Error} - The error object.
  */
-export function withAuthFile(): Promise<TokenCredentialsBase>;
-export function withAuthFile(options: LoginWithAuthFileOptions): Promise<TokenCredentialsBase>;
+export function withAuthFile(): Promise<
+  ApplicationTokenCredentials | ApplicationTokenCertificateCredentials
+>;
+export function withAuthFile(
+  options: LoginWithAuthFileOptions
+): Promise<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>;
 export function withAuthFile(
   options: LoginWithAuthFileOptions,
   callback: {
     (
       err: Error,
-      credentials: ApplicationTokenCredentials,
+      credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials,
       subscriptions: Array<LinkedSubscription>
     ): void;
   }
@@ -665,7 +669,7 @@ export function withAuthFile(
   callback?: {
     (
       err: Error,
-      credentials: ApplicationTokenCredentials,
+      credentials: ApplicationTokenCredentials | ApplicationTokenCertificateCredentials,
       subscriptions: Array<LinkedSubscription>
     ): void;
   }
@@ -681,7 +685,10 @@ export function withAuthFile(
     });
   } else {
     msRest.promiseToCallback(withAuthFileWithAuthResponse(options))(
-      (err: Error, authRes: AuthResponse) => {
+      (
+        err: Error,
+        authRes: AuthResponse<ApplicationTokenCredentials | ApplicationTokenCertificateCredentials>
+      ) => {
         if (err) {
           return cb(err);
         }
@@ -754,7 +761,7 @@ export function interactive(
     });
   } else {
     msRest.promiseToCallback(withInteractiveWithAuthResponse(options))(
-      (err: Error, authRes: AuthResponse) => {
+      (err: Error, authRes: AuthResponse<DeviceTokenCredentials>) => {
         if (err) {
           return cb(err);
         }
@@ -896,7 +903,7 @@ export function withServicePrincipalCertificate(
   certificateStringOrFilePath: string,
   domain: string,
   options: AzureTokenCredentialsOptions
-): Promise<ApplicationTokenCredentials>;
+): Promise<ApplicationTokenCertificateCredentials>;
 export function withServicePrincipalCertificate(
   clientId: string,
   certificateStringOrFilePath: string,
@@ -1224,17 +1231,14 @@ export async function execAz(cmd: string): Promise<any> {
       if (error) {
         return reject(error);
       }
-      if (stdout) {
-        try {
-          return resolve(JSON.parse(stdout));
-        } catch (err) {
-          const msg =
-            `An error occurred while parsing the output "${stdout}", of ` +
-            `the cmd "${cmd}": ${err.stack}.`;
-          return reject(new Error(msg));
-        }
+      try {
+        return resolve(JSON.parse(stdout));
+      } catch (err) {
+        const msg =
+          `An error occurred while parsing the output "${stdout}", of ` +
+          `the cmd "${cmd}": ${err.stack}.`;
+        return reject(new Error(msg));
       }
-      return resolve();
     });
   });
 }
