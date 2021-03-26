@@ -174,7 +174,7 @@ export async function withUsernamePasswordWithAuthResponse(username: string, pas
     options.environment = Environment.AzureCloud;
   }
 
-  const creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment);
+  const creds = new UserTokenCredentials(options.clientId, options.domain, username, password, options.tokenAudience, options.environment, options.tokenCache);
   const tokenResponse = await creds.getToken();
 
   // The token cache gets propulated for all the tenants as a part of building the tenantList.
@@ -214,7 +214,7 @@ export async function withServicePrincipalSecretWithAuthResponse(clientId: strin
     options.environment = Environment.AzureCloud;
   }
 
-  const creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment);
+  const creds = new ApplicationTokenCredentials(clientId, domain, secret, options.tokenAudience, options.environment, options.tokenCache);
   await creds.getToken();
 
   const subscriptionList = await _getSubscriptions(creds, [domain], options.tokenAudience);
