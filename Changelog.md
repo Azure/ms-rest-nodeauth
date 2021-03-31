@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.9 - 2021/03/30
+## 3.0.9 - 2021/03/31
 
 - Pass user provided `tokenCache` option to `withUsernamePasswordWithAuthResponse` and `withServicePrincipalSecretWithAuthResponse` methods to the credentials being created.
 - Fix issue with `AzureCliCredentials` where the `az` command fails due to spaces in the argument list passed to `execFile`. This regression got introduced in the previous update.
