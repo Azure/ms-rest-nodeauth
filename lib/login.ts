@@ -3,7 +3,7 @@
 
 import * as adal from "adal-node";
 import * as msRest from "@azure/ms-rest-js";
-import { execFile, spawn, spawnSync } from "child_process";
+import { execFile } from "child_process";
 import { readFileSync } from "fs";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
