@@ -3,7 +3,7 @@
 
 import * as adal from "adal-node";
 import * as msRest from "@azure/ms-rest-js";
-import { execFile } from "child_process";
+import { execFile, spawn, spawnSync } from "child_process";
 import { readFileSync } from "fs";
 import { Environment } from "@azure/ms-rest-azure-env";
 import { TokenCredentialsBase } from "./credentials/tokenCredentialsBase";
@@ -1216,11 +1216,11 @@ export function loginWithAppServiceMSI(
 /**
  * Executes the azure cli command and returns the result. It will be `undefined` if the command did
  * not return anything or a `JSON object` if the command did return something.
- * @param cmd The az cli command to execute.
+ * @param cmdArguments Arguments to the az cli command to execute.
  */
-export async function execAz(cmd: string): Promise<any> {
+export async function execAz(cmdArguments: string[]): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    execFile(`az`, [cmd, "--out", "json"], { encoding: "utf8" }, (error, stdout) => {
+    execFile(`az`, [...cmdArguments, "--out", "json"], { encoding: "utf8" }, (error, stdout) => {
       if (error) {
         return reject(error);
       }
@@ -1230,7 +1230,7 @@ export async function execAz(cmd: string): Promise<any> {
         } catch (err) {
           const msg =
             `An error occurred while parsing the output "${stdout}", of ` +
-            `the cmd "${cmd}": ${err.stack}.`;
+            `the cmd az "${cmdArguments}": ${err.stack}.`;
           return reject(new Error(msg));
         }
       }
