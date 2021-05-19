@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.10 - 2021/05/20
+
+- Updated the dependency `adal-node` to version `^0.2.0`. This fixes customer issue: [125](https://github.com/Azure/ms-rest-nodeauth/issues/125).
+
 ## 3.0.9 - 2021/03/31
 
 - Pass user provided `tokenCache` option to `withUsernamePasswordWithAuthResponse` and `withServicePrincipalSecretWithAuthResponse` methods to the credentials being created.
