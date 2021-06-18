@@ -15,6 +15,18 @@ You can get the tenant Id from Azure portal or the Azure CLI. If you need to fet
 
 You can now use any of the authentication methods and pass in the tenant Id or use the `setDomain()` method on the existing credential to change the tenant it uses to create the tokens.
 
+### known issue
+#### proxy
+```
+// paste this code to support proxy environment
+// reference:
+// https://github.com/axios/axios/issues/2072#issuecomment-567473812
+const HttpsProxyAgent = require('https-proxy-agent');
+const axios = require('axios')
+axios.defaults.proxy = false
+axios.defaults.httpsAgent = new HttpsProxyAgent('http://MY_PROXY:8888')
+```
+
 ### Example
 
 ### username/password based login
