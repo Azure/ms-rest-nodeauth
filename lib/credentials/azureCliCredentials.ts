@@ -228,14 +228,16 @@ export class AzureCliCredentials implements TokenClientCredentials {
    */
   static async getAccessToken(options: AccessTokenOptions = {}): Promise<CliAccessToken> {
     try {
-      let cmd = "account get-access-token";
+      const cmdArguments = ["account", "get-access-token"];
       if (options.subscriptionIdOrName) {
-        cmd += ` -s "${options.subscriptionIdOrName}"`;
+        cmdArguments.push("-s");
+        cmdArguments.push(options.subscriptionIdOrName);
       }
       if (options.resource) {
-        cmd += ` --resource ${options.resource}`;
+        cmdArguments.push("--resource");
+        cmdArguments.push(options.resource);
       }
-      const result: any = await execAz(cmd);
+      const result: any = await execAz(cmdArguments);
       result.expiresOn = new Date(result.expiresOn);
       return result as CliAccessToken;
     } catch (err) {
@@ -258,11 +260,12 @@ export class AzureCliCredentials implements TokenClientCredentials {
       throw new Error("'subscriptionIdOrName' must be a non-empty string.");
     }
     try {
-      let cmd = "account show";
+      const cmdArguments = ["account", "show"];
       if (subscriptionIdOrName) {
-        cmd += ` -s "${subscriptionIdOrName}"`;
+        cmdArguments.push("-s");
+        cmdArguments.push(subscriptionIdOrName);
       }
-      const result: LinkedSubscription = await execAz(cmd);
+      const result: LinkedSubscription = await execAz(cmdArguments);
       return result;
     } catch (err) {
       const message =
@@ -279,7 +282,7 @@ export class AzureCliCredentials implements TokenClientCredentials {
    */
   static async setDefaultSubscription(subscriptionIdOrName: string): Promise<void> {
     try {
-      await execAz(`account set -s ${subscriptionIdOrName}`);
+      await execAz(["account", "set", "-s", subscriptionIdOrName]);
     } catch (err) {
       const message =
         `An error occurred while setting the current subscription from ` +
@@ -297,14 +300,14 @@ export class AzureCliCredentials implements TokenClientCredentials {
   ): Promise<LinkedSubscription[]> {
     let subscriptionList: any[] = [];
     try {
-      let cmd = "account list";
+      const cmdArguments = ["account", "list"];
       if (options.all) {
-        cmd += " --all";
+        cmdArguments.push(" --all");
       }
       if (options.refresh) {
-        cmd += "--refresh";
+        cmdArguments.push("--refresh");
       }
-      subscriptionList = await execAz(cmd);
+      subscriptionList = await execAz(cmdArguments);
       if (subscriptionList && subscriptionList.length) {
         for (const sub of subscriptionList) {
           if (sub.cloudName) {
