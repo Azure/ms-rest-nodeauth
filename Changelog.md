@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0 - Unreleased
+
+- Use stronger types in places where AuthResponse was used in return values that used the abstract base class `TokenCredentialsBase`. See [PR 121](https://github.com/Azure/ms-rest-nodeauth/pull/121) for details.
+
 ## 3.0.10 - 2021/05/20
 
 - Updated the dependency `adal-node` to version `^0.2.0`. This fixes customer issue: [125](https://github.com/Azure/ms-rest-nodeauth/issues/125).
