@@ -637,15 +637,9 @@ export async function withInteractiveWithAuthResponse(
  * name. Default is "AZURE_SUBSCRIPTION_ID".
  * @param optionalCallback - The optional callback.
  *
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
- *                 {ApplicationTokenCredentials} [credentials]  - The ApplicationTokenCredentials object.
- *                 {Array}                [subscriptions]       - List of associated subscriptions across all the applicable tenants.
- *    {Promise} A promise is returned.
- *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
- *             @reject {Error} - The error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting ApplicationTokenCredentials or ApplicationTokenCertificateCredentials
+ * object and a list of associated subscriptions across all the applicable tenants.
  */
 export function withAuthFile(): Promise<
   ApplicationTokenCredentials | ApplicationTokenCertificateCredentials
@@ -717,15 +711,9 @@ export function withAuthFile(
  * this option is specified the usercode response message will not be logged to console.
  * @param optionalCallback - The optional callback.
  *
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}                          [err]  - The Error object if an error occurred, null otherwise.
- *                 {DeviceTokenCredentials} [credentials]  - The DeviceTokenCredentials object.
- *                 {Array}                [subscriptions]  - List of associated subscriptions across all the applicable tenants.
- *    {Promise} A promise is returned.
- *             @resolve {DeviceTokenCredentials} The DeviceTokenCredentials object.
- *             @reject {Error} - The error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting DeviceTokenCredentials object and a list of
+ * associated subscriptions across all the applicable tenants.
  */
 export function interactive(): Promise<DeviceTokenCredentials>;
 export function interactive(options: InteractiveLoginOptions): Promise<DeviceTokenCredentials>;
@@ -788,15 +776,9 @@ export function interactive(
  * @param options.tokenCache - The token cache. Default value is the MemoryCache object from adal.
  * @param optionalCallback - The optional callback.
  *
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}                               [err]  - The Error object if an error occurred, null otherwise.
- *                 {ApplicationTokenCredentials} [credentials]  - The ApplicationTokenCredentials object.
- *                 {Array}                     [subscriptions]  - List of associated subscriptions across all the applicable tenants.
- *    {Promise} A promise is returned.
- *             @resolve {ApplicationTokenCredentials} The ApplicationTokenCredentials object.
- *             @reject {Error} - The error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting ApplicationTokenCredentials object and a list of
+ * associated subscriptions across all the applicable tenants.
  */
 export function withServicePrincipalSecret(
   clientId: string,
@@ -883,15 +865,9 @@ export function withServicePrincipalSecret(
  * @param options.tokenCache - The token cache. Default value is the MemoryCache object from adal.
  * @param optionalCallback - The optional callback.
  *
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
- *                 {ApplicationTokenCertificateCredentials} [credentials]  - The ApplicationTokenCertificateCredentials object.
- *                 {Array}                [subscriptions]       - List of associated subscriptions across all the applicable tenants.
- *    {Promise} A promise is returned.
- *             @resolve {ApplicationTokenCertificateCredentials} The ApplicationTokenCertificateCredentials object.
- *             @reject {Error} - The error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting ApplicationTokenCertificateCredentials object and a list of
+ * associated subscriptions across all the applicable tenants.
  */
 export function withServicePrincipalCertificate(
   clientId: string,
@@ -987,15 +963,9 @@ export function withServicePrincipalCertificate(
  * @param options.tokenCache - The token cache. Default value is the MemoryCache object from adal.
  * @param optionalCallback - The optional callback.
  *
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}  [err]                         - The Error object if an error occurred, null otherwise.
- *                 {UserTokenCredentials} [credentials]   - The UserTokenCredentials object.
- *                 {Array}                [subscriptions] - List of associated subscriptions across all the applicable tenants.
- *    {Promise} A promise is returned.
- *             @resolve {UserTokenCredentials} The UserTokenCredentials object.
- *             @reject {Error} - The error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting UserTokenCredentials object and a list of
+ * associated subscriptions across all the applicable tenants.
  */
 export function withUsernamePassword(
   username: string,
@@ -1110,14 +1080,8 @@ async function _withMSI(options?: MSIVmOptions): Promise<MSIVmTokenCredentials> 
  * - management endpoint "https://management.core.windows.net/"
  * @param optionalCallback - The optional callback.
  *
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
- *                 {object} [tokenResponse]                     - The tokenResponse (tokenType and accessToken are the two important properties)
- *    {Promise} A promise is returned.
- *             @resolve {object} - tokenResponse.
- *             @reject {Error} - error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting MSIVmTokenCredentials object.
  */
 export function loginWithVmMSI(): Promise<MSIVmTokenCredentials>;
 export function loginWithVmMSI(options: MSIVmOptions): Promise<MSIVmTokenCredentials>;
@@ -1179,14 +1143,8 @@ async function _withAppServiceMSI(
  * - management endpoint "https://management.core.windows.net/"
  * @param options.msiApiVersion - The api-version of the local MSI agent. Default value is "2017-09-01".
  * @param optionalCallback -  The optional callback.
- * @returns If a callback was passed as the last parameter then it returns the callback else returns a Promise.
- *
- *    {function} optionalCallback(err, credentials)
- *                 {Error}  [err]                               - The Error object if an error occurred, null otherwise.
- *                 {object} [tokenResponse]                     - The tokenResponse (tokenType and accessToken are the two important properties)
- *    {Promise} A promise is returned.
- *             @resolve {object} - tokenResponse.
- *             @reject {Error} - error object.
+ * @returns If a callback was passed as the last parameter then it returns void else returns a Promise.
+ * The callback is called with the resulting MSIAppServiceTokenCredentials object.
  */
 export function loginWithAppServiceMSI(): Promise<MSIAppServiceTokenCredentials>;
 export function loginWithAppServiceMSI(
