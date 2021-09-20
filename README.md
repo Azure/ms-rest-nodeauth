@@ -17,7 +17,7 @@ You can now use any of the authentication methods and pass in the tenant Id or u
 
 ### Known issue with proxy support
 
-This package uses `adal-node` which has moved to `axios` from `request` as the package of choice for httpRequests for adal-node since npm support for `request` is discontinued. However it was noticed later that [`axios` does not support proxies](https://github.com/axios/axios/issues/2072). The `adal-node` package is taking only security changes and will not taking any changes to fix this issue. Therefore, we recommend using `https-proxy-agent` as suggested in the issue linked in case you need proxies for your application. For example: 
+This package uses `adal-node` which has moved to `axios` from `request` as the package of choice for httpRequests since npm support for `request` is discontinued. However it was noticed later that [`axios` does not support proxies](https://github.com/axios/axios/issues/2072). The `adal-node` package is taking only security changes and will not taking any changes to fix this issue. Therefore, we recommend using `https-proxy-agent` as suggested in the issue linked in case you need proxies for your application. For example: 
 
 ```
 // paste this code to support proxy environment
