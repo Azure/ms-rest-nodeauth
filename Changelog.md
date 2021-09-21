@@ -1,9 +1,10 @@
 # Changelog
 
-## 3.1.0 - Unreleased
+## 3.1.0 - 2021/09/21
 
 - Use stronger types in places where AuthResponse was used in return values that used the abstract base class `TokenCredentialsBase`. See [PR 121](https://github.com/Azure/ms-rest-nodeauth/pull/121) for details.
 - Fix reference docs for return types in exported APIs. See [PR 133](https://github.com/Azure/ms-rest-nodeauth/pull/133)
+- Add a note in the readme regarding the known issue with proxy. See [PR 131](https://github.com/Azure/ms-rest-nodeauth/pull/131)
 
 ## 3.0.10 - 2021/05/20
 
