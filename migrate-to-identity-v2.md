@@ -217,7 +217,7 @@ You can find more information about the new features in:
 
 ## Troubleshooting
 
-On `@azure/identity` we provide a [troubleshooting guide](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/Troubleshooting.md), which includes solutions to many common problems users have encountered. Errors and exception logs on the new package link to this troubleshooting guide.
+On `@azure/identity`, we provide a [troubleshooting guide](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/Troubleshooting.md), which includes solutions to many common problems users have encountered. Errors and exception logs on the new package link to this troubleshooting guide.
 
 ## Provide feedback
 
