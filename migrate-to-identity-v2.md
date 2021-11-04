@@ -54,7 +54,7 @@ The next section shows that we have made the `@azure/identity` credentials backw
 
 ## Compatible with ms-rest-js
 
-Since `@azure/ms-rest-nodeauth` is generally used to authenticate clients compatible with `@azure/ms-rest-js`, we have been working to adapt `@azure/ms-rest-js-` to be compatible with `@azure/identity` credentials. Today, you can pass any `@azure/identity` credential to a `ServiceClient` and the authentication will work as usual:
+Since `@azure/ms-rest-nodeauth` is generally used to authenticate clients compatible with `@azure/ms-rest-js`, we have been working to adapt `@azure/ms-rest-js-` packages to be compatible with `@azure/identity` credentials. Today, you can pass any `@azure/identity` credential to a `ServiceClient` and the authentication will work as usual:
 
 ```diff
 - import { AzureCliCredential } from "@azure/ms-rest-nodeauth";
@@ -83,7 +83,7 @@ main();
 
 ## Use getToken
 
-Besides credentials, `@azure/ms-rest-nodeauth` also exposed methods to retrieve tokens outside of the Azure service clients. These methods were usually prefixed by `loginWith` or ending in `login`, like `loginWithServicePrincipalSecretWithAuthResponse` or `interactiveLogin`. `@azure/identity` does not expose equivalent methods, but to retrieve access tokens outside of the Azure SDK clients, we recommend calling the credentials `getToken` directly.
+Besides credentials, `@azure/ms-rest-nodeauth` also exposed methods to retrieve tokens outside of the Azure service clients. These methods were usually prefixed by `loginWith` or ending in `login`, like `loginWithServicePrincipalSecretWithAuthResponse` or `interactiveLogin`. The `@azure/identity` package does not expose equivalent methods. To retrieve access tokens outside of the Azure SDK clients, we recommend calling the credentials `getToken` directly.
 
 For example, if you were using `interactiveLogin()`, you would need to wait for this method to finish before continuing in your code. The equivalent in `@azure/identity` is the `DeviceCodeCredential`, which you need to instantiate first, and then call to the `getToken` asynchronous method to authenticate.
 
@@ -110,7 +110,7 @@ In `@azure/identity`, all credentials have a `getToken` asynchronous method with
 
 ## Pass a scope
 
-While in `@azure/ms-rest-nodeauth` a `tokenAudience` could be passed through the constructor of the credentials, or a `resource` passed through the `AccessTokenOptions` of the `getAccessToken` method, in `@azure/identity`, we call them scopes, and they must be passed through the first parameter to the credentials' `getToken` method, as follows:
+While in `@azure/ms-rest-nodeauth` a `tokenAudience` could be passed through the constructor of the credentials, or a `resource` passed through the `AccessTokenOptions` of the `getAccessToken` method, in `@azure/identity`, we call them **scopes**, and they must be passed through as the first parameter to the credentials' `getToken` method, as follows:
 
 ```diff
 - import { AzureCliCredential } from "@azure/ms-rest-nodeauth";
