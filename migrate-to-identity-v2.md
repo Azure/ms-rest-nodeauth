@@ -52,6 +52,11 @@ Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes u
 
 The next section shows that we have made the `@azure/identity` credentials backwards compatible with Azure clients based on `@azure/ms-rest-js`. However, the new Azure SDK clients are not compatible with the `@azure/ms-rest-nodeauth` credentials.
 
+| | `@azure/ms-rest-nodeauth` | `@azure/identity` |
+| --- | --- | --- |
+| `@azure/ms-rest-js` ServiceClient | ✅ | ✅ |
+| `@azure/azure-sdk-for-js` ServiceClient | ❌ | ✅ |
+
 ## Compatible with ms-rest-js
 
 Since `@azure/ms-rest-nodeauth` is generally used to authenticate clients compatible with `@azure/ms-rest-js`, we have been working to adapt `@azure/ms-rest-js-` packages to be compatible with `@azure/identity` credentials. Today, you can pass any `@azure/identity` credential to a `ServiceClient` and the authentication will work as usual:
@@ -132,7 +137,7 @@ main();
 
 ## Authenticate with national clouds
 
-While for `@azure/ms-rest-nodeauth` you would use `@azure/ms-rest-azure-env` to specify a national cloud, on `@azure/identity`, you will need to provide an `authorityHost` through the credentials' constructor and the correct `scope` through the `getToken` method.
+While for `@azure/ms-rest-nodeauth`, you would use `@azure/ms-rest-azure-env` to specify a national cloud, on `@azure/identity`, you will need to provide an `authorityHost` through the credentials' constructor and the correct `scope` through the `getToken` method.
 
 `@azure/identity` offers a utility object `AzureAuthorityHosts` that contains authority hosts of common national clouds. Here's an example on how to authenticate with national clouds using `@azure/identity`:
 
@@ -197,8 +202,19 @@ main();
 
 `@azure/identity` also includes a new set of features only available after upgrading. Some of them are:
 
-- `DefaultAzureCredential`, a credential that simplifies getting started with the SDK by using credentials available in the environment, either using an account logged into the Azure CLI, or logged in via PowerShell, or Visual Studio Code plugins or environment variables.
-- `EnvironmentCredential` reads values from the environment variables, like `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_CLIENT_SECRET`, `AZURE_CLIENT_CERTIFICATE_PATH`, `AZURE_USERNAME` and `AZURE_PASSWORD`, and then uses the appropriate credential to authenticate.
+- `DefaultAzureCredential`, a credential that simplifies getting started with the SDK by using credentials available in the environment, using:
+  - Environment variables.
+  - Or environment-specific credentials available on deployed Azure services.
+  - Or credentials previously used to authenticate Visual Studio Code plugins.
+  - Or an account logged into the Azure CLI.
+  - Or an account logged in via PowerShell.
+- `EnvironmentCredential` reads values from the environment variables , then uses the appropriate credential to authenticate. Environment variables may include: 
+  - `AZURE_CLIENT_ID`.
+  - `AZURE_TENANT_ID`.
+  - `AZURE_CLIENT_SECRET`.
+  - `AZURE_CLIENT_CERTIFICATE_PATH`.
+  - `AZURE_USERNAME`.
+  - `AZURE_PASSWORD`.
 - `PowerShellCredential` authenticates with credentials previously used on Microsoft PowerShell.
 - `ManagedIdentityCredential` authenticates applications deployed on Azure services.
 - `InteractiveBrowserCredential` which authenticates interactively by opening a new browser windows.
