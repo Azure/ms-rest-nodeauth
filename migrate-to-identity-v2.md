@@ -3,7 +3,7 @@
 [npm-ms-rest-nodeauth]: https://www.npmjs.com/package/@azure/ms-rest-nodeauth
 [npm-azure-identity]: https://www.npmjs.com/package/@azure/identity
 
-`@azure/ms-rest-nodeauth` is deprecated in favor of `@azure/identity`.
+[`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] is deprecated in favor of [`@azure/identity`][npm-azure-identity].
 Our new Identity package supports the same authentication scenarios as `@azure/ms-rest-nodeauth`,
 and includes a variety of new features in a way that remains consistent across languages.
 This document outlines the steps needed to migrate to the identity package [@azure/identity version 2.0.1](https://www.npmjs.com/package/@azure/identity/v/2.0.1).
