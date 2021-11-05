@@ -271,12 +271,13 @@ const credential = new ClientSecretCredential(
 );
 ```
 
-If you're using `@azure/ms-rest-js`, you also need to specify a `baseUri` on the `ServiceClient`, pointing to the correct scope in the national cloud you're working with. A complete example follows:
+As before, you will continue to specify a `baseUri` when creating the client in the Azure package to point to the correct scope in the national cloud you're working with. A complete example follows:
 
 ```diff
 - import { ApplicationTokenCredentials } from "@azure/ms-rest-nodeauth";
 + import { ClientSecretCredential, AzureAuthorityHosts } from "@azure/identity";
 - import { Environment } from "@azure/ms-rest-azure-env";
+import { SubscriptionClient } from "@azure/arm-subscriptions";
 
 import * as msRest from "@azure/ms-rest-js";
 import * as dotenv from "dotenv";
@@ -295,17 +296,13 @@ async function main() {
 + const credential = new ClientSecretCredential(tenantId, clientId, secret, tokenAudience, {
 +  authorityHost: AzureAuthorityHosts.AzureChina
 + });
-  const client = new msRest.ServiceClient(credential, {
--    baseUri: environment.resourceManagerEndpointUrl,
-+    baseUri: "https://management.chinacloudapi.cn"
+  const client = new SubscriptionClient(credential, {
+-  baseUri: environment.resourceManagerEndpointUrl,
++  baseUri: "https://management.chinacloudapi.cn"
   });
-  const req: msRest.RequestPrepareOptions = {
-    url: `https://management.azure.com/<path>`,
-    method: "GET",
-  };
 
-  const response = await client.sendRequest(req);
-  console.log(response.bodyAsText);
+  const subscriptions = await client.subscriptions.list();
+  console.log(subscriptions);
 }
 
 main().catch(console.error);
