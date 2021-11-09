@@ -6,7 +6,7 @@
 [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] is deprecated in favor of [`@azure/identity`][npm-azure-identity].
 Our new Identity package supports the same authentication scenarios as `@azure/ms-rest-nodeauth`,
 and includes a variety of new features in a way that remains consistent across languages.
-This document outlines the steps needed to migrate to the identity package [@azure/identity version 2.0.1](https://www.npmjs.com/package/@azure/identity/v/2.0.1).
+This document outlines the steps needed to migrate to the Identity package [@azure/identity version 2.0.1](https://www.npmjs.com/package/@azure/identity/v/2.0.1).
 We also include a summary of the new features only available through `@azure/identity`.
 
 ## Table of contents
@@ -16,7 +16,7 @@ We also include a summary of the new features only available through `@azure/ide
   - [Login methods versus the new credentials](#login-methods-versus-the-new-credentials)
   - [Use getToken](#use-gettoken)
   - [AuthFile to AzureCliCredential](#authfile-to-azureclicredential)
-  - [Retrieving subscriptions](#retrieving-subscriptions)
+  - [Retrieve subscriptions](#retrieve-subscriptions)
 - [Compatible with ms-rest-js](#compatible-with-ms-rest-js)
 - [Pass a scope](#pass-a-scope)
 - [Authenticate with national clouds](#authenticate-with-national-clouds)
@@ -33,7 +33,7 @@ Run the following command to install our new identity package:
 npm install --save @azure/identity@^2.0.1
 ```
 
-Once you're ready to remove `@azure/ms-rest-nodeauth`, you can remove it with:
+Once you're ready to remove `@azure/ms-rest-nodeauth`, remove it with:
 
 ```
 npm remove --save @azure/ms-rest-nodeauth
@@ -41,7 +41,7 @@ npm remove --save @azure/ms-rest-nodeauth
 
 ## Find your credential
 
-Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. Some of these credentials have similar names, but here's a list to more easily find what new credentials to use when migrating to the new `@azure/identity` package:
+Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. Some of these credentials have similar names. Here's a list to more easily find what new credentials to use when migrating to the new `@azure/identity` package:
 
 | `@azure/ms-rest-nodeauth` credential name | `@azure/identity` credential name |
 | --- | --- |
@@ -80,7 +80,7 @@ async function main() {
 main();
 ```
 
-In the following table, we can see the list of login methods from `@azure/ms-rest-nodeauth`, and their equivalent crednetials on `@azure/identity`:
+The following table lists login methods from `@azure/ms-rest-nodeauth` and their equivalent credentials in `@azure/identity`.
 
 | `@azure/ms-rest-nodeauth` login method | `@azure/identity` credential name |
 | --- | --- |
@@ -95,13 +95,20 @@ In the following table, we can see the list of login methods from `@azure/ms-res
 | `loginWithServicePrincipalCertificate` | `ClientCertificateCredential` |
 | `loginWithServicePrincipalCertificateWithAuthResponse` | `ClientCertificateCredential`. See the [auth-response](#auth-response) section. |
 
-Up next, we will explore on how to use the credentials' `getToken` methods directly, how to migrate from those login methods that use auth files to the new `@azure/identity` credentials, and how to retrieve the list of subscriptions after migrating.
+Next, we'll explore how to:
+
+- Use the credentials' `getToken` methods directly.
+- Migrate from those login methods that use auth files to the new `@azure/identity` credentials.
+- Retrieve the list of subscriptions after migrating.
 
 ### Use getToken
 
 In cases where direct control of the authentication flow is necessary, we recommend calling the credential `getToken` method directly.
 
-In `@azure/identity`, all credentials have a `getToken` asynchronous method with standardized response type, `AccessToken`, which always contains only two properties, `expiresOnTimestamp`, which is a number, and `token`, which is a string.
+In `@azure/identity`, all credentials have an asynchronous `getToken` method with standardized response type `AccessToken`. `AccessToken` always contains only two properties:
+
+- `expiresOnTimestamp`, which is a number.
+- `token`, which is a string.
 
 An example migrating from the `interactiveLogin()` to the `DeviceCodeCredential`'s `getToken` method follows:
 
@@ -120,15 +127,15 @@ async function main() {
 main().catch(console.error);
 ```
 
-Using the `getToken` method directly is a necessary step in some authentication flows. For example, when using the [On-Behalf-Of (OBO) flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). More information on using this authentication flow is available at [Identity Examples - Authenticate on behalf of](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#authenticate-on-behalf-of).
+Using the `getToken` method directly is a necessary step in some authentication flows. For example, when using the [On-Behalf-Of (OBO) flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). For more information on using this authentication flow, see [Identity Examples - Authenticate on behalf of](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#authenticate-on-behalf-of).
 
 Credentials that require user interaction, like the `DeviceCodeCredential`, now also expose a new method `authenticate()` that allows developers to control when to request user interaction. You can read more at [Identity Examples - Control user interaction](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#control-user-interaction).
 
 ### AuthFile to AzureCliCredential
 
-Using `@azure/ms-rest-nodeauth` it is possible to authenticate with the path to a file generated by running the following Azure CLI commands:
+Using `@azure/ms-rest-nodeauth`, it's possible to authenticate with the path to a file generated by running the following Azure CLI commands:
 
-```
+```azurecli
 az login --service-principal -u <clientId> -p <clientSecret> -t <tenantId>
 az account show --sdk-auth > auth.json
 ```
@@ -151,7 +158,7 @@ Auth files would contain critical information about the account logged in, such 
 
 `@azure/identity` instead has `AzureCliCredential`, which uses the account logged in through the Azure CLI (by calling to `az login` before running your Node.js program).
 
-In the following diff we show the code canges needed to migrate from `loginWithAuthFileWithAuthResponse` to the `AzureCliCredential`:
+The following diff shows the code changes needed to migrate from `loginWithAuthFileWithAuthResponse` to the `AzureCliCredential`:
 
 ```diff
 - import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
@@ -170,7 +177,7 @@ async function main() {
 main().catch(console.error);
 ```
 
-### Retrieving subscriptions
+### Retrieve subscriptions
 
 While some of the `@azure/ms-rest-nodeauth` methods return an `AuthResponse` type containing the authenticated credential and a list of subscriptions, retrieving Azure subscriptions is not integrated in the `@azure/identity` package. This feature is available through an external package: [`@azure/arm-subscriptions`](https://www.npmjs.com/package/@azure/arm-subscriptions).
 
@@ -219,7 +226,7 @@ main().catch(console.error);
 
 Keep in mind that the new Azure SDK clients are not compatible with the `@azure/ms-rest-nodeauth` credentials.
 
-The SDK clients intended to work with `@azure/ms-rest-nodeauth` will extend a [`ServiceClient`][service-client-track-1-source] class that comes from `@azure/ms-rest-js`, while clients designed to work with `@azure/identity` will extend the [`ServiceClient`][service-client-track-2-source] class coming from `@azure/core-client`.
+The SDK clients intended to work with `@azure/ms-rest-nodeauth` will extend a [`ServiceClient`][service-client-track-1-source] class that comes from `@azure/ms-rest-js`. Clients designed to work with `@azure/identity` will extend the [`ServiceClient`][service-client-track-2-source] class coming from `@azure/core-client`.
 
 | | `@azure/ms-rest-nodeauth` | `@azure/identity` |
 | --- | --- | --- |
@@ -231,7 +238,7 @@ The SDK clients intended to work with `@azure/ms-rest-nodeauth` will extend a [`
 
 ## Pass a scope
 
-In `@azure/ms-rest-nodeauth` a `tokenAudience` could be passed through the constructor of the credentials, or a `resource` passed through the `AccessTokenOptions` of the `getAccessToken` method, in `@azure/identity`, we call them **scopes**, and they are sent as the first parameter to the credentials' `getToken` method.
+In `@azure/ms-rest-nodeauth`, a `tokenAudience` could be passed through the constructor of the credentials, or a `resource` passed through the `AccessTokenOptions` of the `getAccessToken` method. In `@azure/identity`, we call them **scopes**, and they are sent as the first parameter to the credentials' `getToken` method.
 
 While scopes (or resources) are generally provided to the new credentials internally by the Azure SDK clients, a scope is necessary in the authentication flows where it's required to call to `getToken` directly.
 
@@ -329,7 +336,7 @@ main().catch(console.error);
 - `ManagedIdentityCredential` authenticates applications deployed on Azure services.
 - `InteractiveBrowserCredential` which authenticates interactively by opening a new browser windows.
 - `AuthorizationCodeCredential` uses the [Authorization Code Flow](https://docs.microsoft.com/azure/active-directory-b2c/authorization-code-flow).
-- `OnBehalfOfCredential` uses the [On-Behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
+- `OnBehalfOfCredential` uses the [On-Behalf-Of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 
 And two plugin packages:
 
