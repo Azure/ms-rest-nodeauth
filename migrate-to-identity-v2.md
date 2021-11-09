@@ -43,15 +43,15 @@ npm remove --save @azure/ms-rest-nodeauth
 
 Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. Some of these credentials have similar names. Here's a list to more easily find what new credentials to use when migrating to the new `@azure/identity` package:
 
-| `@azure/ms-rest-nodeauth` credential name | `@azure/identity` credential name |
+| _@azure/ms-rest-nodeauth_ credential name | _@azure/identity_ credential name |
 | --- | --- |
-| ApplicationTokenCredentials | ClientSecretCredential |
-| ApplicationTokenCertificateCredentials | ClientCertificateCredential |
-| DeviceTokenCredentials | DeviceCodeCredential |
-| MSIAppServiceTokenCredentials | ManagedIdentityCredential |
-| MSITokenCredentials | ManagedIdentityCredential |
-| MSIVmTokenCredentials | ManagedIdentityCredential |
-| UserTokenCredentials | UsernamePasswordCredential |
+| `ApplicationTokenCredentials` | `ClientSecretCredential` |
+| `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential` |
+| `DeviceTokenCredentials` | `DeviceCodeCredential` |
+| `MSIAppServiceTokenCredentials` | `ManagedIdentityCredential` |
+| `MSITokenCredentials` | `ManagedIdentityCredential` |
+| `MSIVmTokenCredentials` | `ManagedIdentityCredential` |
+| `UserTokenCredentials` | `UsernamePasswordCredential` |
 
 ### Login methods versus the new credentials
 
