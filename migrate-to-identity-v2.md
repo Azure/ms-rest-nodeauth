@@ -27,7 +27,7 @@ We also include a summary of the new features only available through `@azure/ide
 
 ## Install @azure/identity
 
-Run the following command to install our new identity package:
+Run the following command to install the new Identity client library:
 
 ```
 npm install --save @azure/identity@^2.0.1
@@ -41,7 +41,7 @@ npm remove --save @azure/ms-rest-nodeauth
 
 ## Find your credential
 
-Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. Some of these credentials have similar names. Here's a list to more easily find what new credentials to use when migrating to the new `@azure/identity` package:
+Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. Some of these credentials have similar names. Here's a list to more easily find what new credentials to use when migrating to the new `@azure/identity` library:
 
 | _@azure/ms-rest-nodeauth_ credential name | _@azure/identity_ credential name |
 | --- | --- |
@@ -55,7 +55,7 @@ Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes u
 
 ### Login methods versus the new credentials
 
-Besides credentials, `@azure/ms-rest-nodeauth` also exposes methods that authenticate before returning the authenticated credential (and the list of subscriptions available for the authenticated account). These methods are prefixed by `loginWith` or end in `Login`, like `loginWithServicePrincipalSecretWithAuthResponse` or `interactiveLogin`. The `@azure/identity` package does not expose equivalent methods. Our HTTP pipelines will manage the authentication, including the caching and refreshing of tokens internally, so developers would only pass the credential to the constructor of one of our clients, and then continue focusing mainly on calling the client methods, as follows:
+Besides credentials, `@azure/ms-rest-nodeauth` also exposes methods that authenticate before returning the authenticated credential (and the list of subscriptions available for the authenticated account). These methods are prefixed with `loginWith` or suffixed with `Login`. For example, `loginWithServicePrincipalSecretWithAuthResponse` or `interactiveLogin`. The `@azure/identity` package doesn't expose equivalent methods. Our HTTP pipelines will manage the authentication, including the caching and refreshing of tokens internally. Developers only pass the credential to the constructor of a client, and then continue focusing mainly on calling the client methods. For example:
 
 ```ts
 const { DefaultAzureCredential } = require("@azure/identity");
@@ -103,7 +103,7 @@ Next, we'll explore how to:
 
 ### Use getToken
 
-In cases where direct control of the authentication flow is necessary, we recommend calling the credential `getToken` method directly.
+If direct control of the authentication flow is necessary, call the credential `getToken` method directly.
 
 In `@azure/identity`, all credentials have an asynchronous `getToken` method with standardized response type `AccessToken`. `AccessToken` always contains only two properties:
 
@@ -179,15 +179,15 @@ main().catch(console.error);
 
 ### Retrieve subscriptions
 
-While some of the `@azure/ms-rest-nodeauth` methods return an `AuthResponse` type containing the authenticated credential and a list of subscriptions, retrieving Azure subscriptions is not integrated in the `@azure/identity` package. This feature is available through an external package: [`@azure/arm-subscriptions`](https://www.npmjs.com/package/@azure/arm-subscriptions).
+While some of the `@azure/ms-rest-nodeauth` methods return an `AuthResponse` type containing the authenticated credential and a list of subscriptions, retrieving Azure subscriptions isn't integrated in the `@azure/identity` package. This feature is available through the external [`@azure/arm-subscriptions`](https://www.npmjs.com/package/@azure/arm-subscriptions) package.
 
-First, make sure to install `@azure/arm-subscriptions` by running the following command:
+First, install `@azure/arm-subscriptions` by running the following command:
 
 ```
 npm install @azure/arm-subscriptions
 ```
 
-Then, you can use any of the `@azure/identity` credentials to retrieve the account subscriptions, as follows:
+Then, use any of the `@azure/identity` credentials to retrieve the account subscriptions, as follows:
 
 ```ts
 import { DefaultAzureCredential } from "@azure/identity";
@@ -224,7 +224,7 @@ async function main() {
 main().catch(console.error);
 ```
 
-Keep in mind that the new Azure SDK clients are not compatible with the `@azure/ms-rest-nodeauth` credentials.
+Keep in mind that the new Azure SDK clients are incompatible with the `@azure/ms-rest-nodeauth` credentials.
 
 The SDK clients intended to work with `@azure/ms-rest-nodeauth` will extend a [`ServiceClient`][service-client-track-1-source] class that comes from `@azure/ms-rest-js`. Clients designed to work with `@azure/identity` will extend the [`ServiceClient`][service-client-track-2-source] class coming from `@azure/core-client`.
 
@@ -238,11 +238,11 @@ The SDK clients intended to work with `@azure/ms-rest-nodeauth` will extend a [`
 
 ## Pass a scope
 
-In `@azure/ms-rest-nodeauth`, a `tokenAudience` could be passed through the constructor of the credentials, or a `resource` passed through the `AccessTokenOptions` of the `getAccessToken` method. In `@azure/identity`, we call them **scopes**, and they are sent as the first parameter to the credentials' `getToken` method.
+In `@azure/ms-rest-nodeauth`, a `tokenAudience` can be passed through the constructor of the credentials. Alternatively, a `resource` can be passed through the `AccessTokenOptions` of the `getAccessToken` method. In `@azure/identity`, we call them **scopes**. They're sent as the first parameter to the credentials' `getToken` method.
 
 While scopes (or resources) are generally provided to the new credentials internally by the Azure SDK clients, a scope is necessary in the authentication flows where it's required to call to `getToken` directly.
 
-Scopes generally include permissions. For example, to request a token that could have read access to the currently authenticated user, the scope would be `https://graph.microsoft.com/User.Read`. An application may also request any available permission, as defined through the app registration on the portal, by sending a request ending in `/.default` as the scope. More information about Azure scopes and permissions is available at [Permissions and consent in the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent).
+Scopes generally include permissions. For example, to request a token that could have read access to the currently authenticated user, the scope would be `https://graph.microsoft.com/User.Read`. An app may also request any available permission, as defined through the app registration on the Azure portal, by sending a request ending in `/.default` as the scope. For more information about Azure scopes and permissions, see [Permissions and consent in the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent).
 
 The following example code shows how to migrate from using `@azure/ms-rest-nodeauth`'s `tokenAudience` to `@azure/identity`'s `getToken`, with a scope that grants Key Vault access:
 
@@ -278,7 +278,7 @@ const credential = new ClientSecretCredential(
 );
 ```
 
-As before, you will continue to specify a `baseUri` when creating the client in the Azure package to point to the correct scope in the national cloud you're working with. A complete example follows:
+As before, specify a `baseUri` when creating the client in the Azure package to point to the correct scope in the national cloud you're working with. A complete example follows:
 
 ```diff
 - import { ApplicationTokenCredentials } from "@azure/ms-rest-nodeauth";
@@ -350,7 +350,7 @@ You can find more information about the new features in:
 
 ## Troubleshooting
 
-On `@azure/identity`, we provide a [troubleshooting guide](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/Troubleshooting.md), which includes solutions to many common problems users have encountered. Errors and exception logs on the new package link to this troubleshooting guide.
+For `@azure/identity`, see the [troubleshooting guide](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/Troubleshooting.md). The guide includes solutions to many common problems users have encountered. Errors and exception logs on the new package link to this troubleshooting guide.
 
 ## Provide feedback
 
