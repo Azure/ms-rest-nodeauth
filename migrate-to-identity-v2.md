@@ -6,8 +6,7 @@
 [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] is deprecated in favor of [`@azure/identity`][npm-azure-identity].
 Our new Identity package supports the same authentication scenarios as `@azure/ms-rest-nodeauth`,
 and includes a variety of new features in a way that remains consistent across languages.
-This document outlines the steps needed to migrate to the Identity package [@azure/identity version 2.0.1](https://www.npmjs.com/package/@azure/identity/v/2.0.1).
-We also include a summary of the new features only available through `@azure/identity`.
+This document outlines the steps needed to migrate to the Identity package [@azure/identity version 2.0.1](https://www.npmjs.com/package/@azure/identity/v/2.0.1). Also included is a summary of the new features only available through `@azure/identity`.
 
 ## Table of contents
 
@@ -17,7 +16,7 @@ We also include a summary of the new features only available through `@azure/ide
   - [Use getToken](#use-gettoken)
   - [AuthFile to AzureCliCredential](#authfile-to-azureclicredential)
   - [Retrieve subscriptions](#retrieve-subscriptions)
-- [Compatible with ms-rest-js](#compatible-with-ms-rest-js)
+- [Compatibility with ms-rest-js](#compatible-with-ms-rest-js)
 - [Pass a scope](#pass-a-scope)
 - [Authenticate with national clouds](#authenticate-with-national-clouds)
 - [New features](#new-features)
@@ -110,7 +109,7 @@ In `@azure/identity`, all credentials have an asynchronous `getToken` method wit
 - `expiresOnTimestamp`, which is a number.
 - `token`, which is a string.
 
-An example migrating from the `interactiveLogin()` to the `DeviceCodeCredential`'s `getToken` method follows:
+Consider the following example of migrating from the `interactiveLogin()` method to the `DeviceCodeCredential`'s `getToken` method:
 
 ```diff
 - import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
@@ -129,7 +128,7 @@ main().catch(console.error);
 
 Using the `getToken` method directly is a necessary step in some authentication flows. For example, when using the [On-Behalf-Of (OBO) flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). For more information on using this authentication flow, see [Identity Examples - Authenticate on behalf of](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#authenticate-on-behalf-of).
 
-Credentials that require user interaction, like the `DeviceCodeCredential`, now also expose a new method `authenticate()` that allows developers to control when to request user interaction. You can read more at [Identity Examples - Control user interaction](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#control-user-interaction).
+Credentials that require user interaction, like the `DeviceCodeCredential`, now also expose a new `authenticate()` method. This method allows developers to control when to request user interaction. For more information, see [Identity Examples - Control user interaction](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#control-user-interaction).
 
 ### AuthFile to AzureCliCredential
 
@@ -205,7 +204,7 @@ main();
 
 `@azure/arm-subscriptions` is compatible with both `@azure/ms-rest-nodeauth` and `@azure/identity`. More information on this compatibility is available in the following section.
 
-## Compatible with ms-rest-js
+## Compatibility with ms-rest-js
 
 All the packages that work with `@azure/ms-rest-nodeauth` are compatible with `@azure/identity` credentials. `@azure/arm-subscriptions` is one of those packages. An example migrating to `@azure/identity` follows:
 
@@ -226,7 +225,7 @@ main().catch(console.error);
 
 Keep in mind that the new Azure SDK clients are incompatible with the `@azure/ms-rest-nodeauth` credentials.
 
-The SDK clients intended to work with `@azure/ms-rest-nodeauth` will extend a [`ServiceClient`][service-client-track-1-source] class that comes from `@azure/ms-rest-js`. Clients designed to work with `@azure/identity` will extend the [`ServiceClient`][service-client-track-2-source] class coming from `@azure/core-client`.
+The SDK clients intended to work with `@azure/ms-rest-nodeauth` extend a [`ServiceClient`][service-client-track-1-source] class from `@azure/ms-rest-js`. Clients designed to work with `@azure/identity` extend the [`ServiceClient`][service-client-track-2-source] class from `@azure/core-client`.
 
 | | `@azure/ms-rest-nodeauth` | `@azure/identity` |
 | --- | --- | --- |
