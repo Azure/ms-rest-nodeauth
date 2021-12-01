@@ -321,7 +321,7 @@ main().catch(console.error);
 - `DefaultAzureCredential`, a credential that simplifies getting started with the client library by using credentials available in the environment, using:
   - Environment variables.
   - Or environment-specific credentials available on deployed Azure services.
-  - Or credentials previously used to authenticate Visual Studio Code plugins.
+  - Or credentials previously used to authenticate via the Visual Studio Code [extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azure-account) (which requires the [@azure/identity-vscode plugin](https://www.npmjs.com/package/@azure/identity-vscode)).
   - Or an account logged into the Azure CLI.
   - Or an account logged in via PowerShell.
 - `EnvironmentCredential` reads values from the environment variables, then uses the appropriate credential to authenticate. Environment variables may include: 
