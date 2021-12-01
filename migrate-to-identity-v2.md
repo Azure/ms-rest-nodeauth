@@ -16,7 +16,7 @@ This document outlines the steps needed to migrate to the Identity package [@azu
   - [Use getToken](#use-gettoken)
   - [AuthFile to AzureCliCredential](#authfile-to-azureclicredential)
   - [Retrieve subscriptions](#retrieve-subscriptions)
-- [Compatibility with ms-rest-js](#compatible-with-ms-rest-js)
+- [Compatibility with @azure/ms-rest-js](#compatibility-with-azurems-rest-js)
 - [Pass a scope](#pass-a-scope)
 - [Authenticate with national clouds](#authenticate-with-national-clouds)
 - [New features](#new-features)
@@ -204,7 +204,7 @@ main();
 
 `@azure/arm-subscriptions` is compatible with both `@azure/ms-rest-nodeauth` and `@azure/identity`. More information on this compatibility is available in the following section.
 
-## Compatibility with ms-rest-js
+## Compatibility with @azure/ms-rest-js
 
 All the packages that work with `@azure/ms-rest-nodeauth` are compatible with `@azure/identity` credentials. `@azure/arm-subscriptions` is one of those packages. An example migrating to `@azure/identity` follows:
 
@@ -263,7 +263,7 @@ main().catch(console.error);
 
 While for `@azure/ms-rest-nodeauth`, you would use `@azure/ms-rest-azure-env` to specify a national cloud, on `@azure/identity`, you will need to provide an `authorityHost` through the credentials' constructor and the correct `scope` through the `getToken` method.
 
-`@azure/identity` offers a utility object `AzureAuthorityHosts` that contains authority hosts of common national clouds. Here's an example on how to authenticate with national clouds using `@azure/identity`:
+`@azure/identity` offers a utility object `AzureAuthorityHosts` that contains authority hosts of common national clouds. Here's an example of authenticating with national clouds using `@azure/identity`:
 
 ```ts
 import { AzureAuthorityHosts, ClientSecretCredential } from "@azure/identity";
@@ -325,14 +325,14 @@ main().catch(console.error);
   - Or an account logged into the Azure CLI.
   - Or an account logged in via PowerShell.
 - `EnvironmentCredential` reads values from the environment variables, then uses the appropriate credential to authenticate. Environment variables may include: 
-  - `AZURE_CLIENT_ID`.
-  - `AZURE_TENANT_ID`.
-  - `AZURE_CLIENT_SECRET`.
-  - `AZURE_CLIENT_CERTIFICATE_PATH`.
-  - `AZURE_USERNAME`.
-  - `AZURE_PASSWORD`.
+  - `AZURE_CLIENT_ID`
+  - `AZURE_TENANT_ID`
+  - `AZURE_CLIENT_SECRET`
+  - `AZURE_CLIENT_CERTIFICATE_PATH`
+  - `AZURE_USERNAME`
+  - `AZURE_PASSWORD`
 - `PowerShellCredential` authenticates with credentials previously used on Microsoft PowerShell.
-- `ManagedIdentityCredential` authenticates applications deployed on Azure services.
+- `ManagedIdentityCredential` authenticates apps deployed on Azure services.
 - `InteractiveBrowserCredential` which authenticates interactively by opening a new browser windows.
 - `AuthorizationCodeCredential` uses the [Authorization Code Flow](https://docs.microsoft.com/azure/active-directory-b2c/authorization-code-flow).
 - `OnBehalfOfCredential` uses the [On-Behalf-Of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
