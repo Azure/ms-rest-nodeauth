@@ -57,8 +57,8 @@ Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes u
 Besides credentials, `@azure/ms-rest-nodeauth` also exposes methods that authenticate before returning the authenticated credential (and the list of subscriptions available for the authenticated account). These methods are prefixed with `loginWith` or suffixed with `Login`. For example, `loginWithServicePrincipalSecretWithAuthResponse` or `interactiveLogin`. The `@azure/identity` package doesn't expose equivalent methods. Our HTTP pipelines will manage the authentication, including the caching and refreshing of tokens internally. Developers only pass the credential to the constructor of a client, and then continue focusing mainly on calling the client methods. For example:
 
 ```ts
-const { DefaultAzureCredential } = require("@azure/identity");
-const { KeyClient } = require("@azure/keyvault-keys");
+import { DefaultAzureCredential } from "@azure/identity";
+import { KeyClient } from "@azure/keyvault-keys";
 
 /**
  * For more information: https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/identity/identity#defaultazurecredential
@@ -67,12 +67,12 @@ const { KeyClient } = require("@azure/keyvault-keys");
 async function main() {
   const credential = new DefaultAzureCredential();
 
-  const keyVaultUrl = `https://key-vault-name.vault.azure.net`;
+  const keyVaultUrl = "https://key-vault-name.vault.azure.net";
   const client = new KeyClient(keyVaultUrl, credential);
   
   // After this point, users would generally only use the client methods.
 
-  // Here we retrieve the properties of the existing keys in a Key Vault.
+  // Here, we retrieve the properties of the existing keys in a Key Vault.
   console.log(await client.listPropertiesOfKeys().next());
 }
 
@@ -146,7 +146,7 @@ import * as msRestNodeAuth from "@azure/ms-rest-nodeauth";
 
 const options: msRestNodeAuth.LoginWithAuthFileOptions = {
   filePath: "<file path to auth file>",
-}
+};
 msRestNodeAuth.loginWithAuthFileWithAuthResponse(options).then((authRes) => {
   console.log(authRes);
   console.log(process.env["AZURE_SUBSCRIPTION_ID"]);
@@ -183,7 +183,7 @@ While some of the `@azure/ms-rest-nodeauth` methods return an `AuthResponse` typ
 First, install `@azure/arm-subscriptions` by running the following command:
 
 ```
-npm install @azure/arm-subscriptions
+npm install --save @azure/arm-subscriptions
 ```
 
 Then, use any of the `@azure/identity` credentials to retrieve the account subscriptions, as follows:
@@ -318,7 +318,7 @@ main().catch(console.error);
 
 `@azure/identity` also includes a new set of features only available after upgrading. Some of them are:
 
-- `DefaultAzureCredential`, a credential that simplifies getting started with the SDK by using credentials available in the environment, using:
+- `DefaultAzureCredential`, a credential that simplifies getting started with the client library by using credentials available in the environment, using:
   - Environment variables.
   - Or environment-specific credentials available on deployed Azure services.
   - Or credentials previously used to authenticate Visual Studio Code plugins.
