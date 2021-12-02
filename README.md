@@ -4,15 +4,15 @@ The `@azure/ms-rest-nodeauth` package provides different authentication mechanis
 
 There is no active development for `@azure/ms-rest-nodeauth` other than critical bug fixes. Please refer to the below table to find suggested alternatives for each Azure service for which you have been using credentials from `@azure/ms-rest-nodeauth`.
 
-| Azure service          | Package                                         | Alternative to @azure/ms-rest-nodeauth                                                          |
-| ---------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Azure Resource Manager | Packages with names starting with `@azure/arm-` | `@azure/identity`                                                                               |
-| Application Insights   | @azure/applicationinsights-query                | Not planned as this package will be deprecated in favor of `@azure/monitor-query` in early 2022 |
-| Application Insights   | @azure/loganalytics                             | Not planned as this package will be deprecated in favor of `@azure/monitor-query` in early 2022 |
-| Batch                  | @azure/batch                                    | No alternatives yet                                                                             |
-| Graph                  | @azure/graph                                    | Not planned as this service will be deprecated in June 2022                                     |
-| Service Fabric         | `@azure/servicefabric`                          | Not planned as there is no active development for this package.                                 |
-| Storage Data Lake      | `@azure/storage-datalake`                       | Not planned as there is no active development for this package.                                 |
+| Azure service          | Package                                         | Alternative to @azure/ms-rest-nodeauth                                                           |
+| ---------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Azure Resource Manager | Packages with names starting with `@azure/arm-` | `@azure/identity`                                                                                |
+| Application Insights   | @azure/applicationinsights-query                | Not planned as this package will be deprecated in favor of `@azure/monitor-query` in early 2022. |
+| Application Insights   | @azure/loganalytics                             | Not planned as this package will be deprecated in favor of `@azure/monitor-query` in early 2022. |
+| Batch                  | @azure/batch                                    | No alternatives yet                                                                              |
+| Graph                  | @azure/graph                                    | Not planned as this service will be deprecated in June 2022.                                     |
+| Service Fabric         | @azure/servicefabric                            | Not planned as there is no active development for this package.                                  |
+| Storage Data Lake      | @azure/storage-datalake                         | Not planned as there is no active development for this package.                                  |
 
 All the authentication methods support callbacks as well as promises. If they are called within an async method in your application then you can use the async/await pattern as well.
 
