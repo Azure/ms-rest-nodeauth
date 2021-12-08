@@ -1,4 +1,4 @@
-# Migrate from @azure/ms-rest-nodeauth to @azure/identity@^2.0.1
+# Migrate from @azure/ms-rest-nodeauth to @azure/identity v2
 
 [npm-ms-rest-nodeauth]: https://www.npmjs.com/package/@azure/ms-rest-nodeauth
 [npm-azure-identity]: https://www.npmjs.com/package/@azure/identity
