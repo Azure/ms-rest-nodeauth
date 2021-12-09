@@ -5,12 +5,12 @@
 
 The [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] package is mainly used to authenticate requests to the Azure Resource Manager from packages with names that start with `@azure/arm-`. The newer [`@azure/identity`][npm-azure-identity] package supports all the authentication mechanisms supported by [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] and more.
 
-This document outlines the steps needed to migrate from [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] to [`@azure/identity`][npm-azure-identity] when working with the packages that talk to Azure Resource Manager (i.e. the ones with names starting from `@azure/arm-`). Please ignore this document if you are using [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] with other Azure packages.
+This document outlines the steps needed to migrate from [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] to [`@azure/identity`][npm-azure-identity] when working with the packages that talk to Azure Resource Manager (i.e. the ones with names starting from `@azure/arm-`). Ignore this document if you're using [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] with other Azure packages.
 
 Important dates:
 
-- **By mid 2021**, the `@azure/arm-` packages started supporting credentials from [`@azure/identity`][npm-azure-identity] and `@azure/ms-rest-nodeauth` side by side.
-- **Starting on December 2021**, new major versions of the `@azure/arm-` packages will be dropping support for [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] altogether and will only support credentials from `@azure/identity`.
+- **By mid 2021**, the `@azure/arm-` packages started supporting credentials from [`@azure/identity`][npm-azure-identity] and `@azure/ms-rest-nodeauth` side-by-side.
+- **As of December 2021**, new major versions of the `@azure/arm-` packages only support credential types from `@azure/identity`. Support for [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] was dropped.
 
 
 ## Table of contents
