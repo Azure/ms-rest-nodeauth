@@ -54,8 +54,7 @@ The following table lists login methods from `@azure/ms-rest-nodeauth` along wit
 | `@azure/ms-rest-nodeauth` login method | `@azure/identity` credential name |
 | --- | --- |
 | `interactiveLogin`, which results in a `DeviceTokenCredentials` | `DeviceCodeCredential` |
-| `loginWithUsernamePassword`, which results in a `UserTokenCredentials` | `UsernamePasswordCredential` |
-| `loginWithUsernamePasswordWithAuthResponse`, which results in a `UserTokenCredentials` and a list of subscriptions. | `UsernamePasswordCredential`. See the [list subscriptions](#list-subscriptions) section. |
+| `loginWithUsernamePassword` and `loginWithUsernamePasswordWithAuthResponse` which return `UserTokenCredentials` | `UsernamePasswordCredential`. See the [list subscriptions](#list-subscriptions) section. |
 | `loginWithServicePrincipalSecret`, which results in an `ApplicationTokenCredentials` | `ClientSecretCredential` |
 | `loginWithAuthFile`, when it results in an `ApplicationTokenCredentials` | `AzureCliCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section. |
 | `loginWithAuthFile`, when it results in an `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section. |
@@ -240,8 +239,9 @@ Consider the following example of migrating from the `interactiveLogin()` method
 + import { DeviceCodeCredential } from "@azure/identity";
 
 async function main() {
-- const authres = await msRestNodeAuth.interactiveLogin();
-- console.log(authres);
+- const credential = await msRestNodeAuth.interactiveLogin();
+- const tokenResponse = await credential.getToken();
+- console.log(tokenResponse);
 + const credential = new DeviceCodeCredential();
 + const accessToken = await credential.getToken("https://graph.microsoft.com/.default");
 + console.log(accessToken);
