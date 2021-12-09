@@ -53,17 +53,14 @@ The following table lists login methods from `@azure/ms-rest-nodeauth` along wit
 
 | `@azure/ms-rest-nodeauth` login method | `@azure/identity` credential name |
 | --- | --- |
-| `interactiveLogin`, which results in a `DeviceTokenCredentials` | `DeviceCodeCredential` |
+| `interactiveLogin`, which returns `DeviceTokenCredentials` | `DeviceCodeCredential` |
 | `loginWithUsernamePassword` and `loginWithUsernamePasswordWithAuthResponse` which return `UserTokenCredentials` | `UsernamePasswordCredential`. See the [list subscriptions](#list-subscriptions) section. |
-| `loginWithServicePrincipalSecret`, which results in an `ApplicationTokenCredentials` | `ClientSecretCredential` |
-| `loginWithAuthFile`, when it results in an `ApplicationTokenCredentials` | `AzureCliCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section. |
-| `loginWithAuthFile`, when it results in an `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section. |
-| `loginWithAuthFileWithAuthResponse`, when it results in an `ApplicationTokenCredentials` and a list of subscriptions. | `AzureCliCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section and the [list subscriptions](#list-subscriptions) section. |
-| `loginWithAuthFileWithAuthResponse`, when it results in an `ApplicationTokenCertificateCredentials` and a list of subscriptions. | `ClientCertificateCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section and the [list subscriptions](#list-subscriptions) section. |
-| `loginWithVmMSI`, which results in a `MSIVmTokenCredentials` | `ManagedIdentityCredential` |
-| `loginWithAppServiceMSI`, which results in an `MSIAppServiceTokenCredentials` | `ManagedIdentityCredential` |
-| `loginWithServicePrincipalCertificate`, which results in an `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential` |
-| `loginWithServicePrincipalCertificateWithAuthResponse`, which results in an `ApplicationTokenCertificateCredentials` and a list of subscriptions. | `ClientCertificateCredential`. See the [list subscriptions](#list-subscriptions) section. |
+| `loginWithServicePrincipalSecret`, which returns `ApplicationTokenCredentials` | `ClientSecretCredential` |
+| `loginWithAuthFile` and `loginWithAuthFileWithAuthResponse`, when they return `ApplicationTokenCredentials` | `AzureCliCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section and the [list subscriptions](#list-subscriptions) section. |
+| `loginWithAuthFile` and `loginWithAuthFileWithAuthResponse`, when they return `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section and the [list subscriptions](#list-subscriptions) section. |
+| `loginWithVmMSI`, which returns `MSIVmTokenCredentials` | `ManagedIdentityCredential` |
+| `loginWithAppServiceMSI`, which returns `MSIAppServiceTokenCredentials` | `ManagedIdentityCredential` |
+| `loginWithServicePrincipalCertificate` and `loginWithServicePrincipalCertificateWithAuthResponse`, which return `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential`. See the [list subscriptions](#list-subscriptions) section. |
 
 Our HTTP pipelines will manage the authentication, including the caching and refreshing of tokens internally. After passing the credentials to the SDK clients, developers can focus directly on calling the client methods. For example:
 
