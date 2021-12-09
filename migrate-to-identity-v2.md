@@ -3,14 +3,14 @@
 [npm-ms-rest-nodeauth]: https://www.npmjs.com/package/@azure/ms-rest-nodeauth
 [npm-azure-identity]: https://www.npmjs.com/package/@azure/identity
 
-The [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] package is mainly used to authenticate requests on packages with names that start with `@azure/arm-`, which interact with the Azure Resource Manager. The newer [`@azure/identity`][npm-azure-identity] package supports all the authentication mechanisms supported by [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] and more.
+The [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] package is mainly used to authenticate requests to the Azure Resource Manager from packages with names that start with `@azure/arm-`. The newer [`@azure/identity`][npm-azure-identity] package supports all the authentication mechanisms supported by [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] and more.
 
 This document outlines the steps needed to migrate from [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] to [`@azure/identity`][npm-azure-identity] when working with the packages that talk to Azure Resource Manager (i.e. the ones with names starting from `@azure/arm-`). Please ignore this document if you are using [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] with other Azure packages.
 
 Important dates:
 
-- **By mid 2021**, the `@azure/arm-` packages started supporting [`@azure/identity`][npm-azure-identity].
-- **Starting on December 2021**, new major versions of the `@azure/arm-` packages will be dropping support for [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] altogether.
+- **By mid 2021**, the `@azure/arm-` packages started supporting credentials from [`@azure/identity`][npm-azure-identity] and `@azure/ms-rest-nodeauth` side by side.
+- **Starting on December 2021**, new major versions of the `@azure/arm-` packages will be dropping support for [`@azure/ms-rest-nodeauth`][npm-ms-rest-nodeauth] altogether and will only support credentials from `@azure/identity`.
 
 
 ## Table of contents
@@ -29,13 +29,13 @@ Important dates:
 
 ## Install @azure/identity
 
-Run the following command to install the new Identity client library:
+Run the following command to install the new Identity client library in your existing project:
 
 ```
 npm install --save @azure/identity@^2.0.1
 ```
 
-Once you're ready to remove `@azure/ms-rest-nodeauth`, remove it with:
+Once you're ready to remove `@azure/ms-rest-nodeauth` from your project, either remove it manually from the `package.json` file or remove it with:
 
 ```
 npm remove --save @azure/ms-rest-nodeauth
@@ -43,9 +43,13 @@ npm remove --save @azure/ms-rest-nodeauth
 
 ## Find your credential
 
-Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. Besides credentials, `@azure/ms-rest-nodeauth` also exposes methods that retrieve a credential with the list of subscriptions related to the authenticated account — these methods are prefixed with `loginWith` or suffixed with `Login`, for example, `loginWithServicePrincipalSecretWithAuthResponse` or `interactiveLogin`.
+Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes used by the Azure SDK clients. 
 
-The following table lists credentials and login methods from `@azure/ms-rest-nodeauth` and their equivalent credentials in `@azure/identity`.
+The `@azure/ms-rest-nodeauth` package also exposes methods that return the credential after making an initial call to get the access token using the same credential. Each of these methods have a counterpart whose name ends with `withAuthResponse` which does the same, but also returns a list of subscriptions related to the authenticated account.
+
+The new `@azure/identity` package does not expose such methods. You will need to use the `@azure/arm-subscriptions` package to fetch the subscriptions.
+
+The following table lists login methods from `@azure/ms-rest-nodeauth` along with the credential they return and their equivalent credentials in `@azure/identity`.
 
 | `@azure/ms-rest-nodeauth` login method | `@azure/identity` credential name |
 | --- | --- |
@@ -146,7 +150,7 @@ If you need the access token separately, make sure to provide the correct scope 
 
 ### List subscriptions
 
-While the `loginWith*` methods of the `@azure/ms-rest-nodeauth` return an `AuthResponse` type containing the authenticated credentials and a list of subscriptions, retrieving Azure subscriptions isn't integrated in the `@azure/identity` package. This feature is available through the external [`@azure/arm-subscriptions`](https://www.npmjs.com/package/@azure/arm-subscriptions) package.
+While the `*WithAuthResponse methods of the `@azure/ms-rest-nodeauth` return an `AuthResponse` type containing the authenticated credentials and a list of subscriptions, retrieving Azure subscriptions isn't integrated in the `@azure/identity` package. This feature is available through the external [`@azure/arm-subscriptions`](https://www.npmjs.com/package/@azure/arm-subscriptions) package.
 
 First, install `@azure/arm-subscriptions` by running the following command:
 
