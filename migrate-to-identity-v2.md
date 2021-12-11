@@ -47,15 +47,15 @@ Both `@azure/ms-rest-nodeauth` and `@azure/identity` expose credential classes u
 
 The `@azure/ms-rest-nodeauth` package also exposes methods that return the credential after making an initial call to get the access token using the same credential. Each of these methods have a counterpart whose name ends with `withAuthResponse` which does the same, but also returns a list of subscriptions related to the authenticated account.
 
-The new `@azure/identity` package does not expose such methods. You will need to use the `@azure/arm-subscriptions` package to fetch the subscriptions.
+The new `@azure/identity` package does not expose such methods. You will need to use the `@azure/arm-subscriptions` package to fetch the subscriptions. See the [list subscriptions section](#list-subscriptions) in this document for more details.
 
 The following table lists login methods from `@azure/ms-rest-nodeauth` along with the credential they return and their equivalent credentials in `@azure/identity`.
 
-| `@azure/ms-rest-nodeauth` login method | `@azure/identity` credential name |
+| `@azure/ms-rest-nodeauth` login methods | `@azure/identity` credential name |
 | --- | --- |
 | `interactiveLogin` and `interactiveLoginWithAuthResponse` which return `DeviceTokenCredentials` | `DeviceCodeCredential`. See the [list subscriptions](#list-subscriptions) section. |
 | `loginWithUsernamePassword` and `loginWithUsernamePasswordWithAuthResponse` which return `UserTokenCredentials` | `UsernamePasswordCredential`. See the [list subscriptions](#list-subscriptions) section. |
-| `loginWithServicePrincipalSecret`, which returns `ApplicationTokenCredentials` | `ClientSecretCredential` |
+| `loginWithServicePrincipalSecret` and `loginWithServicePrincipalSecretWithAuthResponse` which return `ApplicationTokenCredentials` | `ClientSecretCredential` |
 | `loginWithAuthFile` and `loginWithAuthFileWithAuthResponse`, when they return `ApplicationTokenCredentials` | `AzureCliCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section and the [list subscriptions](#list-subscriptions) section. |
 | `loginWithAuthFile` and `loginWithAuthFileWithAuthResponse`, when they return `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential`. See [AuthFile to AzureCliCredential](#authfile-to-azureclicredential) section and the [list subscriptions](#list-subscriptions) section. |
 | `loginWithVmMSI`, which returns `MSIVmTokenCredentials` | `ManagedIdentityCredential` |
