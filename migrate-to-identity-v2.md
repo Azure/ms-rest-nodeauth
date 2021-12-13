@@ -53,14 +53,14 @@ The following table lists login methods from `@azure/ms-rest-nodeauth` along wit
 
 | `@azure/ms-rest-nodeauth` login methods | `@azure/identity` credential name |
 | --- | --- |
-| `interactiveLogin` and `interactiveLoginWithAuthResponse` which return `DeviceTokenCredentials` | `DeviceCodeCredential`. |
-| `loginWithUsernamePassword` and `loginWithUsernamePasswordWithAuthResponse` which return `UserTokenCredentials` | `UsernamePasswordCredential`. |
+| `interactiveLogin` and `interactiveLoginWithAuthResponse` which return `DeviceTokenCredentials` | `DeviceCodeCredential` |
+| `loginWithUsernamePassword` and `loginWithUsernamePasswordWithAuthResponse` which return `UserTokenCredentials` | `UsernamePasswordCredential` |
 | `loginWithServicePrincipalSecret` and `loginWithServicePrincipalSecretWithAuthResponse` which return `ApplicationTokenCredentials` | `ClientSecretCredential` |
-| `loginWithAuthFile` and `loginWithAuthFileWithAuthResponse` | `@azure/identity` does not currently support reading authentication details from a file. Use other credentials, such as `ClientSecretCredential` or `ClientCertificateCredential`. |
+| `loginWithAuthFile` and `loginWithAuthFileWithAuthResponse` | `@azure/identity` does not currently support reading authentication details from a file. Use other credentials, such as `ClientSecretCredential` or `ClientCertificateCredential` |
 | `loginWithVmMSI`, which returns `MSIVmTokenCredentials` | `ManagedIdentityCredential` |
 | `loginWithAppServiceMSI`, which returns `MSIAppServiceTokenCredentials` | `ManagedIdentityCredential` |
-| `loginWithServicePrincipalCertificate` and `loginWithServicePrincipalCertificateWithAuthResponse`, which return `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential`. |
-| `AzureCliCredentials` | `AzureCliCredential` |
+| `loginWithServicePrincipalCertificate` and `loginWithServicePrincipalCertificateWithAuthResponse`, which return `ApplicationTokenCertificateCredentials` | `ClientCertificateCredential` |
+| `AzureCliCredentials` | [`AzureCliCredential`](https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/identity/identity/samples/AzureIdentityExamples.md#authenticating-a-user-account-with-azure-cli) |
 
 Our HTTP pipelines will manage the authentication, including the caching and refreshing of tokens internally. After passing the credentials to the SDK clients, developers can focus directly on calling the client methods. For example:
 
