@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.1 - 2021/12/15
+
+- Updated readme with a pointer to a [migration guide to use @azure/identity instead of @azure/ms-rest-nodeauth](https://github.com/Azure/ms-rest-nodeauth/blob/master/migrate-to-identity-v2.md) if you are trying to authenticate requests from packages targetting the Azure Resource Manager. Such packages have their names starting with `@azure/arm-`. As of December 2021, new major versions of all such packages will drop support for credentials from `@azure/ms-rest-nodeauth`.
+- Updated readme with list of Azure packages that supports credentials from `@azure/ms-rest-nodeauth`.
+- Updated readme with a note that there is no active development for `@azure/ms-rest-nodeauth` other than critical bug fixes.
+
 ## 3.1.0 - 2021/09/21
 
 - Use stronger types in places where AuthResponse was used in return values that used the abstract base class `TokenCredentialsBase`. See [PR 121](https://github.com/Azure/ms-rest-nodeauth/pull/121) for details.
