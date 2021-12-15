@@ -11,7 +11,7 @@ stages:
     jobs:
       - job: Test
         pool:
-          vmImage: "Ubuntu 16.04"
+          vmImage: "ubuntu-latest"
         strategy:
           matrix:
             Node8:
@@ -43,7 +43,7 @@ stages:
               reportDirectory: "$(System.DefaultWorkingDirectory)/**/coverage"
       - job: Build
         pool:
-          vmImage: "Ubuntu 16.04"
+          vmImage: "ubuntu-latest"
         steps:
           - script: |
               export TAR_NAME=$(npm pack -q)
@@ -66,7 +66,7 @@ stages:
             variables:
               TAR_NAME: $[ stageDependencies.BuildStage.Build.outputs['PackArtifacts.TAR_NAME'] ]
             pool:
-              vmImage: "Ubuntu 16.04"
+              vmImage: "ubuntu-latest"
             environment: npm
             displayName: Publish to NPM
             strategy:
