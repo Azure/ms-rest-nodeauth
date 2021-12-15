@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.1 - 2021/12/16
+## 3.1.1 - 2021/12/15
 
 - Updated readme with a pointer to a [migration guide to use @azure/identity instead of @azure/ms-rest-nodeauth](https://github.com/Azure/ms-rest-nodeauth/blob/master/migrate-to-identity-v2.md) if you are trying to authenticate requests from packages targetting the Azure Resource Manager. Such packages have their names starting with `@azure/arm-`. As of December 2021, new major versions of all such packages will drop support for credentials from `@azure/ms-rest-nodeauth`.
 - Updated readme with list of Azure packages that supports credentials from `@azure/ms-rest-nodeauth`.
