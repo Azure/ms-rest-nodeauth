@@ -127,7 +127,7 @@ const tokenAudience = "https://graph.microsoft.com/";
 
 async function main() {
 - const credential = new ApplicationTokenCredentials(clientId, domain, secret, tokenAudience, environment);
-+ const credential = new ClientSecretCredential(tenantId, clientId, secret, tokenAudience, {
++ const credential = new ClientSecretCredential(tenantId, clientId, secret, {
 +  authorityHost: AzureAuthorityHosts.AzureChina
 + });
   const client = new SubscriptionClient(credential, {
@@ -221,7 +221,8 @@ async function main() {
 -  const authResponse = await interactiveLogin({
 -    tokenAudience: "https://vault.azure.net/"
 -  });
-+  const credential = new AzureCliCredential("https://vault.azure.net/.default");
++  const credential = new InteractiveBrowserCredential();
++  const accessToken = await credential.getToken("https://vault.azure.net/.default");
 }
 
 main().catch(console.error);
