@@ -122,9 +122,8 @@ const clientId = process.env.AZURE_CLIENT_ID;
 const domain = process.env.AZURE_TENANT_ID;
 const tenantId = process.env.AZURE_TENANT_ID;
 const secret = "process.env.AZURE_CLIENT_SECRET;
-const tokenAudience = "https://graph.microsoft.com/";
+- const tokenAudience = "https://management.chinacloudapi.cn/";
 - const environment = Environment.ChinaCloud;
-
 async function main() {
 - const credential = new ApplicationTokenCredentials(clientId, domain, secret, tokenAudience, environment);
 + const credential = new ClientSecretCredential(tenantId, clientId, secret, {
@@ -211,16 +210,17 @@ While scopes (or resources) are generally provided to the new credentials intern
 
 Scopes generally include permissions. For example, to request a token that could have read access to the currently authenticated user, the scope would be `https://graph.microsoft.com/User.Read`. An app may also request any available permission, as defined through the app registration on the Azure portal, by sending a request ending in `/.default` as the scope. For more information about Azure scopes and permissions, see [Permissions and consent in the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent).
 
-The following example code shows how to migrate from using `@azure/ms-rest-nodeauth`'s `tokenAudience` to `@azure/identity`'s `getToken`, with a scope that grants Key Vault access:
+The following example code shows how to migrate from using `@azure/ms-rest-nodeauth`'s `getToken` to `@azure/identity`'s `getToken`, with a scope that grants Key Vault access:
 
 ```diff
 - import { interactiveLogin } from "@azure/ms-rest-nodeauth";
 + import { AzureCliCredential } from "@azure/identity";
 
 async function main() {
--  const authResponse = await interactiveLogin({
+-  const credentials = await interactiveLogin({
 -    tokenAudience: "https://vault.azure.net/"
 -  });
+-  const tokenResponse = await credentials.getToken();
 +  const credential = new InteractiveBrowserCredential();
 +  const accessToken = await credential.getToken("https://vault.azure.net/.default");
 }
