@@ -108,7 +108,7 @@ const credential = new ClientSecretCredential(
 You will continue specifying a `baseUri` when creating the client in the Azure package to point to the correct scope relative to a national cloud. An example follows:
 
 ```diff
-- import { ApplicationTokenCredentials } from "@azure/ms-rest-nodeauth";
+- import { loginWithServicePrincipalSecret } from "@azure/ms-rest-nodeauth";
 + import { ClientSecretCredential, AzureAuthorityHosts } from "@azure/identity";
 - import { Environment } from "@azure/ms-rest-azure-env";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
@@ -119,16 +119,14 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const clientId = process.env.AZURE_CLIENT_ID;
-const domain = process.env.AZURE_TENANT_ID;
-const tenantId = process.env.AZURE_TENANT_ID;
-const secret = "process.env.AZURE_CLIENT_SECRET;
-- const tokenAudience = "https://management.chinacloudapi.cn/";
+const domain = process.env.AZURE_TENANT_ID; // domain or tenantId
+const secret = process.env.AZURE_CLIENT_SECRET;
 - const environment = Environment.ChinaCloud;
++ const authorityHost = AzureAuthorityHosts.AzureChina;
+
 async function main() {
-- const credential = new ApplicationTokenCredentials(clientId, domain, secret, tokenAudience, environment);
-+ const credential = new ClientSecretCredential(tenantId, clientId, secret, {
-+  authorityHost: AzureAuthorityHosts.AzureChina
-+ });
+- const credential = await loginWithServicePrincipalSecret(clientId, secret, domain, { environment });
++ const credential = new ClientSecretCredential(domain, clientId, secret, { authorityHost });
   const client = new SubscriptionClient(credential, {
 -  baseUri: environment.resourceManagerEndpointUrl,
 +  baseUri: "https://management.chinacloudapi.cn"
