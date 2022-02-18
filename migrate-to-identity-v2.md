@@ -110,7 +110,7 @@ You will continue specifying a `baseUri` when creating the client in the Azure p
 ```diff
 - import { loginWithServicePrincipalSecret } from "@azure/ms-rest-nodeauth";
 + import { ClientSecretCredential, AzureAuthorityHosts } from "@azure/identity";
-- import { Environment } from "@azure/ms-rest-azure-env";
+import { Environment } from "@azure/ms-rest-azure-env";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
 
 import * as msRest from "@azure/ms-rest-js";
@@ -121,15 +121,14 @@ dotenv.config();
 const clientId = process.env.AZURE_CLIENT_ID;
 const domain = process.env.AZURE_TENANT_ID; // domain or tenantId
 const secret = process.env.AZURE_CLIENT_SECRET;
-- const environment = Environment.ChinaCloud;
+const environment = Environment.ChinaCloud;
 + const authorityHost = AzureAuthorityHosts.AzureChina;
 
 async function main() {
 - const credential = await loginWithServicePrincipalSecret(clientId, secret, domain, { environment });
 + const credential = new ClientSecretCredential(domain, clientId, secret, { authorityHost });
   const client = new SubscriptionClient(credential, {
--  baseUri: environment.resourceManagerEndpointUrl,
-+  baseUri: "https://management.chinacloudapi.cn"
+   baseUri: environment.resourceManagerEndpointUrl,
   });
 
   const subscriptions = await client.subscriptions.list();
