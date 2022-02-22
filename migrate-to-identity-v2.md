@@ -108,9 +108,9 @@ const credential = new ClientSecretCredential(
 You will continue specifying a `baseUri` when creating the client in the Azure package to point to the correct scope relative to a national cloud. An example follows:
 
 ```diff
-- import { ApplicationTokenCredentials } from "@azure/ms-rest-nodeauth";
+- import { loginWithServicePrincipalSecret } from "@azure/ms-rest-nodeauth";
 + import { ClientSecretCredential, AzureAuthorityHosts } from "@azure/identity";
-- import { Environment } from "@azure/ms-rest-azure-env";
+import { Environment } from "@azure/ms-rest-azure-env";
 import { SubscriptionClient } from "@azure/arm-subscriptions";
 
 import * as msRest from "@azure/ms-rest-js";
@@ -119,20 +119,16 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const clientId = process.env.AZURE_CLIENT_ID;
-const domain = process.env.AZURE_TENANT_ID;
-const tenantId = process.env.AZURE_TENANT_ID;
-const secret = "process.env.AZURE_CLIENT_SECRET;
-const tokenAudience = "https://graph.microsoft.com/";
-- const environment = Environment.ChinaCloud;
+const domain = process.env.AZURE_TENANT_ID; // domain or tenantId
+const secret = process.env.AZURE_CLIENT_SECRET;
+const environment = Environment.ChinaCloud;
++ const authorityHost = AzureAuthorityHosts.AzureChina;
 
 async function main() {
-- const credential = new ApplicationTokenCredentials(clientId, domain, secret, tokenAudience, environment);
-+ const credential = new ClientSecretCredential(tenantId, clientId, secret, tokenAudience, {
-+  authorityHost: AzureAuthorityHosts.AzureChina
-+ });
+- const credential = await loginWithServicePrincipalSecret(clientId, secret, domain, { environment });
++ const credential = new ClientSecretCredential(domain, clientId, secret, { authorityHost });
   const client = new SubscriptionClient(credential, {
--  baseUri: environment.resourceManagerEndpointUrl,
-+  baseUri: "https://management.chinacloudapi.cn"
+   baseUri: environment.resourceManagerEndpointUrl,
   });
 
   const subscriptions = await client.subscriptions.list();
@@ -211,17 +207,19 @@ While scopes (or resources) are generally provided to the new credentials intern
 
 Scopes generally include permissions. For example, to request a token that could have read access to the currently authenticated user, the scope would be `https://graph.microsoft.com/User.Read`. An app may also request any available permission, as defined through the app registration on the Azure portal, by sending a request ending in `/.default` as the scope. For more information about Azure scopes and permissions, see [Permissions and consent in the Microsoft identity platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent).
 
-The following example code shows how to migrate from using `@azure/ms-rest-nodeauth`'s `tokenAudience` to `@azure/identity`'s `getToken`, with a scope that grants Key Vault access:
+The following example code shows how to migrate from using `@azure/ms-rest-nodeauth`'s `getToken` to `@azure/identity`'s `getToken`, with a scope that grants Key Vault access:
 
 ```diff
 - import { interactiveLogin } from "@azure/ms-rest-nodeauth";
 + import { AzureCliCredential } from "@azure/identity";
 
 async function main() {
--  const authResponse = await interactiveLogin({
+-  const credentials = await interactiveLogin({
 -    tokenAudience: "https://vault.azure.net/"
 -  });
-+  const credential = new AzureCliCredential("https://vault.azure.net/.default");
+-  const tokenResponse = await credentials.getToken();
++  const credential = new InteractiveBrowserCredential();
++  const accessToken = await credential.getToken("https://vault.azure.net/.default");
 }
 
 main().catch(console.error);
